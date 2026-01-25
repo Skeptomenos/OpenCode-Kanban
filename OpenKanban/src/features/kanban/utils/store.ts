@@ -30,7 +30,7 @@ export type Actions = {
   addCol: (title: string) => Promise<void>;
   updateCol: (id: UniqueIdentifier, newName: string) => Promise<void>;
   removeCol: (id: UniqueIdentifier) => Promise<void>;
-  removeTask: (id: string) => void;
+  removeTask: (id: string) => Promise<void>;
 };
 
 /**
@@ -179,8 +179,24 @@ export const useTaskStore = create<State & Actions>((set) => ({
     }
   },
 
-  removeTask: (id: string) =>
-    set((state) => ({
-      tasks: state.tasks.filter((task) => task.id !== id)
-    }))
+  removeTask: async (id: string) => {
+    try {
+      const response = await fetch(`/api/issues/${id}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        console.error('Failed to delete task:', result.error?.message);
+        return;
+      }
+
+      set((state) => ({
+        tasks: state.tasks.filter((task) => task.id !== id),
+      }));
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+    }
+  }
 }));

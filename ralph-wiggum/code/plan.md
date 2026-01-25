@@ -42,7 +42,7 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 | [x] | **Task 6.5**: Add session link/unlink API endpoints | `specs/SCHEMA.md:L314-319` | Done: POST/GET /api/issues/[id]/sessions + DELETE /api/issues/[id]/sessions/[sessionId] |
 | [x] | **Task 7.1**: Connect store addTask to POST /api/issues | `specs/04-boards-integration.md:L36-37`, `specs/phase2-plan.md:L406-407` | Done: Async fetch with error handling, updates local state on success |
 | [x] | **Task 7.2**: Connect store column operations to PATCH /api/boards | `specs/04-boards-integration.md:L38` | Done: addCol, updateCol, removeCol persist columnConfig via PATCH /api/boards/[id], optimistic update with rollback on failure |
-| [ ] | **Task 7.3**: Connect store removeTask to DELETE /api/issues | `specs/phase2-plan.md:L410-411` | Complete task deletion persistence |
+| [x] | **Task 7.3**: Connect store removeTask to DELETE /api/issues | `specs/phase2-plan.md:L410-411` | Done: removeTask now async with DELETE /api/issues/[id] call |
 | [ ] | **Task 7.4**: Update kanban-board.tsx to fetch from API on mount | `specs/04-boards-integration.md:L41-43` | Initialize store from /api/boards/:id |
 | [ ] | **Task 8.1**: Copy SCHEMA.md to docs directory | `specs/phase2-plan.md:L124-130` | OpenKanban/docs/SCHEMA.md |
 | [ ] | **Task 8.2**: Update ROADMAP.md to mark Phase 2 complete | `specs/04-boards-integration.md:L48`, `specs/phase2-plan.md:L439-448` | Update status table |
