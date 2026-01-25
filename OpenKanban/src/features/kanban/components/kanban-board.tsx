@@ -52,12 +52,12 @@ interface BoardWithIssues {
   issues: ApiIssue[];
 }
 
-interface BoardListItem {
-  id: string;
-  name: string;
+interface KanbanBoardProps {
+  projectId?: string;
+  boardId?: string;
 }
 
-export function KanbanBoard() {
+export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const columns = useTaskStore((state) => state.columns);
   const setColumns = useTaskStore((state) => state.setCols);
   const tasks = useTaskStore((state) => state.tasks);
@@ -76,37 +76,40 @@ export function KanbanBoard() {
 
   const initializeBoard = useCallback(async () => {
     try {
-      const boardsResponse = await fetch('/api/boards');
-      const boardsResult = await boardsResponse.json();
+      let activeBoardId = boardId;
 
-      if (!boardsResult.success) {
-        console.error('Failed to fetch boards:', boardsResult.error?.message);
-        setIsLoading(false);
-        return;
-      }
+      if (!activeBoardId) {
+        const boardsResponse = await fetch('/api/boards');
+        const boardsResult = await boardsResponse.json();
 
-      const boards: BoardListItem[] = boardsResult.data;
-      let activeBoardId: string;
-
-      if (boards.length === 0) {
-        const createResponse = await fetch('/api/boards', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: 'Default Board',
-            columnConfig: [{ id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] }],
-          }),
-        });
-        const createResult = await createResponse.json();
-
-        if (!createResult.success) {
-          console.error('Failed to create default board:', createResult.error?.message);
+        if (!boardsResult.success) {
+          console.error('Failed to fetch boards:', boardsResult.error?.message);
           setIsLoading(false);
           return;
         }
-        activeBoardId = createResult.data.id;
-      } else {
-        activeBoardId = boards[0].id;
+
+        const boards: Array<{ id: string; name: string }> = boardsResult.data;
+
+        if (boards.length === 0) {
+          const createResponse = await fetch('/api/boards', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: 'Default Board',
+              columnConfig: [{ id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] }],
+            }),
+          });
+          const createResult = await createResponse.json();
+
+          if (!createResult.success) {
+            console.error('Failed to create default board:', createResult.error?.message);
+            setIsLoading(false);
+            return;
+          }
+          activeBoardId = createResult.data.id;
+        } else {
+          activeBoardId = boards[0].id;
+        }
       }
 
       const boardResponse = await fetch(`/api/boards/${activeBoardId}`);
@@ -120,7 +123,7 @@ export function KanbanBoard() {
 
       const boardData: BoardWithIssues = boardResult.data;
 
-      setBoardId(activeBoardId);
+      setBoardId(activeBoardId ?? null);
 
       const uiColumns: Column[] = boardData.columnConfig.map((col) => ({
         id: col.id,
@@ -141,7 +144,7 @@ export function KanbanBoard() {
       console.error('Failed to initialize board:', error);
       setIsLoading(false);
     }
-  }, [setBoardId, setColumns, setIsLoading, setTasks]);
+  }, [boardId, setBoardId, setColumns, setIsLoading, setTasks]);
 
   useEffect(() => {
     initializeBoard();
