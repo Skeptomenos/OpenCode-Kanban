@@ -68,7 +68,7 @@ Part D (Verify) ────┴── D1: Final integration test
 | [x] | **B4**: Refactor Zustand store - remove async actions | `352:L29-38` | Done v0.3.13 - Removed `fetchTasks`, `addTask`, `removeTask` from store. Updated `kanban-board.tsx` to use `fetchIssues` from api.ts. Updated `new-task-dialog.tsx` to use `createIssue` from api.ts. All 76 tests pass |
 | [x] | **B5**: Refactor KanbanViewPage to useQuery | `352:L44-54` | Done v0.3.14 - Replaced `initializeBoard` callback + `useEffect` with `useQuery` in `kanban-board.tsx`. Added board fetchers to `api.ts`. Sync effect checks `draggedTask` to prevent flicker during drag. All 76 tests pass |
 | [x] | **B6**: Add mutations for CRUD operations | `352:L56-61` | Done v0.3.15 - Added `updateIssueMutation` in `kanban-board.tsx` for drag-and-drop status updates with rollback. Added `createIssueMutation` in `new-task-dialog.tsx`. Both use `onSettled` to invalidate `['kanban']` queries. All 76 tests pass |
-| [ ] | **B7**: Wire column operations to mutations | `352:L56-61` | Convert `addCol`, `updateCol`, `removeCol` to use `api.ts` + mutations for board updates |
+| [x] | **B7**: Wire column operations to mutations | `352:L56-61` | Done v0.3.16 - Created `useColumnMutations` hook + context. Removed direct fetch from store. `NewSectionDialog` + `ColumnActions` now use mutations. All 76 tests pass |
 
 ### Part C: Code Hygiene (~45 min)
 

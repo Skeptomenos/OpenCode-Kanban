@@ -10,11 +10,10 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-
-import { useTaskStore } from '../utils/store';
+import { useColumnMutationsContext } from '../hooks/column-mutations-context';
 
 export default function NewSectionDialog() {
-  const addCol = useTaskStore((state) => state.addCol);
+  const { addColumn } = useColumnMutationsContext();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,7 +23,7 @@ export default function NewSectionDialog() {
     const { title } = Object.fromEntries(formData);
 
     if (typeof title !== 'string') return;
-    addCol(title);
+    addColumn(title);
   };
 
   return (

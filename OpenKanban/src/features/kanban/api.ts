@@ -339,3 +339,45 @@ export async function createBoard(data: {
 
   return result.data;
 }
+
+/**
+ * Input for updating an existing board via the API.
+ */
+export type UpdateBoardInput = {
+  name?: string;
+  columnConfig?: Array<{
+    id: string;
+    title: string;
+    statusMappings: string[];
+  }>;
+};
+
+/**
+ * Update an existing board.
+ * @param id Board ID to update
+ * @param input Partial board update input
+ * @returns The updated board
+ * @throws ApiError if the request fails
+ */
+export async function updateBoard(
+  id: string,
+  input: UpdateBoardInput
+): Promise<BoardWithIssues> {
+  const response = await fetch(`/api/boards/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+
+  const result: ApiResponse<BoardWithIssues> = await response.json();
+
+  if (!result.success) {
+    throw new ApiError(
+      result.error.message,
+      result.error.code,
+      response.status
+    );
+  }
+
+  return result.data;
+}

@@ -15,6 +15,7 @@ import { Task, useTaskStore } from '../utils/store';
 import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
 import { fetchIssues, fetchBoards, fetchBoard, createBoard, updateIssue } from '../api';
+import { ColumnMutationsProvider } from '../hooks/column-mutations-context';
 import {
   Announcements,
   DndContext,
@@ -378,45 +379,47 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   }
 
   return (
-    <DndContext
-      accessibility={{
-        announcements
-      }}
-      sensors={sensors}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-    >
-      <BoardContainer>
-        <SortableContext items={columnsId}>
-          {columns?.map((col, index) => (
-            <Fragment key={col.id}>
-              <BoardColumn column={col} />
-              {index === columns?.length - 1 && (
-                <div className='w-[300px]'>
-                  <NewSectionDialog />
-                </div>
-              )}
-            </Fragment>
-          ))}
-          {!columns.length && <NewSectionDialog />}
-        </SortableContext>
-      </BoardContainer>
+    <ColumnMutationsProvider projectId={projectId} boardId={boardId}>
+      <DndContext
+        accessibility={{
+          announcements
+        }}
+        sensors={sensors}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onDragOver={onDragOver}
+      >
+        <BoardContainer>
+          <SortableContext items={columnsId}>
+            {columns?.map((col, index) => (
+              <Fragment key={col.id}>
+                <BoardColumn column={col} />
+                {index === columns?.length - 1 && (
+                  <div className='w-[300px]'>
+                    <NewSectionDialog />
+                  </div>
+                )}
+              </Fragment>
+            ))}
+            {!columns.length && <NewSectionDialog />}
+          </SortableContext>
+        </BoardContainer>
 
-      <ClientPortal>
-        <DragOverlay>
-          {activeColumn && (
-            <BoardColumn
-              isOverlay
-              column={activeColumn}
-              tasks={tasks.filter(
-                (task) => task.columnId === activeColumn.id
-              )}
-            />
-          )}
-          {activeTask && <TaskCard task={activeTask} isOverlay />}
-        </DragOverlay>
-      </ClientPortal>
-    </DndContext>
+        <ClientPortal>
+          <DragOverlay>
+            {activeColumn && (
+              <BoardColumn
+                isOverlay
+                column={activeColumn}
+                tasks={tasks.filter(
+                  (task) => task.columnId === activeColumn.id
+                )}
+              />
+            )}
+            {activeTask && <TaskCard task={activeTask} isOverlay />}
+          </DragOverlay>
+        </ClientPortal>
+      </DndContext>
+    </ColumnMutationsProvider>
   );
 }

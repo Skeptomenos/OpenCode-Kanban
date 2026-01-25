@@ -22,10 +22,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { useTaskStore } from '../utils/store';
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { useColumnMutationsContext } from '../hooks/column-mutations-context';
 
 export function ColumnActions({
   title,
@@ -35,8 +35,7 @@ export function ColumnActions({
   id: UniqueIdentifier;
 }) {
   const [name, setName] = React.useState(title);
-  const updateCol = useTaskStore((state) => state.updateCol);
-  const removeCol = useTaskStore((state) => state.removeCol);
+  const { updateColumn, removeColumn } = useColumnMutationsContext();
   const [editDisable, setIsEditDisable] = React.useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -47,7 +46,7 @@ export function ColumnActions({
         onSubmit={(e) => {
           e.preventDefault();
           setIsEditDisable(!editDisable);
-          updateCol(id, name);
+          updateColumn(id, name);
           toast(`${title} updated to ${name}`);
         }}
       >
@@ -105,7 +104,7 @@ export function ColumnActions({
             <AlertDialogAction 
               className={buttonVariants({ variant: 'destructive' })}
               onClick={() => {
-                removeCol(id);
+                removeColumn(id);
                 toast('This column has been deleted.');
               }}
             >
