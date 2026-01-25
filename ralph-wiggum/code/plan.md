@@ -227,7 +227,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 | [x] | **J1**: Add `code: 'INTERNAL_ERROR'` to sessions route | C.8 | `358:L18-19` | Done v0.3.46 |
 | [x] | **J2**: Add `.strict()` to `ApiSuccessSchema` | B.1 | `358:L10-12` | Done v0.3.47 |
 | [x] | **J3**: Add debug logging to adapter catch blocks | C.6 | `358:L17` | Done v0.3.48 - Added logging to 2 catch blocks in adapter.ts |
-| [ ] | **J4**: Return boolean from `rollbackProject` | C.7 | `358:L17` | Error visibility |
+| [x] | **J4**: Return boolean from `rollbackProject` | C.7 | `358:L17` | Done v0.3.49 - Returns boolean for caller visibility, callers log orphaned projects |
 
 ---
 

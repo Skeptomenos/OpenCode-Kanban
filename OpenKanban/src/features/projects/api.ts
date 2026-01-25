@@ -177,7 +177,10 @@ export async function createProjectWithBoard(
   try {
     sanitizedBoardInput = CreateBoardSchema.strip().parse(boardInput);
   } catch (error) {
-    await rollbackProject(project.id);
+    const rollbackSuccess = await rollbackProject(project.id);
+    if (!rollbackSuccess) {
+      logger.warn('Orphaned project may exist after validation failure', { projectId: project.id });
+    }
     throw new ProjectApiError(
       'Invalid board data: ' + (error instanceof Error ? error.message : 'validation failed'),
       'VALIDATION_ERROR'
@@ -192,7 +195,10 @@ export async function createProjectWithBoard(
       body: JSON.stringify(sanitizedBoardInput),
     });
   } catch {
-    await rollbackProject(project.id);
+    const rollbackSuccess = await rollbackProject(project.id);
+    if (!rollbackSuccess) {
+      logger.warn('Orphaned project may exist after network failure', { projectId: project.id });
+    }
     throw new ProjectApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
   }
 
@@ -200,7 +206,10 @@ export async function createProjectWithBoard(
   try {
     boardResult = await boardResponse.json();
   } catch {
-    await rollbackProject(project.id);
+    const rollbackSuccess = await rollbackProject(project.id);
+    if (!rollbackSuccess) {
+      logger.warn('Orphaned project may exist after parse failure', { projectId: project.id });
+    }
     throw new ProjectApiError('Invalid response from server', 'PARSE_ERROR', boardResponse.status);
   }
 
@@ -209,7 +218,10 @@ export async function createProjectWithBoard(
       projectId: project.id,
       error: boardResult.error,
     });
-    await rollbackProject(project.id);
+    const rollbackSuccess = await rollbackProject(project.id);
+    if (!rollbackSuccess) {
+      logger.warn('Orphaned project may exist after board creation failure', { projectId: project.id });
+    }
     throw new ProjectApiError(
       'Failed to initialize project board. Please try again.',
       boardResult.error.code,
@@ -225,16 +237,22 @@ export async function createProjectWithBoard(
 
 /**
  * Rollback a project creation by deleting the project.
- * Logs but doesn't throw on failure (best-effort cleanup).
+ * Returns success/failure status for caller visibility.
+ * Logs errors but doesn't throw (best-effort cleanup).
+ * 
+ * @param projectId - The ID of the project to delete
+ * @returns true if rollback succeeded, false if it failed
  */
-async function rollbackProject(projectId: string): Promise<void> {
+async function rollbackProject(projectId: string): Promise<boolean> {
   try {
-    await fetch(`/api/issues/${projectId}`, { method: 'DELETE' });
+    const response = await fetch(`/api/issues/${projectId}`, { method: 'DELETE' });
+    return response.ok;
   } catch (rollbackError) {
     logger.error('Failed to rollback project after board failure', {
       projectId,
       error: String(rollbackError),
     });
+    return false;
   }
 }
 
