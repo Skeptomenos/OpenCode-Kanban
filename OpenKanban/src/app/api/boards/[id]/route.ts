@@ -12,6 +12,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
+import { BoardService } from '@/services/board-service';
+import { IssueService } from '@/services/issue-service';
 import { UpdateBoardSchema } from '@/contract/pm/schemas';
 import { logger } from '@/lib/logger';
 
@@ -35,8 +37,10 @@ export async function GET(
     const { id } = await context.params;
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const boardService = new BoardService(repo);
+    const issueService = new IssueService(repo);
 
-    const board = repo.getBoard(id);
+    const board = boardService.getBoard(id);
     if (!board) {
       return NextResponse.json(
         {
@@ -47,9 +51,9 @@ export async function GET(
       );
     }
 
-    const issues = repo.listIssues(board.filters);
+    const issues = issueService.listIssues(board.filters);
     const issueIds = issues.map((issue) => issue.id);
-    const issuesWithRelations = repo.getIssuesWithRelations(issueIds);
+    const issuesWithRelations = issueService.getIssuesWithRelations(issueIds);
 
     return NextResponse.json({
       success: true,
@@ -87,8 +91,9 @@ export async function PATCH(
     const { id } = await context.params;
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new BoardService(repo);
 
-    const existing = repo.getBoard(id);
+    const existing = service.getBoard(id);
     if (!existing) {
       return NextResponse.json(
         {
@@ -127,7 +132,7 @@ export async function PATCH(
       );
     }
 
-    const updatedBoard = repo.updateBoard(id, result.data);
+    const updatedBoard = service.updateBoard(id, result.data);
 
     return NextResponse.json({
       success: true,
@@ -161,8 +166,9 @@ export async function DELETE(
     const { id } = await context.params;
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new BoardService(repo);
 
-    const existing = repo.getBoard(id);
+    const existing = service.getBoard(id);
     if (!existing) {
       return NextResponse.json(
         {
@@ -173,7 +179,7 @@ export async function DELETE(
       );
     }
 
-    repo.deleteBoard(id);
+    service.deleteBoard(id);
 
     return NextResponse.json({
       success: true,

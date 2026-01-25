@@ -56,7 +56,7 @@ Part D (Verify) ────┴── D1: Final integration test
 | [x] | **A6**: Refactor `/api/issues/route.ts` to use Service | `351:L59-73` | Done v0.3.6 - Replaced `repo.listIssues()` / `repo.createIssue()` with `service.listIssues()` / `service.createIssue()` |
 | [x] | **A7**: Refactor `/api/issues/[id]/route.ts` to use Service | `351:L75-79` | Done v0.3.7 - Replaced `repo.getIssueWithRelations()`, `repo.getIssue()`, `repo.updateIssue()`, `repo.deleteIssue()` with `IssueService` calls. All 76 tests pass. |
 | [x] | **A8**: Refactor `/api/boards/route.ts` to use Service | `351:L76-79` | Done v0.3.8 - Replaced `repo.listBoards()` / `repo.createBoard()` with `service.listBoards()` / `service.createBoard()` |
-| [ ] | **A9**: Refactor `/api/boards/[id]/route.ts` to use Service | `351:L76-79` | Replace repo calls with `BoardService`. Verify: `grep -r "repo\." src/app/api/` shows only instantiation |
+| [x] | **A9**: Refactor `/api/boards/[id]/route.ts` to use Service | `351:L76-79` | Done v0.3.9 - Replaced `repo.getBoard()`, `repo.listIssues()`, `repo.getIssuesWithRelations()`, `repo.updateBoard()`, `repo.deleteBoard()` with `BoardService` + `IssueService` calls. Added `getIssuesWithRelations()` to IssueService. All 76 tests pass |
 
 ### Part B: Frontend Modernization (~75 min)
 

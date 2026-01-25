@@ -44,6 +44,10 @@ export class IssueService {
     return this.repo.getIssueWithRelations(id);
   }
 
+  getIssuesWithRelations(ids: string[]): IssueWithRelations[] {
+    return this.repo.getIssuesWithRelations(ids);
+  }
+
   updateIssue(id: string, data: UpdateIssueInput): Issue {
     return this.repo.updateIssue(id, data);
   }
