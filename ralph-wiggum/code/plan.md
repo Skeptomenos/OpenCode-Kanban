@@ -96,7 +96,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **G1**: Create `src/features/projects/api.ts` | `356:L13-15` | Done v0.3.34 - `fetchProjects`, `createProject`. Issue D.2 |
-| [ ] | **G2**: Refactor `use-projects.ts` to use `useQuery` | `356:L18-20` | Issue D.2 |
+| [x] | **G2**: Refactor `use-projects.ts` to use `useQuery` | `356:L18-20` | Done v0.3.35 - Issue D.2 |
 | [ ] | **G3**: Refactor `create-project-dialog.tsx` to use `useMutation` | `356:L23-25` | Issue D.2 |
 | [ ] | **G4**: Create tests for `/api/sessions` route | `356:L32-37` | 3 test cases. Issue E.1 |
 | [ ] | **G5**: Create tests for `/api/issues/[id]/sessions` route | `356:L40-46` | 5 test cases. Issue E.1 |
