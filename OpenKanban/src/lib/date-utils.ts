@@ -22,3 +22,16 @@
 export function now(): number {
   return Date.now();
 }
+
+/**
+ * Get the current timestamp as an ISO 8601 string.
+ *
+ * Uses the centralized `now()` function internally to ensure
+ * consistent timestamp generation across the codebase.
+ *
+ * @returns Current timestamp as ISO 8601 string (e.g., "2026-01-25T21:50:00.000Z")
+ * @see Issue B.1 - Logger date handling centralization
+ */
+export function nowISO(): string {
+  return new Date(now()).toISOString();
+}
