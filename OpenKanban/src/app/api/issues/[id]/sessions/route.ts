@@ -1,6 +1,7 @@
 /**
  * Issue Session Links API - Link sessions to issues
  * @see specs/SCHEMA.md:L314-319
+ * @see ralph-wiggum/specs/354-service-completion.md:L43-46
  *
  * POST   /api/issues/[id]/sessions - Link a session to an issue
  * GET    /api/issues/[id]/sessions - List all session links for an issue
@@ -10,6 +11,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
+import { IssueService } from '@/services/issue-service';
 import { LinkSessionSchema } from '@/contract/pm/schemas';
 import { logger } from '@/lib/logger';
 
@@ -34,8 +36,9 @@ export async function POST(
     const { id } = await context.params;
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new IssueService(repo);
 
-    const existing = repo.getIssue(id);
+    const existing = service.getIssue(id);
     if (!existing) {
       return NextResponse.json(
         {
@@ -76,7 +79,7 @@ export async function POST(
 
     const { sessionId, linkType } = result.data;
 
-    const existingLinks = repo.getSessionLinks(id);
+    const existingLinks = service.getSessionLinks(id);
     const alreadyLinked = existingLinks.some((link) => link.sessionId === sessionId);
     if (alreadyLinked) {
       return NextResponse.json(
@@ -91,7 +94,7 @@ export async function POST(
       );
     }
 
-    repo.linkSession(id, sessionId, linkType);
+    service.linkSession(id, sessionId, linkType);
 
     return NextResponse.json({
       success: true,
@@ -128,8 +131,9 @@ export async function GET(
     const { id } = await context.params;
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new IssueService(repo);
 
-    const existing = repo.getIssue(id);
+    const existing = service.getIssue(id);
     if (!existing) {
       return NextResponse.json(
         {
@@ -140,7 +144,7 @@ export async function GET(
       );
     }
 
-    const sessionLinks = repo.getSessionLinks(id);
+    const sessionLinks = service.getSessionLinks(id);
 
     return NextResponse.json({
       success: true,
