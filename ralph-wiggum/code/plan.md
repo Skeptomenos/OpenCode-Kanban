@@ -1,89 +1,112 @@
-# Implementation Plan: Phase 3.5 Refactor
+s# Implementation Plan: Phase 3.5 Complete
 
-> **Status:** Ready for Implementation  
-> **Total Estimated Time:** ~3 hours  
+> **Status:** Phase 3.5 Refactor COMPLETE | Phase 3.5 Cleanup PENDING
 > **Specs:**
-> - `ralph-wiggum/specs/351-backend-arch.md`
-> - `ralph-wiggum/specs/352-frontend-modernization.md`
-> - `ralph-wiggum/specs/353-security-hygiene.md`
-> - `ralph-wiggum/specs/coding-principle-violations-2026-01-25.md`
-
-## Overview
-
-Refactoring OpenKanban to strict architectural compliance before Phase 4. This plan addresses:
-- Missing Service Layer (Route → Service → Repository pattern)
-- Manual fetch patterns (replace with TanStack Query)
-- Security hygiene (BOLA stubs, Date handling, export conventions)
-- Coding principle violations
-
-## Dependencies Graph
-
-```
-Part A (Backend) ──┬── A1: date-utils.ts (no deps)
-                   ├── A2: Strict schemas (no deps)
-                   ├── A3: Issue service + tests (TDD)
-                   ├── A4: Board service + tests (TDD)
-                   ├── A5: BOLA stubs in services
-                   └── A6-A9: Route refactors (depend on A3-A5)
-                   
-Part B (Frontend) ──┬── B1: Install TanStack Query
-                    ├── B2: QueryClient provider
-                    ├── B3: kanban/api.ts layer
-                    ├── B4: Strip Zustand async actions
-                    ├── B5: KanbanViewPage useQuery (depends on B1-B4)
-                    ├── B6: Mutation + optimistic drag
-                    └── B7: Column operations via mutations
-                    
-Part C (Hygiene) ───┬── C1-C3: Convert default exports (batched by area)
-                    └── C4: ESLint no-default-export rule
-
-Part D (Verify) ────┴── D1: Final integration test
-```
+> - `ralph-wiggum/specs/351-backend-arch.md` (DONE)
+> - `ralph-wiggum/specs/352-frontend-modernization.md` (DONE)
+> - `ralph-wiggum/specs/353-security-hygiene.md` (DONE)
+> - `ralph-wiggum/specs/354-service-completion.md` (PENDING)
+> - `ralph-wiggum/specs/355-code-consistency.md` (PENDING)
+> - `ralph-wiggum/specs/356-tech-debt.md` (PENDING)
+> **Issue Tracker:** `OpenKanban/docs/PHASE-3.5-REFACTOR-ISSUES.md`
 
 ---
 
-## Tasks
+## Phase 3.5 Refactor (COMPLETE)
 
-### Part A: Backend Architecture (~60 min)
+All 21 tasks completed. Build passes, lint passes, 76 tests pass.
 
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **A1**: Create `src/lib/date-utils.ts` with `now()` wrapper | `353:L41-46` | Done v0.3.1 - Replaced 6x in repository.ts + 1x in adapter.ts. Verified: `grep "Date.now()" src/` → only `date-utils.ts` |
-| [x] | **A2**: Add `.strict()` to Zod schemas | `351:L45-55` | Done v0.3.2 - Added `.strict()` to 4 schemas. Tests: 8 new cases (4 valid, 4 rejection) |
-| [x] | **A3**: Create Issue Service + Tests (TDD) | `351:L14-42` | Done v0.3.3 - IssueService with 6 methods + 13 tests. All 63 tests pass |
-| [x] | **A4**: Create Board Service + Tests (TDD) | `351:L23-28` | Done v0.3.4 - BoardService with 5 methods + 13 tests. All 76 tests pass |
-| [x] | **A5**: Add BOLA stubs to Services | `353:L10-18` | Done v0.3.5 - Added ownerId to IssueService + BoardService constructors. Tests updated to pass 'test-owner'. Hints for unused ownerId expected (stub pattern). |
-| [x] | **A6**: Refactor `/api/issues/route.ts` to use Service | `351:L59-73` | Done v0.3.6 - Replaced `repo.listIssues()` / `repo.createIssue()` with `service.listIssues()` / `service.createIssue()` |
-| [x] | **A7**: Refactor `/api/issues/[id]/route.ts` to use Service | `351:L75-79` | Done v0.3.7 - Replaced `repo.getIssueWithRelations()`, `repo.getIssue()`, `repo.updateIssue()`, `repo.deleteIssue()` with `IssueService` calls. All 76 tests pass. |
-| [x] | **A8**: Refactor `/api/boards/route.ts` to use Service | `351:L76-79` | Done v0.3.8 - Replaced `repo.listBoards()` / `repo.createBoard()` with `service.listBoards()` / `service.createBoard()` |
-| [x] | **A9**: Refactor `/api/boards/[id]/route.ts` to use Service | `351:L76-79` | Done v0.3.9 - Replaced `repo.getBoard()`, `repo.listIssues()`, `repo.getIssuesWithRelations()`, `repo.updateBoard()`, `repo.deleteBoard()` with `BoardService` + `IssueService` calls. Added `getIssuesWithRelations()` to IssueService. All 76 tests pass |
+<details>
+<summary>Click to expand completed tasks</summary>
 
-### Part B: Frontend Modernization (~75 min)
+### Part A: Backend Architecture
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **B1**: Install TanStack Query | `352:L12-13` | Done v0.3.10 - Installed `@tanstack/react-query@^5.90.20`. Build passes, all 76 tests pass |
-| [x] | **B2**: Create QueryClient + Provider | `352:L14-15` | Done v0.3.11 - Created `src/lib/query-client.ts` with lazy singleton pattern. Wrapped app via `providers.tsx`. Build passes, all 76 tests pass |
-| [x] | **B3**: Create `src/features/kanban/api.ts` fetcher layer | `352:L19-25` | Done v0.3.12 - Created typed fetchers: `fetchIssues`, `fetchIssue`, `createIssue`, `updateIssue`, `deleteIssue`. Uses `Schema.strip().parse()` before sending. Includes `ApiError` class for error handling |
-| [x] | **B4**: Refactor Zustand store - remove async actions | `352:L29-38` | Done v0.3.13 - Removed `fetchTasks`, `addTask`, `removeTask` from store. Updated `kanban-board.tsx` to use `fetchIssues` from api.ts. Updated `new-task-dialog.tsx` to use `createIssue` from api.ts. All 76 tests pass |
-| [x] | **B5**: Refactor KanbanViewPage to useQuery | `352:L44-54` | Done v0.3.14 - Replaced `initializeBoard` callback + `useEffect` with `useQuery` in `kanban-board.tsx`. Added board fetchers to `api.ts`. Sync effect checks `draggedTask` to prevent flicker during drag. All 76 tests pass |
-| [x] | **B6**: Add mutations for CRUD operations | `352:L56-61` | Done v0.3.15 - Added `updateIssueMutation` in `kanban-board.tsx` for drag-and-drop status updates with rollback. Added `createIssueMutation` in `new-task-dialog.tsx`. Both use `onSettled` to invalidate `['kanban']` queries. All 76 tests pass |
-| [x] | **B7**: Wire column operations to mutations | `352:L56-61` | Done v0.3.16 - Created `useColumnMutations` hook + context. Removed direct fetch from store. `NewSectionDialog` + `ColumnActions` now use mutations. All 76 tests pass |
+| [x] | **A1**: Create `src/lib/date-utils.ts` with `now()` wrapper | `353:L41-46` | Done v0.3.1 |
+| [x] | **A2**: Add `.strict()` to Zod schemas | `351:L45-55` | Done v0.3.2 |
+| [x] | **A3**: Create Issue Service + Tests (TDD) | `351:L14-42` | Done v0.3.3 |
+| [x] | **A4**: Create Board Service + Tests (TDD) | `351:L23-28` | Done v0.3.4 |
+| [x] | **A5**: Add BOLA stubs to Services | `353:L10-18` | Done v0.3.5 |
+| [x] | **A6**: Refactor `/api/issues/route.ts` to use Service | `351:L59-73` | Done v0.3.6 |
+| [x] | **A7**: Refactor `/api/issues/[id]/route.ts` to use Service | `351:L75-79` | Done v0.3.7 |
+| [x] | **A8**: Refactor `/api/boards/route.ts` to use Service | `351:L76-79` | Done v0.3.8 |
+| [x] | **A9**: Refactor `/api/boards/[id]/route.ts` to use Service | `351:L76-79` | Done v0.3.9 |
 
-### Part C: Code Hygiene (~45 min)
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **C1**: Convert default exports - kanban components | `353:L34-37` | Done v0.3.17 - Converted 3 files to named exports. Updated imports in `page.tsx`, `kanban-board.tsx`. All 76 tests pass |
-| [x] | **C2**: Convert default exports - layout components | `353:L34-37` | Done v0.3.18 - Converted 5 files to named exports: `search-input.tsx`, `app-sidebar.tsx`, `page-container.tsx`, `header.tsx`, `providers.tsx`. Updated imports in `layout.tsx`, `kanban-view-page.tsx`, `header.tsx`. All 76 tests pass |
-| [x] | **C3**: Convert default exports - kbar components | `353:L34-37` | Done v0.3.19 - Converted 4 files to named exports: `index.tsx`, `render-result.tsx`, `result-item.tsx`, `use-theme-switching.tsx`. Updated import in `layout.tsx`. All 76 tests pass |
-| [x] | **C4**: Add ESLint no-default-export rule | `353:L24-32` | Done v0.3.20 - Added `import/no-default-export: error` in eslint.config.mjs. Added override for Next.js special files (page, layout, loading, not-found, error). Converted theme-provider.tsx to named export. All 76 tests pass |
-
-### Part D: Verification (~15 min)
+### Part B: Frontend Modernization
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **D1**: Full verification suite | `351:L84-85`, `352:L65-68`, `353:L50-52` | Done v0.3.21 - Build passes, lint passes, all 76 tests pass. Verified: `grep -r "repo\." src/app/api/issues/route.ts ...` shows no direct repo calls in refactored routes. `grep "Date.now()" src/` only matches `date-utils.ts`. Manual tests TBD by user. |
+| [x] | **B1**: Install TanStack Query | `352:L12-13` | Done v0.3.10 |
+| [x] | **B2**: Create QueryClient + Provider | `352:L14-15` | Done v0.3.11 |
+| [x] | **B3**: Create `src/features/kanban/api.ts` fetcher layer | `352:L19-25` | Done v0.3.12 |
+| [x] | **B4**: Refactor Zustand store - remove async actions | `352:L29-38` | Done v0.3.13 |
+| [x] | **B5**: Refactor KanbanViewPage to useQuery | `352:L44-54` | Done v0.3.14 |
+| [x] | **B6**: Add mutations for CRUD operations | `352:L56-61` | Done v0.3.15 |
+| [x] | **B7**: Wire column operations to mutations | `352:L56-61` | Done v0.3.16 |
+
+### Part C: Code Hygiene
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [x] | **C1**: Convert default exports - kanban components | `353:L34-37` | Done v0.3.17 |
+| [x] | **C2**: Convert default exports - layout components | `353:L34-37` | Done v0.3.18 |
+| [x] | **C3**: Convert default exports - kbar components | `353:L34-37` | Done v0.3.19 |
+| [x] | **C4**: Add ESLint no-default-export rule | `353:L24-32` | Done v0.3.20 |
+
+### Part D: Verification
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [x] | **D1**: Full verification suite | `351:L84-85` | Done v0.3.21 - Build/lint/76 tests pass |
+
+</details>
+
+---
+
+## Phase 3.5 Cleanup (PENDING)
+
+Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.5-REFACTOR-ISSUES.md`.
+
+### Part E: Service Layer Completion (~45 min)
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [x] | **E1**: Create `OpenCodeService` class | `354:L10-26` | Done v0.3.22 - Wrap LocalOpenCodeAdapter. Issue A.1 |
+| [ ] | **E2**: Add session linking methods to `IssueService` | `354:L36-41` | `getSessionLinks`, `linkSession`, `unlinkSession`. Issues A.2, G.1 |
+| [x] | **E3**: Refactor `/api/sessions/route.ts` to use OpenCodeService | `354:L27-29` | Done v0.3.22 - Issue A.1 |
+| [ ] | **E4**: Refactor `/api/issues/[id]/sessions/route.ts` to use IssueService | `354:L43-46` | Issue A.2 |
+| [ ] | **E5**: Refactor `/api/issues/[id]/sessions/[sessionId]/route.ts` to use IssueService | `354:L43-46` | Issue A.2 |
+| [ ] | **E6**: Add `.strip().parse()` to Board API fetchers | `354:L51-59` | `createBoard`, `updateBoard`. Issue D.1 |
+| [ ] | **E7**: Add tests for `OpenCodeService` | `354:L67-70` | Mock adapter, test methods |
+| [ ] | **E8**: Add tests for session linking methods in `IssueService` | `354:L72-74` | 3 new test cases |
+
+### Part F: Code Consistency (~30 min)
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [ ] | **F1**: Add `nowISO()` to `date-utils.ts` | `355:L13-14` | Issue B.1 |
+| [ ] | **F2**: Update `logger.ts` to use `nowISO()` | `355:L17-18` | Issue B.1 |
+| [ ] | **F3**: Add `.strict()` to PM support schemas | `355:L25-31` | 6 schemas. Issue C.1 |
+| [ ] | **F4**: Add `.strict()` to OpenCode schemas | `355:L35-41` | 5 schemas. Issue C.2 |
+| [ ] | **F5**: Deduplicate types in `api.ts` | `355:L48-50` | Import from repository. Issue F.1 |
+
+### Part G: Technical Debt (~45 min)
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [ ] | **G1**: Create `src/features/projects/api.ts` | `356:L13-15` | `fetchProjects`, `createProject`. Issue D.2 |
+| [ ] | **G2**: Refactor `use-projects.ts` to use `useQuery` | `356:L18-20` | Issue D.2 |
+| [ ] | **G3**: Refactor `create-project-dialog.tsx` to use `useMutation` | `356:L23-25` | Issue D.2 |
+| [ ] | **G4**: Create tests for `/api/sessions` route | `356:L32-37` | 3 test cases. Issue E.1 |
+| [ ] | **G5**: Create tests for `/api/issues/[id]/sessions` route | `356:L40-46` | 5 test cases. Issue E.1 |
+| [ ] | **G6**: Create tests for `/api/issues/[id]/sessions/[sessionId]` route | `356:L48-51` | 2 test cases. Issue E.1 |
+
+### Part H: Final Verification
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [ ] | **H1**: Run full verification suite | `354:L77-80`, `355:L54-58`, `356:L55-59` | Build, lint, 85+ tests, manual checks |
 
 ---
 
@@ -95,55 +118,70 @@ Part D (Verify) ────┴── D1: Final integration test
 
 ---
 
-## Recommended Execution Order
+## Issue to Task Mapping
 
-### Session 1 - Backend Foundation (Tasks A1-A4)
-1. A1: `date-utils.ts` - Quick (10 min)
-2. A2: Strict schemas - Quick (10 min)
-3. A3: Issue Service + tests - Short (25 min)
-4. A4: Board Service + tests - Short (20 min)
-
-### Session 2 - Backend Wiring (Tasks A5-A9)
-5. A5: BOLA stubs - Quick (10 min)
-6. A6-A9: Route refactors - Short each (10 min × 4 = 40 min)
-
-### Session 3 - Frontend Setup (Tasks B1-B4)
-7. B1: Install TanStack - Quick (5 min)
-8. B2: QueryClient provider - Quick (10 min)
-9. B3: `kanban/api.ts` - Short (25 min)
-10. B4: Strip Zustand async - Short (15 min)
-
-### Session 4 - Frontend Integration (Tasks B5-B7)
-11. B5: KanbanViewPage useQuery - Short (25 min)
-12. B6: Mutations - Short (20 min)
-13. B7: Column mutations - Short (15 min)
-
-### Session 5 - Hygiene (Tasks C1-C4)
-14. C1-C3: Export conversions - Quick each (10 min × 3 = 30 min)
-15. C4: ESLint rule - Quick (15 min)
-
-### Session 6 - Final
-16. D1: Full verification - Short (15 min)
+| Issue ID | Severity | Summary | Task(s) |
+|----------|----------|---------|---------|
+| A.1 | MEDIUM | Session routes bypass service layer | E1, E3 |
+| A.2 | MEDIUM | Session linking routes bypass service layer | E2, E4, E5 |
+| A.3 | LOW | BOLA stubs non-functional | Deferred to Phase 4 |
+| B.1 | LOW | Logger uses raw `new Date()` | F1, F2 |
+| C.1 | LOW | PM support schemas missing `.strict()` | F3 |
+| C.2 | LOW | OpenCode schemas missing `.strict()` | F4 |
+| D.1 | MEDIUM | Board fetchers missing `.strip().parse()` | E6 |
+| D.2 | LOW | Projects feature not modernized | G1, G2, G3 |
+| E.1 | MEDIUM | Session/linking routes have no tests | G4, G5, G6 |
+| F.1 | LOW | Duplicate type definitions | F5 |
+| G.1 | LOW | IssueService missing session link methods | E2 |
 
 ---
 
-## Risk Mitigation
+## Recommended Execution Order
 
-| Risk | Mitigation |
-|------|------------|
-| Strict schemas break existing clients | B3 implements `.strip().parse()` before send |
-| TanStack Query + Zustand conflict | B5 sync effect checks `isDragging` flag |
-| Export refactor breaks imports | Do one area at a time, run build after each |
-| Date.now() in tests | Tests already use `createTestDb` isolation |
+### Session 1 - Service Layer Foundation (Tasks E1-E5, ~25 min)
+1. E1: Create `OpenCodeService` (10 min)
+2. E2: Add session linking to `IssueService` (10 min)
+3. E3-E5: Refactor session routes (5 min - simple delegation)
+
+### Session 2 - Service Layer Safety & Tests (Tasks E6-E8, ~20 min)
+4. E6: Board API `.strip().parse()` (5 min)
+5. E7-E8: Service tests (15 min)
+
+### Session 3 - Code Consistency (Tasks F1-F5, ~30 min)
+6. F1-F2: Date handling (10 min)
+7. F3-F4: Schema strictness (15 min)
+8. F5: Type deduplication (5 min)
+
+### Session 4 - Projects Modernization (Tasks G1-G3, ~25 min)
+9. G1: Projects API layer (10 min)
+10. G2-G3: React Query refactor (15 min)
+
+### Session 5 - Test Coverage (Tasks G4-G6, ~20 min)
+11. G4-G6: Route tests (20 min)
+
+### Session 6 - Final Verification (Task H1, ~10 min)
+12. H1: Full verification suite
+
+**Total Estimated Time:** ~2.5 hours
 
 ---
 
 ## Acceptance Criteria
 
-- [x] `npm run build` passes ✅
-- [x] `npm run lint` passes (no errors) ✅
-- [x] `npm run test` - all 76 tests pass ✅
-- [x] `grep -r "repo\." src/app/api/` - shows only instantiation patterns in refactored routes ✅
-- [x] `grep "Date.now()" src/` - only matches `date-utils.ts` ✅
-- [ ] Drag-and-drop: visual update → refresh → persisted (Manual test by user)
-- [ ] Rapid drag: no flickering or race conditions (Manual test by user)
+### Automated
+- [ ] `npm run build` passes
+- [ ] `npm run lint` passes (no errors)
+- [ ] `npm run test` - 85+ tests pass (currently 76)
+- [ ] `grep -r "repo\." src/app/api/sessions/` returns 0 matches (service layer)
+- [ ] `grep "new Date()" src/lib/logger.ts` returns 0 matches
+
+### Manual
+- [ ] Create board via UI -> 200 OK (not 400)
+- [ ] Link session to issue -> persisted on refresh
+- [ ] Projects list loads via React Query DevTools
+
+---
+
+## Deferred to Phase 4
+
+- **A.3: BOLA Enforcement** - Requires schema migration to add `ownerId` column. Currently stubs only.

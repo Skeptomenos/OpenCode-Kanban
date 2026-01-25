@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
 import { LocalOpenCodeAdapter } from '@/contract/opencode/adapter';
+import { OpenCodeService } from '@/services/opencode-service';
 import { logger } from '@/lib/logger';
 
 export async function GET() {
   try {
-    // 1. Initialize Adapter (The Contract)
-    const repo = new LocalOpenCodeAdapter();
+    const adapter = new LocalOpenCodeAdapter();
+    const service = new OpenCodeService(adapter);
     
-    // 2. Fetch Data
     const [sessions, projects] = await Promise.all([
-      repo.getAllSessions(),
-      repo.getAllProjects()
+      service.getAllSessions(),
+      service.getAllProjects()
     ]);
     
     // 3. Return Envelope (API Standard)
