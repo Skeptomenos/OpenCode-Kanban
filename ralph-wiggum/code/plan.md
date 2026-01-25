@@ -51,7 +51,7 @@ Part D (Verify) ────┴── D1: Final integration test
 | [x] | **A1**: Create `src/lib/date-utils.ts` with `now()` wrapper | `353:L41-46` | Done v0.3.1 - Replaced 6x in repository.ts + 1x in adapter.ts. Verified: `grep "Date.now()" src/` → only `date-utils.ts` |
 | [x] | **A2**: Add `.strict()` to Zod schemas | `351:L45-55` | Done v0.3.2 - Added `.strict()` to 4 schemas. Tests: 8 new cases (4 valid, 4 rejection) |
 | [x] | **A3**: Create Issue Service + Tests (TDD) | `351:L14-42` | Done v0.3.3 - IssueService with 6 methods + 13 tests. All 63 tests pass |
-| [ ] | **A4**: Create Board Service + Tests (TDD) | `351:L23-28` | Create `src/services/board-service.ts`. Methods: `getBoard`, `listBoards`, `createBoard`, `updateBoard`, `deleteBoard`. Tests in `__tests__/board-service.test.ts` |
+| [x] | **A4**: Create Board Service + Tests (TDD) | `351:L23-28` | Done v0.3.4 - BoardService with 5 methods + 13 tests. All 76 tests pass |
 | [ ] | **A5**: Add BOLA stubs to Services | `353:L10-18` | Add `ownerId: string = 'local-owner'` param to service constructors. Pass-through (no enforcement yet). Update service tests |
 | [ ] | **A6**: Refactor `/api/issues/route.ts` to use Service | `351:L59-73` | Replace `repo.listIssues()` / `repo.createIssue()` with `service.listIssues()` / `service.createIssue()` |
 | [ ] | **A7**: Refactor `/api/issues/[id]/route.ts` to use Service | `351:L75-79` | Replace `repo.getIssueWithRelations()`, `repo.updateIssue()`, `repo.deleteIssue()` with service calls |
