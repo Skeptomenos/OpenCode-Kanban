@@ -46,3 +46,12 @@ next-env.d.ts
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# SQLite database files (keep .gitkeep for directory)
+/data/*.db
+/data/*.db-journal
+/data/*.db-wal
+/data/*.db-shm
+
+# Drizzle migrations (optional: remove if you want to track migrations)
+/drizzle
