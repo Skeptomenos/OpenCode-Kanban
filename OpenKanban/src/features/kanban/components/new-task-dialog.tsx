@@ -18,7 +18,7 @@ import { useTaskStore, type Task } from '../utils/store';
 import { createIssue, type CreateIssueInput } from '../api';
 import { logger } from '@/lib/logger';
 
-export default function NewTaskDialog() {
+export function NewTaskDialog() {
   const queryClient = useQueryClient();
   const columns = useTaskStore((state) => state.columns);
   const currentProjectId = useTaskStore((state) => state.currentProjectId);

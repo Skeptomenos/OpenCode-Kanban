@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useColumnMutationsContext } from '../hooks/column-mutations-context';
 
-export default function NewSectionDialog() {
+export function NewSectionDialog() {
   const { addColumn } = useColumnMutationsContext();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

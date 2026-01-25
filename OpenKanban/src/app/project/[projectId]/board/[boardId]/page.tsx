@@ -1,4 +1,4 @@
-import KanbanViewPage from '@/features/kanban/components/kanban-view-page';
+import { KanbanViewPage } from '@/features/kanban/components/kanban-view-page';
 import { notFound } from 'next/navigation';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
