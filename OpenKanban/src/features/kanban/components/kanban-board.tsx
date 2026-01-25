@@ -95,6 +95,45 @@ async function fetchKanbanData(
   return { boardId: resolvedBoardId, columns, tasks };
 }
 
+/**
+ * Kanban board component with drag-and-drop functionality.
+ *
+ * ## Dual Source of Truth Architecture
+ *
+ * This component uses a **hybrid state management pattern** combining React Query
+ * (server state) with Zustand (UI state) for optimal drag-and-drop performance:
+ *
+ * 1. **React Query** (`useQuery`): Fetches and caches board data from the API.
+ *    This is the authoritative source for persisted state.
+ *
+ * 2. **Zustand** (`useTaskStore`): Holds a synchronized copy of tasks/columns
+ *    for instant UI updates during drag operations.
+ *
+ * ### Why This Pattern?
+ *
+ * - **Drag Performance**: Direct Zustand updates during `onDragOver` provide
+ *   60fps smoothness without waiting for network round-trips.
+ *
+ * - **Consistency**: After drag ends, mutations fire and React Query invalidates,
+ *   ensuring the UI eventually reconciles with server state.
+ *
+ * - **Flicker Prevention**: The sync effect skips updates while `draggedTask`
+ *   is non-null, preventing React Query refetches from resetting drag position.
+ *
+ * ### Data Flow
+ *
+ * ```
+ * API -> useQuery -> sync effect -> Zustand store -> UI
+ *                                         ^
+ *                                         |
+ *                    onDragOver (optimistic) ---+
+ *                                               |
+ *                    onDragEnd -> useMutation ---> API -> invalidate -> refetch
+ * ```
+ *
+ * @see specs/352-frontend-modernization.md:L29-38 - Hybrid pattern rationale
+ * @see specs/358-code-quality.md:L24 - D.1 documentation requirement
+ */
 export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const queryClient = useQueryClient();
   const columns = useTaskStore((state) => state.columns);
