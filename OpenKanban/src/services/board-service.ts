@@ -18,8 +18,11 @@ const DEFAULT_OWNER_ID = 'local-owner';
 
 export class BoardService {
   /**
-   * BOLA stub: ownerId is accepted but not enforced yet.
-   * Future: Use this to filter queries by owner for multi-tenant security.
+   * @todo Phase 4: Implement BOLA enforcement
+   * - Add ownerId column to database schema
+   * - Pass ownerId to all repository methods
+   * - Filter queries by owner for multi-tenant security
+   * @see OpenKanban/docs/phase3.5-issues2.md#f4-bola-stubs-inert
    */
   constructor(
     private readonly repo: IPMRepository,
