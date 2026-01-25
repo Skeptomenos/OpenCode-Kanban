@@ -11,7 +11,7 @@ A local-first Kanban board for managing OpenCode sessions.
 - **Local-First**: All data lives in `~/.local/share/opencode/storage` or the project root.
 
 ## Architecture
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Database**: SQLite (local `kanban.db`)
 - **ORM**: Drizzle
 - **State**: Zustand
