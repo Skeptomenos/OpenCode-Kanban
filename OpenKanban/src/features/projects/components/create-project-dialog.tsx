@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -76,8 +77,21 @@ export function CreateProjectDialog({
       const boardResult = await boardResponse.json();
 
       if (!boardResult.success) {
-        console.error('Failed to create board:', boardResult.error);
-        toast.warning('Project created, but board initialization failed');
+        logger.warn('Board creation failed, rolling back project', { 
+          projectId, 
+          error: boardResult.error 
+        });
+        
+        try {
+          await fetch(`/api/issues/${projectId}`, { method: 'DELETE' });
+        } catch (rollbackError) {
+          logger.error('Failed to rollback project after board failure', { 
+            projectId, 
+            error: String(rollbackError) 
+          });
+        }
+        
+        throw new Error('Failed to initialize project board. Please try again.');
       }
 
       const boardId = boardResult.data?.id;
@@ -86,7 +100,6 @@ export function CreateProjectDialog({
       form.reset();
       toast.success(`Project "${name}" created`);
 
-      router.refresh();
       onSuccess?.();
 
       if (boardId) {
@@ -95,7 +108,7 @@ export function CreateProjectDialog({
         router.push(`/project/${projectId}`);
       }
     } catch (error) {
-      console.error('Failed to create project:', error);
+      logger.error('Failed to create project', { error: String(error) });
       toast.error(error instanceof Error ? error.message : 'Failed to create project');
     } finally {
       setIsSubmitting(false);
@@ -129,6 +142,7 @@ export function CreateProjectDialog({
               autoFocus
               aria-label='Project name'
               disabled={isSubmitting}
+              maxLength={500}
             />
           </div>
           <div className='grid gap-2'>
@@ -141,6 +155,7 @@ export function CreateProjectDialog({
               placeholder='A brief description of your project...'
               aria-label='Project description'
               disabled={isSubmitting}
+              maxLength={10000}
             />
           </div>
         </form>

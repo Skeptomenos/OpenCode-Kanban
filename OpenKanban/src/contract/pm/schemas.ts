@@ -27,11 +27,11 @@ export const MetadataSchema = z.record(z.string(), z.unknown()).optional();
  * @see specs/SCHEMA.md:L209-216
  */
 export const CreateIssueSchema = z.object({
-  type: z.string().min(1, 'Type is required'),
-  parentId: z.string().nullable().optional(),
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().nullable().optional(),
-  status: z.string().optional(), // Defaults to 'backlog' in repository
+  type: z.string().min(1, 'Type is required').max(50),
+  parentId: z.string().max(100).nullable().optional(),
+  title: z.string().min(1, 'Title is required').max(500),
+  description: z.string().max(10000).nullable().optional(),
+  status: z.string().max(50).optional(),
   metadata: MetadataSchema,
 });
 
@@ -41,10 +41,10 @@ export const CreateIssueSchema = z.object({
  * @see specs/SCHEMA.md:L218
  */
 export const UpdateIssueSchema = z.object({
-  parentId: z.string().nullable().optional(),
-  title: z.string().min(1).optional(),
-  description: z.string().nullable().optional(),
-  status: z.string().optional(),
+  parentId: z.string().max(100).nullable().optional(),
+  title: z.string().min(1).max(500).optional(),
+  description: z.string().max(10000).nullable().optional(),
+  status: z.string().max(50).optional(),
   metadata: MetadataSchema,
 });
 
@@ -80,7 +80,7 @@ export const ColumnConfigSchema = z.object({
 export const BoardFiltersSchema = z.object({
   types: z.array(z.string()).optional(),
   statuses: z.array(z.string()).optional(),
-  parentId: z.string().optional(),
+  parentId: z.string().nullable().optional(),
   labelIds: z.array(z.string()).optional(),
 });
 
@@ -89,7 +89,7 @@ export const BoardFiltersSchema = z.object({
  * @see specs/SCHEMA.md:L253-257
  */
 export const CreateBoardSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  name: z.string().min(1, 'Name is required').max(200),
   filters: BoardFiltersSchema.optional(),
   columnConfig: z.array(ColumnConfigSchema).optional(),
 });
@@ -99,7 +99,7 @@ export const CreateBoardSchema = z.object({
  * @see specs/SCHEMA.md:L259
  */
 export const UpdateBoardSchema = z.object({
-  name: z.string().min(1).optional(),
+  name: z.string().min(1).max(200).optional(),
   filters: BoardFiltersSchema.optional(),
   columnConfig: z.array(ColumnConfigSchema).optional(),
 });
@@ -113,8 +113,8 @@ export const UpdateBoardSchema = z.object({
  * @see specs/SCHEMA.md:L314-319
  */
 export const LinkSessionSchema = z.object({
-  sessionId: z.string().min(1, 'Session ID is required'),
-  linkType: z.string().nullable().optional(),
+  sessionId: z.string().min(1, 'Session ID is required').max(100),
+  linkType: z.string().max(50).nullable().optional(),
 });
 
 // =============================================================================
@@ -126,7 +126,7 @@ export const LinkSessionSchema = z.object({
  * Value can be any JSON-serializable data.
  */
 export const SetConfigSchema = z.object({
-  key: z.string().min(1, 'Key is required'),
+  key: z.string().min(1, 'Key is required').max(100),
   value: z.unknown(),
 });
 

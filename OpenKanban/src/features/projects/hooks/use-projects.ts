@@ -2,15 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-
-export interface Project {
-  id: string;
-  title: string;
-  description: string | null;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { Project } from '@/contract/pm/types';
 
 interface ApiResponse {
   success: boolean;

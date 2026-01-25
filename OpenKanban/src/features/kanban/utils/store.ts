@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { Column } from '../components/board-column';
 import { v4 as uuid } from 'uuid';
+import { logger } from '@/lib/logger';
 
 export type Task = {
   id: string;
@@ -42,6 +43,7 @@ export type Actions = {
   updateCol: (id: UniqueIdentifier, newName: string) => Promise<void>;
   removeCol: (id: UniqueIdentifier) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
+  updateTaskStatus: (taskId: string, newStatus: string) => Promise<boolean>;
 };
 
 /**
@@ -80,12 +82,12 @@ async function persistColumnConfig(
 
     const result = await response.json();
     if (!result.success) {
-      console.error('Failed to persist column config:', result.error?.message);
+      logger.error('Failed to persist column config', { message: result.error?.message });
       return false;
     }
     return true;
   } catch (error) {
-    console.error('Failed to persist column config:', error);
+    logger.error('Failed to persist column config', { error: String(error) });
     return false;
   }
 }
@@ -112,7 +114,7 @@ export const useTaskStore = create<State & Actions>((set) => ({
       const result = await response.json();
 
       if (!result.success) {
-        console.error('Failed to fetch tasks:', result.error?.message);
+        logger.error('Failed to fetch tasks', { message: result.error?.message });
         set({ isLoading: false });
         return;
       }
@@ -126,7 +128,7 @@ export const useTaskStore = create<State & Actions>((set) => ({
 
       set({ tasks, isLoading: false });
     } catch (error) {
-      console.error('Failed to fetch tasks:', error);
+      logger.error('Failed to fetch tasks', { error: String(error) });
       set({ isLoading: false });
     }
   },
@@ -166,7 +168,7 @@ export const useTaskStore = create<State & Actions>((set) => ({
       const result = await response.json();
 
       if (!result.success) {
-        console.error('Failed to create task:', result.error?.message);
+        logger.error('Failed to create task', { message: result.error?.message });
         return;
       }
 
@@ -183,7 +185,7 @@ export const useTaskStore = create<State & Actions>((set) => ({
         ],
       }));
     } catch (error) {
-      console.error('Failed to create task:', error);
+      logger.error('Failed to create task', { error: String(error) });
     }
   },
 
@@ -242,7 +244,7 @@ export const useTaskStore = create<State & Actions>((set) => ({
       const result = await response.json();
 
       if (!result.success) {
-        console.error('Failed to delete task:', result.error?.message);
+        logger.error('Failed to delete task', { message: result.error?.message });
         return;
       }
 
@@ -250,7 +252,29 @@ export const useTaskStore = create<State & Actions>((set) => ({
         tasks: state.tasks.filter((task) => task.id !== id),
       }));
     } catch (error) {
-      console.error('Failed to delete task:', error);
+      logger.error('Failed to delete task', { error: String(error) });
+    }
+  },
+
+  updateTaskStatus: async (taskId: string, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/issues/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        logger.error('Failed to update task status', { message: result.error?.message });
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      logger.error('Failed to update task status', { error: String(error) });
+      return false;
     }
   }
 }));

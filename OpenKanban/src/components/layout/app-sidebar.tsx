@@ -27,7 +27,7 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Projects</SidebarGroupLabel>
           <CreateProjectDialog onSuccess={refresh}>
-            <SidebarGroupAction title='Create Project'>
+            <SidebarGroupAction title='Create Project' aria-label='Create Project'>
               <IconPlus className='h-4 w-4' />
               <span className='sr-only'>Create Project</span>
             </SidebarGroupAction>

@@ -53,6 +53,8 @@ export default function NewSectionDialog() {
               placeholder='Section title...'
               className='col-span-4'
               aria-label='Section title'
+              required
+              maxLength={200}
             />
           </div>
         </form>

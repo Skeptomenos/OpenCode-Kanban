@@ -13,6 +13,7 @@ import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
 import { CreateIssueSchema, IssueFilterSchema } from '@/contract/pm/schemas';
 import type { IssueFilter } from '@/lib/db/repository';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/issues
@@ -34,12 +35,12 @@ export async function GET(request: NextRequest) {
 
     const typeParam = searchParams.get('type');
     if (typeParam) {
-      filter.types = typeParam.split(',').map((t) => t.trim());
+      filter.types = typeParam.split(',').map((t) => t.trim()).filter(Boolean);
     }
 
     const statusParam = searchParams.get('status');
     if (statusParam) {
-      filter.statuses = statusParam.split(',').map((s) => s.trim());
+      filter.statuses = statusParam.split(',').map((s) => s.trim()).filter(Boolean);
     }
 
     const parentIdParam = searchParams.get('parentId');
@@ -67,7 +68,7 @@ export async function GET(request: NextRequest) {
       data: issues,
     });
   } catch (error) {
-    console.error('GET /api/issues error:', error);
+    logger.error('GET /api/issues failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,
@@ -126,7 +127,7 @@ export async function POST(request: NextRequest) {
       data: issue,
     });
   } catch (error) {
-    console.error('POST /api/issues error:', error);
+    logger.error('POST /api/issues failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,

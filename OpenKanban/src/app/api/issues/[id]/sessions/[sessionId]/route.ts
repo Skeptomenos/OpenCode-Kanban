@@ -9,6 +9,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
+import { logger } from '@/lib/logger';
 
 type RouteContext = {
   params: Promise<{ id: string; sessionId: string }>;
@@ -53,7 +54,7 @@ export async function DELETE(
       },
     });
   } catch (error) {
-    console.error('DELETE /api/issues/[id]/sessions/[sessionId] error:', error);
+    logger.error('DELETE /api/issues/[id]/sessions/[sessionId] failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,

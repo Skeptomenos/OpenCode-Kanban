@@ -12,6 +12,7 @@ import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
 import { CreateBoardSchema } from '@/contract/pm/schemas';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/boards
@@ -32,7 +33,7 @@ export async function GET() {
       data: boards,
     });
   } catch (error) {
-    console.error('GET /api/boards error:', error);
+    logger.error('GET /api/boards failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
       data: board,
     });
   } catch (error) {
-    console.error('POST /api/boards error:', error);
+    logger.error('POST /api/boards failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,

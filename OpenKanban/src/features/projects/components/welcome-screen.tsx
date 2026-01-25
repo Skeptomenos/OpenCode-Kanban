@@ -31,6 +31,7 @@ export function WelcomeScreen() {
           </CardDescription>
         </CardHeader>
         <CardContent className='pt-4'>
+          {/* No onSuccess needed: CreateProjectDialog navigates to new project after creation */}
           <CreateProjectDialog>
             <Button size='lg' className='w-full sm:w-auto'>
               <IconPlus className='mr-2 h-5 w-5' />

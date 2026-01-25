@@ -12,6 +12,7 @@ import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
 import { UpdateIssueSchema } from '@/contract/pm/schemas';
+import { logger } from '@/lib/logger';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -50,7 +51,7 @@ export async function GET(
       data: issue,
     });
   } catch (error) {
-    console.error('GET /api/issues/[id] error:', error);
+    logger.error('GET /api/issues/[id] failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,
@@ -125,7 +126,7 @@ export async function PATCH(
       data: updatedIssue,
     });
   } catch (error) {
-    console.error('PATCH /api/issues/[id] error:', error);
+    logger.error('PATCH /api/issues/[id] failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,
@@ -172,7 +173,7 @@ export async function DELETE(
       data: { id },
     });
   } catch (error) {
-    console.error('DELETE /api/issues/[id] error:', error);
+    logger.error('DELETE /api/issues/[id] failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,

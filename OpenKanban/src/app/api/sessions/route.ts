@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { LocalOpenCodeAdapter } from '@/contract/opencode/adapter';
+import { logger } from '@/lib/logger';
 
 export async function GET() {
   try {
@@ -21,7 +22,7 @@ export async function GET() {
       }
     });
   } catch (error) {
-    console.error('API Error:', error);
+    logger.error('GET /api/sessions failed', { error: String(error) });
     return NextResponse.json({ 
       success: false, 
       error: { message: 'Failed to load sessions' } 

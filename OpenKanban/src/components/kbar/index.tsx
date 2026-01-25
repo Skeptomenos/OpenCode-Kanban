@@ -1,5 +1,4 @@
 'use client';
-import { navItems } from '@/config/nav-config';
 import {
   KBarAnimator,
   KBarPortal,
@@ -12,6 +11,9 @@ import { useMemo } from 'react';
 import RenderResults from './render-result';
 import useThemeSwitching from './use-theme-switching';
 import { useFilteredNavItems } from '@/hooks/use-nav';
+import type { NavItem } from '@/types';
+
+const navItems: NavItem[] = [];
 
 export default function KBar({ children }: { children: React.ReactNode }) {
   const router = useRouter();

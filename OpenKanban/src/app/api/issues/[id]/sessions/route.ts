@@ -11,6 +11,7 @@ import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
 import { LinkSessionSchema } from '@/contract/pm/schemas';
+import { logger } from '@/lib/logger';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -101,7 +102,7 @@ export async function POST(
       },
     });
   } catch (error) {
-    console.error('POST /api/issues/[id]/sessions error:', error);
+    logger.error('POST /api/issues/[id]/sessions failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,
@@ -146,7 +147,7 @@ export async function GET(
       data: sessionLinks,
     });
   } catch (error) {
-    console.error('GET /api/issues/[id]/sessions error:', error);
+    logger.error('GET /api/issues/[id]/sessions failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,

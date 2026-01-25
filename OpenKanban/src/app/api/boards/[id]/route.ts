@@ -12,8 +12,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
-import type { IssueWithRelations } from '@/lib/db/repository';
 import { UpdateBoardSchema } from '@/contract/pm/schemas';
+import { logger } from '@/lib/logger';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -48,9 +48,8 @@ export async function GET(
     }
 
     const issues = repo.listIssues(board.filters);
-    const issuesWithRelations: IssueWithRelations[] = issues
-      .map((issue) => repo.getIssueWithRelations(issue.id))
-      .filter((issue): issue is IssueWithRelations => issue !== null);
+    const issueIds = issues.map((issue) => issue.id);
+    const issuesWithRelations = repo.getIssuesWithRelations(issueIds);
 
     return NextResponse.json({
       success: true,
@@ -60,7 +59,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('GET /api/boards/[id] error:', error);
+    logger.error('GET /api/boards/[id] failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,
@@ -135,7 +134,7 @@ export async function PATCH(
       data: updatedBoard,
     });
   } catch (error) {
-    console.error('PATCH /api/boards/[id] error:', error);
+    logger.error('PATCH /api/boards/[id] failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,
@@ -181,7 +180,7 @@ export async function DELETE(
       data: { deleted: true },
     });
   } catch (error) {
-    console.error('DELETE /api/boards/[id] error:', error);
+    logger.error('DELETE /api/boards/[id] failed', { error: String(error) });
     return NextResponse.json(
       {
         success: false,

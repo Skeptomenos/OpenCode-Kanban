@@ -55,6 +55,8 @@ export default function NewTaskDialog() {
               placeholder='Todo title...'
               className='col-span-4'
               aria-label='Task title'
+              required
+              maxLength={500}
             />
           </div>
           <div className='grid grid-cols-4 items-center gap-4'>
@@ -64,6 +66,7 @@ export default function NewTaskDialog() {
               placeholder='Description...'
               className='col-span-4'
               aria-label='Task description'
+              maxLength={10000}
             />
           </div>
         </form>

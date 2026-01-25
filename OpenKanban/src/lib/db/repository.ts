@@ -69,7 +69,7 @@ export type UpdateBoardInput = Partial<CreateBoardInput>;
 export type BoardFilters = {
   types?: string[];
   statuses?: string[];
-  parentId?: string;
+  parentId?: string | null;
   labelIds?: string[];
 };
 
@@ -144,6 +144,14 @@ export interface IPMRepository {
    * Returns null if not found.
    */
   getIssueWithRelations(id: string): IssueWithRelations | null;
+
+  /**
+   * Get multiple Issues with all relations in a single batch operation.
+   * Optimized to avoid N+1 queries - fetches all relations in 2 queries total.
+   * @param ids - Array of Issue IDs to fetch
+   * @returns Array of IssueWithRelations (excludes not found IDs)
+   */
+  getIssuesWithRelations(ids: string[]): IssueWithRelations[];
 
   /**
    * List all Issues matching the optional filter.
@@ -326,6 +334,64 @@ export class SqlitePMRepository implements IPMRepository {
       sessionIds,
       labelIds,
     };
+  }
+
+  getIssuesWithRelations(ids: string[]): IssueWithRelations[] {
+    if (ids.length === 0) return [];
+
+    const issues = this.db
+      .select()
+      .from(schema.issues)
+      .where(inArray(schema.issues.id, ids))
+      .all();
+
+    if (issues.length === 0) return [];
+
+    const issueIds = issues.map((i) => i.id);
+
+    const allSessionLinks = this.db
+      .select()
+      .from(schema.issueSessions)
+      .where(inArray(schema.issueSessions.issueId, issueIds))
+      .all();
+
+    const allLabelLinks = this.db
+      .select()
+      .from(schema.issueLabels)
+      .where(inArray(schema.issueLabels.issueId, issueIds))
+      .all();
+
+    const sessionsByIssue = new Map<string, string[]>();
+    for (const link of allSessionLinks) {
+      const existing = sessionsByIssue.get(link.issueId) ?? [];
+      existing.push(link.sessionId);
+      sessionsByIssue.set(link.issueId, existing);
+    }
+
+    const labelsByIssue = new Map<string, string[]>();
+    for (const link of allLabelLinks) {
+      const existing = labelsByIssue.get(link.issueId) ?? [];
+      existing.push(link.labelId);
+      labelsByIssue.set(link.issueId, existing);
+    }
+
+    return issues.map((issue) => {
+      let metadata: Record<string, unknown> = {};
+      if (issue.metadata) {
+        try {
+          metadata = JSON.parse(issue.metadata);
+        } catch {
+          metadata = {};
+        }
+      }
+
+      return {
+        ...issue,
+        metadata,
+        sessionIds: sessionsByIssue.get(issue.id) ?? [],
+        labelIds: labelsByIssue.get(issue.id) ?? [],
+      };
+    });
   }
 
   listIssues(filter?: IssueFilter): Issue[] {

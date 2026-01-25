@@ -1,8 +1,19 @@
 'use client';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+
+const subscribe = () => () => {};
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+function ClientPortal({ children }: { children: ReactNode }) {
+  const isClient = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return isClient ? createPortal(children, document.body) : null;
+}
 import { Task, useTaskStore } from '../utils/store';
 import { hasDraggableData } from '../utils';
+import { logger } from '@/lib/logger';
+import type { BoardWithIssues } from '@/contract/pm/types';
 import {
   Announcements,
   DndContext,
@@ -22,36 +33,6 @@ import type { Column } from './board-column';
 import NewSectionDialog from './new-section-dialog';
 import { TaskCard } from './task-card';
 
-interface ColumnConfig {
-  id: string;
-  title: string;
-  statusMappings: string[];
-}
-
-interface ApiIssue {
-  id: string;
-  type: string;
-  title: string;
-  description?: string | null;
-  status: string;
-  parentId?: string | null;
-  metadata?: Record<string, unknown>;
-  createdAt: number;
-  updatedAt: number;
-  sessionIds?: string[];
-  labelIds?: string[];
-}
-
-interface BoardWithIssues {
-  id: string;
-  name: string;
-  filters: Record<string, unknown>;
-  columnConfig: ColumnConfig[];
-  createdAt: number;
-  updatedAt: number;
-  issues: ApiIssue[];
-}
-
 interface KanbanBoardProps {
   projectId?: string;
   boardId?: string;
@@ -67,7 +48,9 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const setBoardId = useTaskStore((state) => state.setBoardId);
   const setProjectId = useTaskStore((state) => state.setProjectId);
   const fetchTasks = useTaskStore((state) => state.fetchTasks);
+  const updateTaskStatus = useTaskStore((state) => state.updateTaskStatus);
   const pickedUpTaskColumn = useRef<string>('');
+  const pendingStatusUpdates = useRef<Map<string, string>>(new Map());
 
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
@@ -99,7 +82,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
         const boardsResult = await boardsResponse.json();
 
         if (!boardsResult.success) {
-          console.error('Failed to fetch boards:', boardsResult.error?.message);
+          logger.error('Failed to fetch boards', { message: boardsResult.error?.message });
           setIsLoading(false);
           return;
         }
@@ -118,7 +101,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
           const createResult = await createResponse.json();
 
           if (!createResult.success) {
-            console.error('Failed to create default board:', createResult.error?.message);
+            logger.error('Failed to create default board', { message: createResult.error?.message });
             setIsLoading(false);
             return;
           }
@@ -132,7 +115,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       const boardResult = await boardResponse.json();
 
       if (!boardResult.success) {
-        console.error('Failed to fetch board details:', boardResult.error?.message);
+        logger.error('Failed to fetch board details', { message: boardResult.error?.message });
         setIsLoading(false);
         return;
       }
@@ -164,7 +147,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
         setIsLoading(false);
       }
     } catch (error) {
-      console.error('Failed to initialize board:', error);
+      logger.error('Failed to initialize board', { error: String(error) });
       setIsLoading(false);
     }
   }, [boardId, projectId, setBoardId, setColumns, setIsLoading, setProjectId, setTasks, fetchTasks]);
@@ -306,6 +289,15 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
     setActiveTask(null);
 
     const { active, over } = event;
+    
+    if (pendingStatusUpdates.current.size > 0) {
+      const updates = Array.from(pendingStatusUpdates.current.entries());
+      pendingStatusUpdates.current.clear();
+      updates.forEach(([taskId, newStatus]) => {
+        updateTaskStatus(taskId, newStatus);
+      });
+    }
+    
     if (!over) return;
 
     const activeId = active.id;
@@ -352,6 +344,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       const activeTask = tasks[activeIndex];
       const overTask = tasks[overIndex];
       if (activeTask && overTask && activeTask.columnId !== overTask.columnId) {
+        pendingStatusUpdates.current.set(activeTask.id, overTask.columnId);
         const updatedTasks = tasks.map((t) =>
           t.id === activeTask.id ? { ...t, columnId: overTask.columnId } : t
         );
@@ -366,7 +359,8 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
     if (isActiveATask && isOverAColumn) {
       const activeIndex = tasks.findIndex((t) => t.id === activeId);
       const activeTask = tasks[activeIndex];
-      if (activeTask) {
+      if (activeTask && activeTask.columnId !== overId) {
+        pendingStatusUpdates.current.set(activeTask.id, overId as string);
         const updatedTasks = tasks.map((t) =>
           t.id === activeTask.id ? { ...t, columnId: overId as string } : t
         );
@@ -401,22 +395,20 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
         </SortableContext>
       </BoardContainer>
 
-      {'document' in window &&
-        createPortal(
-          <DragOverlay>
-            {activeColumn && (
-              <BoardColumn
-                isOverlay
-                column={activeColumn}
-                tasks={tasks.filter(
-                  (task) => task.columnId === activeColumn.id
-                )}
-              />
-            )}
-            {activeTask && <TaskCard task={activeTask} isOverlay />}
-          </DragOverlay>,
-          document.body
-        )}
+      <ClientPortal>
+        <DragOverlay>
+          {activeColumn && (
+            <BoardColumn
+              isOverlay
+              column={activeColumn}
+              tasks={tasks.filter(
+                (task) => task.columnId === activeColumn.id
+              )}
+            />
+          )}
+          {activeTask && <TaskCard task={activeTask} isOverlay />}
+        </DragOverlay>
+      </ClientPortal>
     </DndContext>
   );
 }

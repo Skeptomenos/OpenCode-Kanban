@@ -43,7 +43,10 @@ export default async function RootLayout({
                 if (localStorage.theme === 'dark' || ((!('theme' in localStorage) || localStorage.theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                   document.querySelector('meta[name="theme-color"]').setAttribute('content', '${META_THEME_COLORS.dark}')
                 }
-              } catch (_) {}
+              } catch (_) {
+                // Silent catch intentional: inline script runs before React hydration,
+                // logging is not useful here, and failure is acceptable (graceful degradation)
+              }
             `
           }}
         />
@@ -65,7 +68,7 @@ export default async function RootLayout({
             disableTransitionOnChange
             enableColorScheme
           >
-            <Providers activeThemeValue={activeThemeValue as string}>
+            <Providers activeThemeValue={activeThemeValue}>
               <Toaster />
               {children}
             </Providers>

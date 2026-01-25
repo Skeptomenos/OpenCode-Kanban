@@ -142,4 +142,4 @@ export function closeDb(): void {
   }
 }
 
-export const db = getDb();
+
