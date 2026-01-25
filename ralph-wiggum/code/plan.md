@@ -97,7 +97,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 |--------|------|----------------|-------|
 | [x] | **G1**: Create `src/features/projects/api.ts` | `356:L13-15` | Done v0.3.34 - `fetchProjects`, `createProject`. Issue D.2 |
 | [x] | **G2**: Refactor `use-projects.ts` to use `useQuery` | `356:L18-20` | Done v0.3.35 - Issue D.2 |
-| [ ] | **G3**: Refactor `create-project-dialog.tsx` to use `useMutation` | `356:L23-25` | Issue D.2 |
+| [x] | **G3**: Refactor `create-project-dialog.tsx` to use `useMutation` | `356:L23-25` | Done v0.3.36 - Issue D.2 |
 | [ ] | **G4**: Create tests for `/api/sessions` route | `356:L32-37` | 3 test cases. Issue E.1 |
 | [ ] | **G5**: Create tests for `/api/issues/[id]/sessions` route | `356:L40-46` | 5 test cases. Issue E.1 |
 | [ ] | **G6**: Create tests for `/api/issues/[id]/sessions/[sessionId]` route | `356:L48-51` | 2 test cases. Issue E.1 |
@@ -171,7 +171,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 ### Automated
 - [ ] `npm run build` passes
 - [ ] `npm run lint` passes (no errors)
-- [ ] `npm run test` - 85+ tests pass (currently 76)
+- [ ] `npm run test` - 85+ tests pass (currently 92)
 - [ ] `grep -r "repo\." src/app/api/sessions/` returns 0 matches (service layer)
 - [ ] `grep "new Date()" src/lib/logger.ts` returns 0 matches
 

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { logger } from '@/lib/logger';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +18,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
+import { createProjectWithBoard, type CreateProjectInput, ProjectApiError } from '../api';
+import { PROJECTS_QUERY_KEY } from '../hooks/use-projects';
+import { logger } from '@/lib/logger';
+
 interface CreateProjectDialogProps {
   children: React.ReactNode;
   onSuccess?: () => void;
@@ -28,12 +32,31 @@ export function CreateProjectDialog({
   onSuccess
 }: CreateProjectDialogProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const createProjectMutation = useMutation({
+    mutationFn: (input: CreateProjectInput) => createProjectWithBoard(input),
+    onSuccess: (result) => {
+      setOpen(false);
+      toast.success(`Project "${result.project.title}" created`);
+      onSuccess?.();
+      router.push(`/project/${result.project.id}/board/${result.board.id}`);
+    },
+    onError: (error) => {
+      const message = error instanceof ProjectApiError 
+        ? error.message 
+        : 'Failed to create project';
+      logger.error('Failed to create project', { error: String(error) });
+      toast.error(message);
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -42,77 +65,13 @@ export function CreateProjectDialog({
 
     if (!name?.trim()) {
       toast.error('Project name is required');
-      setIsSubmitting(false);
       return;
     }
 
-    try {
-      const projectResponse = await fetch('/api/issues', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'project',
-          title: name.trim(),
-          description: description?.trim() || undefined
-        })
-      });
-
-      const projectResult = await projectResponse.json();
-
-      if (!projectResult.success) {
-        throw new Error(projectResult.error?.message || 'Failed to create project');
-      }
-
-      const projectId = projectResult.data.id;
-
-      const boardResponse = await fetch('/api/boards', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Main Board',
-          filters: { parentId: projectId, types: ['task'] }
-        })
-      });
-
-      const boardResult = await boardResponse.json();
-
-      if (!boardResult.success) {
-        logger.warn('Board creation failed, rolling back project', { 
-          projectId, 
-          error: boardResult.error 
-        });
-        
-        try {
-          await fetch(`/api/issues/${projectId}`, { method: 'DELETE' });
-        } catch (rollbackError) {
-          logger.error('Failed to rollback project after board failure', { 
-            projectId, 
-            error: String(rollbackError) 
-          });
-        }
-        
-        throw new Error('Failed to initialize project board. Please try again.');
-      }
-
-      const boardId = boardResult.data?.id;
-
-      setOpen(false);
-      form.reset();
-      toast.success(`Project "${name}" created`);
-
-      onSuccess?.();
-
-      if (boardId) {
-        router.push(`/project/${projectId}/board/${boardId}`);
-      } else {
-        router.push(`/project/${projectId}`);
-      }
-    } catch (error) {
-      logger.error('Failed to create project', { error: String(error) });
-      toast.error(error instanceof Error ? error.message : 'Failed to create project');
-    } finally {
-      setIsSubmitting(false);
-    }
+    createProjectMutation.mutate({
+      title: name.trim(),
+      description: description?.trim() || undefined,
+    });
   };
 
   return (
@@ -141,7 +100,7 @@ export function CreateProjectDialog({
               required
               autoFocus
               aria-label='Project name'
-              disabled={isSubmitting}
+              disabled={createProjectMutation.isPending}
               maxLength={500}
             />
           </div>
@@ -154,7 +113,7 @@ export function CreateProjectDialog({
               name='description'
               placeholder='A brief description of your project...'
               aria-label='Project description'
-              disabled={isSubmitting}
+              disabled={createProjectMutation.isPending}
               maxLength={10000}
             />
           </div>
@@ -163,9 +122,9 @@ export function CreateProjectDialog({
           <Button
             type='submit'
             form='create-project-form'
-            disabled={isSubmitting}
+            disabled={createProjectMutation.isPending}
           >
-            {isSubmitting ? 'Creating...' : 'Create Project'}
+            {createProjectMutation.isPending ? 'Creating...' : 'Create Project'}
           </Button>
         </DialogFooter>
       </DialogContent>

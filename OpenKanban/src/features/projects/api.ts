@@ -7,9 +7,10 @@
  * to prevent 400 errors from strict backend schemas.
  */
 
-import { CreateIssueSchema } from '@/contract/pm/schemas';
+import { CreateIssueSchema, CreateBoardSchema } from '@/contract/pm/schemas';
 import type { Project } from '@/contract/pm/types';
 import type { CreateIssueInput } from '@/lib/db/repository';
+import { logger } from '@/lib/logger';
 
 // =============================================================================
 // Types
@@ -86,23 +87,145 @@ export async function fetchProjects(): Promise<Project[]> {
   return result.data;
 }
 
+// =============================================================================
+// Board Types (for project creation flow)
+// =============================================================================
+
+/**
+ * Board filters used when creating a default board for a project.
+ */
+type BoardFilters = {
+  types?: string[];
+  statuses?: string[];
+  parentId?: string | null;
+  labelIds?: string[];
+};
+
+/**
+ * Input for creating a board via the API.
+ */
+type CreateBoardInput = {
+  name: string;
+  filters?: BoardFilters;
+  columnConfig?: Array<{
+    id: string;
+    title: string;
+    statusMappings: string[];
+  }>;
+};
+
+/**
+ * Board data returned from the API.
+ */
+type BoardData = {
+  id: string;
+  name: string;
+  filters?: BoardFilters | null;
+  columnConfig?: Array<{
+    id: string;
+    title: string;
+    statusMappings: string[];
+  }> | null;
+};
+
+// =============================================================================
+// Composite Operations
+// =============================================================================
+
+/**
+ * Result of creating a project with its default board.
+ */
+export type CreateProjectWithBoardResult = {
+  project: Project;
+  board: BoardData;
+};
+
+/**
+ * Create a new project with a default "Main Board".
+ * 
+ * This is an atomic operation that:
+ * 1. Creates the project
+ * 2. Creates a default board filtered to that project
+ * 3. Rolls back the project if board creation fails
+ * 
+ * @param input Project creation input
+ * @returns The created project and board
+ * @throws ProjectApiError if any step fails
+ */
+export async function createProjectWithBoard(
+  input: CreateProjectInput
+): Promise<CreateProjectWithBoardResult> {
+  const project = await createProject(input);
+  
+  const boardInput: CreateBoardInput = {
+    name: 'Main Board',
+    filters: { parentId: project.id, types: ['task'] },
+  };
+
+  let sanitizedBoardInput: CreateBoardInput;
+  try {
+    sanitizedBoardInput = CreateBoardSchema.strip().parse(boardInput);
+  } catch (error) {
+    await rollbackProject(project.id);
+    throw new ProjectApiError(
+      'Invalid board data: ' + (error instanceof Error ? error.message : 'validation failed'),
+      'VALIDATION_ERROR'
+    );
+  }
+
+  const boardResponse = await fetch('/api/boards', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(sanitizedBoardInput),
+  });
+
+  const boardResult: ApiResponse<BoardData> = await boardResponse.json();
+
+  if (!boardResult.success) {
+    logger.warn('Board creation failed, rolling back project', {
+      projectId: project.id,
+      error: boardResult.error,
+    });
+    await rollbackProject(project.id);
+    throw new ProjectApiError(
+      'Failed to initialize project board. Please try again.',
+      boardResult.error.code,
+      boardResponse.status
+    );
+  }
+
+  return {
+    project,
+    board: boardResult.data,
+  };
+}
+
+/**
+ * Rollback a project creation by deleting the project.
+ * Logs but doesn't throw on failure (best-effort cleanup).
+ */
+async function rollbackProject(projectId: string): Promise<void> {
+  try {
+    await fetch(`/api/issues/${projectId}`, { method: 'DELETE' });
+  } catch (rollbackError) {
+    logger.error('Failed to rollback project after board failure', {
+      projectId,
+      error: String(rollbackError),
+    });
+  }
+}
+
 /**
  * Create a new project.
  * Uses Schema.strip().parse() to strip unknown fields before sending.
- * @param input Project creation input
- * @returns The created Project
- * @throws ProjectApiError if validation fails or the request fails
  */
 export async function createProject(input: CreateProjectInput): Promise<Project> {
-  // Build the full issue input with type='project'
   const issueInput: CreateIssueInput = {
     type: 'project',
     title: input.title,
     description: input.description ?? null,
   };
 
-  // CRITICAL: Strip unknown fields to prevent 400 errors from strict backend
-  // @see specs/356-tech-debt.md:L15
   let sanitizedInput: CreateIssueInput;
   try {
     sanitizedInput = CreateIssueSchema.strip().parse(issueInput);
