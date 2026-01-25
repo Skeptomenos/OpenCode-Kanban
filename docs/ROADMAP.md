@@ -49,19 +49,37 @@ A local-first Project Management tool where:
 - Zustand store integration with API persistence
 - Session linking for issue-to-OpenCode integration
 
-### Phase 3: Dynamic Routing & Sidebar
+### Phase 3: Dynamic Routing & Sidebar ✅ COMPLETE
 *Goal: Navigate between projects.*
-- [ ] Dynamic Route: `src/app/project/[id]/page.tsx`.
-- [ ] Sidebar: Dynamically list projects from `storage`.
-- [ ] Home: Redirect to last active project.
+- [x] Dynamic Route: `src/app/project/[projectId]/page.tsx`.
+- [x] Sidebar: Dynamically list projects from `storage`.
+- [x] Home: Redirect to last active project (or welcome screen).
 
-**Phase 3 Deliverables Checklist:**
-- [ ] `src/app/project/[projectId]/board/[boardId]/page.tsx` created
-- [ ] Sidebar fetches projects from SQLite
-- [ ] "Create Project" button/dialog implemented in Sidebar
-- [ ] Kanban Board filters tasks by `parentId` (Project ID)
-- [ ] Root `/` redirects to first available project
-- [ ] Legacy `/dashboard` routes removed
+**Phase 3 Deliverables (completed 2026-01-25):**
+- [x] `src/app/project/[projectId]/board/[boardId]/page.tsx` created
+- [x] Sidebar fetches projects from SQLite
+- [x] "Create Project" button/dialog implemented in Sidebar
+- [x] Kanban Board filters tasks by `parentId` (Project ID)
+- [x] Root `/` shows welcome screen or redirects to project
+- [x] Legacy `/dashboard` routes removed
+
+### Phase 3.5: Refactor & Cleanup ✅ COMPLETE
+*Goal: Address 11 architectural issues identified in post-Phase-3 audit.*
+
+**Phase 3.5 Refactor (completed 2026-01-25):**
+- [x] Backend Architecture: Service layer, Zod strict schemas, BOLA stubs
+- [x] Frontend Modernization: TanStack Query, API fetcher layer, mutations
+- [x] Code Hygiene: Named exports, ESLint no-default-export rule
+
+**Phase 3.5 Cleanup (completed 2026-01-25):**
+- [x] Service Layer Completion: OpenCodeService, session linking
+- [x] Code Consistency: Date utils, schema strictness, type deduplication
+- [x] Technical Debt: Projects modernization, route tests
+
+**Phase 3.5 Final Polish (completed 2026-01-26):**
+- [x] Type Safety: Zod schema validation, FormData guards, dnd-kit conversions
+- [x] Error Handling: Debug logging, rollback visibility, error codes
+- [x] Architecture: Query keys factory, store cleanup, documentation
 
 ### Pre-Phase 4: Tooling Migration
 *Goal: Standardize on pnpm before feature work.*
@@ -93,9 +111,9 @@ A local-first Project Management tool where:
 
 ## 4. Current Status
 
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-01-26
 
-**State:** Phase 2 COMPLETE. Ready for Phase 3.
+**State:** Phase 3.5 COMPLETE. Ready for Pre-Phase 4 (pnpm migration).
 
 | Component | Status | Notes |
 |-----------|--------|-------|
@@ -103,16 +121,22 @@ A local-first Project Management tool where:
 | Session loader | ✅ Done | Async I/O, reads from `~/.local/share/opencode/storage` |
 | API endpoint | ✅ Done | `GET /api/sessions`, full CRUD for issues/boards |
 | Database | ✅ Done | SQLite with Drizzle ORM at `data/kanban.db` |
-| Repository | ✅ Done | TDD-verified with 42 tests (vitest) |
+| Repository | ✅ Done | TDD-verified with 106 tests (vitest) |
 | Kanban UI | ✅ Done | Connected to API, data persists across refresh |
 | Persistence | ✅ Done | SQLite-backed, survives browser refresh |
 | Session Links | ✅ Done | Issues can link to OpenCode sessions |
 | ESLint | ✅ Done | Fixed in Phase 1 Cleanup |
+| Dynamic Routing | ✅ Done | `/project/[projectId]/board/[boardId]` |
+| Sidebar Projects | ✅ Done | Fetches from SQLite, Create Project dialog |
+| Service Layer | ✅ Done | IssueService, BoardService, OpenCodeService |
+| TanStack Query | ✅ Done | Replaces Zustand async actions |
+| Type Safety | ✅ Done | Zod strict schemas, FormData guards |
 
-**Next Action:** Start Phase 3 dynamic routing and sidebar.
+**Next Action:** Start Pre-Phase 4 (pnpm migration).
 
 **Documentation:**
 - `docs/ROADMAP.md` - This file (master roadmap)
 - `docs/ISSUES.md` - Technical debt tracker
 - `docs/TECH.md` - Stack decisions
 - `OpenKanban/docs/SCHEMA.md` - Data model specification (Phase 2)
+- `OpenKanban/docs/PHASE-3.5-REFACTOR-ISSUES.md` - Phase 3.5 issue tracker

@@ -247,7 +247,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 |--------|------|--------|----------------|-------|
 | [x] | **L1**: Document dual source of truth pattern | D.1 | `358:L24` | Done v0.3.53 - JSDoc block added to KanbanBoard |
 | [x] | **L2**: Add TODO to BOLA stubs | F.4 | `358:L38` | Done v0.3.54 - @todo JSDoc added to IssueService, BoardService |
-| [ ] | **L3**: Update ROADMAP (Phase 3.5 complete) | G.1 | `359:L10-13` | Status update |
+| [x] | **L3**: Update ROADMAP (Phase 3.5 complete) | G.1 | `359:L10-13` | Done v0.3.55 - Phase 3 & 3.5 marked complete, Status updated |
 | [ ] | **L4**: Update README versions (Next.js 16) | G.2 | `359:L17-20` | Version sync |
 
 ---
