@@ -18,7 +18,7 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 1.1**: Install Drizzle ORM, better-sqlite3, and vitest dependencies | `specs/01-foundation.md:L11-17` | Done: drizzle-orm@0.45.1, better-sqlite3@12.6.2, vitest@4.0.18, drizzle-kit@0.31.8 |
-| [ ] | **Task 1.2**: Configure vitest for Next.js environment | `specs/01-foundation.md:L20` | Create vitest.config.ts with Next.js compatibility |
+| [x] | **Task 1.2**: Configure vitest for Next.js environment | `specs/01-foundation.md:L20` | Done: vitest.config.ts + vitest.setup.ts with jsdom, tsconfigPaths, React mocks |
 | [ ] | **Task 1.3**: Configure drizzle-kit and environment variables | `specs/01-foundation.md:L21-22` | Create drizzle.config.ts, update .env.example with DATABASE_PATH |
 | [ ] | **Task 1.4**: Verify native module bundling with Next.js build | `specs/01-foundation.md:L79-80` | Run npm run build to ensure better-sqlite3 works |
 | [ ] | **Task 2.1**: Create Drizzle schema for issues, issue_sessions, labels, issue_labels tables | `specs/01-foundation.md:L36-66`, `specs/SCHEMA.md:L52-127` | src/lib/db/schema.ts - core PM entities |
