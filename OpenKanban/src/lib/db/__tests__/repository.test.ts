@@ -9,6 +9,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 import { drizzle, type BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import { z } from 'zod';
 import * as schema from '../schema';
 import { SqlitePMRepository } from '../repository';
 import type { IPMRepository, CreateIssueInput } from '../repository';
@@ -458,6 +459,24 @@ describe('SqlitePMRepository', () => {
       repo.deleteConfig('to_delete');
 
       expect(repo.getConfig('to_delete')).toBeUndefined();
+    });
+
+    it('validates config value with Zod schema when provided', () => {
+      const TestSchema = z.object({ foo: z.string(), count: z.number() }).strict();
+      repo.setConfig('typed_key', { foo: 'bar', count: 42 });
+
+      const value = repo.getConfig('typed_key', TestSchema);
+
+      expect(value).toEqual({ foo: 'bar', count: 42 });
+    });
+
+    it('returns undefined when schema validation fails', () => {
+      const StrictSchema = z.object({ required: z.string() }).strict();
+      repo.setConfig('wrong_shape', { different: 'data' });
+
+      const value = repo.getConfig('wrong_shape', StrictSchema);
+
+      expect(value).toBeUndefined();
     });
   });
 

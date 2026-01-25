@@ -1,6 +1,6 @@
-s# Implementation Plan: Phase 3.5 Complete
+# Implementation Plan: Phase 3.5 Final Polish
 
-> **Status:** Phase 3.5 COMPLETE (Refactor + Cleanup)
+> **Status:** Block 3 (Final Polish) IN PROGRESS
 > **Specs:**
 > - `ralph-wiggum/specs/351-backend-arch.md` (DONE)
 > - `ralph-wiggum/specs/352-frontend-modernization.md` (DONE)
@@ -8,7 +8,10 @@ s# Implementation Plan: Phase 3.5 Complete
 > - `ralph-wiggum/specs/354-service-completion.md` (DONE)
 > - `ralph-wiggum/specs/355-code-consistency.md` (DONE)
 > - `ralph-wiggum/specs/356-tech-debt.md` (DONE)
-> **Issue Tracker:** `OpenKanban/docs/PHASE-3.5-REFACTOR-ISSUES.md`
+> - `ralph-wiggum/specs/357-type-safety.md` (IN PROGRESS)
+> - `ralph-wiggum/specs/358-code-quality.md` (IN PROGRESS)
+> - `ralph-wiggum/specs/359-documentation.md` (IN PROGRESS)
+> **Issue Tracker:** `OpenKanban/docs/phase3.5-issues2.md`
 
 ---
 
@@ -185,3 +188,127 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 ## Deferred to Phase 4
 
 - **A.3: BOLA Enforcement** - Requires schema migration to add `ownerId` column. Currently stubs only.
+
+---
+
+## Phase 3.5 Final Polish (Block 3) - IN PROGRESS
+
+> **Objective:** Fix remaining 22 issues from post-implementation review (`phase3.5-issues2.md`).
+> **Estimated Time:** ~2.5 hours
+
+### Deferred Issues (6 items)
+
+| Issue | Reason for Deferral |
+|-------|---------------------|
+| **A.5** - Form context cast | Standard Shadcn pattern; form fields work correctly |
+| **C.5** - Layout silent catch | Intentionally documented; graceful degradation |
+| **E.3** - throwOnError config | Requires testing strategy for error boundaries first |
+| **F.2** - Pagination params | Feature work, not a bug; API works fine |
+| **F.3** - pnpm migration | Explicitly marked for Pre-Phase 4 per ROADMAP |
+| **G.3** - Docs consolidation | Requires updating multiple references; cosmetic |
+
+---
+
+### Part I: Type Safety & Critical Fixes (~35 min)
+
+| Status | Task | Issues | Spec Reference | Notes |
+|--------|------|--------|----------------|-------|
+| [x] | **I1**: Add optional Zod schema to `getConfig()` | A.1 | `357:L10-22` | Done v0.3.42 - Added schema param + 2 tests |
+| [ ] | **I2**: FormData type guards | A.3 | `357:L33-44` | Replace `as string` with guards |
+| [ ] | **I3**: dnd-kit String() conversion | A.4 | `357:L46-53` | Use `String(overId)` |
+| [ ] | **I4**: Singleton pattern JSDoc | A.2 | `357:L25-32` | Document Next.js dev-mode pattern |
+
+---
+
+### Part J: Error & Schema Consistency (~20 min)
+
+| Status | Task | Issues | Spec Reference | Notes |
+|--------|------|--------|----------------|-------|
+| [ ] | **J1**: Add `code: 'INTERNAL_ERROR'` to sessions route | C.8 | `358:L18-19` | 2 min fix |
+| [ ] | **J2**: Add `.strict()` to `ApiSuccessSchema` | B.1 | `358:L10-12` | 2 min fix |
+| [ ] | **J3**: Add debug logging to adapter catch blocks | C.6 | `358:L17` | Race condition logging |
+| [ ] | **J4**: Return boolean from `rollbackProject` | C.7 | `358:L17` | Error visibility |
+
+---
+
+### Part K: Architecture & React Quality (~55 min)
+
+| Status | Task | Issues | Spec Reference | Notes |
+|--------|------|--------|----------------|-------|
+| [ ] | **K1**: Create `src/lib/query-keys.ts` factory | F.1 | `358:L36` | Touches 4 files |
+| [ ] | **K2**: Remove `isLoading` from Zustand store | D.2 | `358:L25` | React Query handles this |
+| [ ] | **K3**: Hoist async helpers outside KanbanBoard | F.5 | `358:L39` | Move to top of file |
+
+---
+
+### Part L: Documentation & Comments (~25 min)
+
+| Status | Task | Issues | Spec Reference | Notes |
+|--------|------|--------|----------------|-------|
+| [ ] | **L1**: Document dual source of truth pattern | D.1 | `358:L24` | JSDoc block |
+| [ ] | **L2**: Add TODO to BOLA stubs | F.4 | `358:L38` | Phase 4 pointer |
+| [ ] | **L3**: Update ROADMAP (Phase 3.5 complete) | G.1 | `359:L10-13` | Status update |
+| [ ] | **L4**: Update README versions (Next.js 16) | G.2 | `359:L17-20` | Version sync |
+
+---
+
+### Part M: Optional Enhancement
+
+| Status | Task | Issues | Spec Reference | Notes |
+|--------|------|--------|----------------|-------|
+| [ ] | **M1**: NewTaskDialog optimistic updates | E.2 | `358:L30` | Nice-to-have, current pattern works |
+
+---
+
+### Part N: Final Verification
+
+| Status | Task | Notes |
+|--------|------|-------|
+| [ ] | **N1**: `npm run build` | Must pass |
+| [ ] | **N2**: `npm run lint` | No errors |
+| [ ] | **N3**: `npm run test` | 104+ tests pass |
+| [ ] | **N4**: Manual verification | Create project, drag task |
+
+---
+
+## Block 3 Issue to Task Mapping
+
+| Issue ID | Severity | Summary | Task |
+|----------|----------|---------|------|
+| A.1 | MEDIUM | Unsafe JSON.parse cast | I1 |
+| A.2 | LOW | globalThis singleton cast | I4 |
+| A.3 | LOW | FormData unsafe cast | I2 |
+| A.4 | LOW | dnd-kit UniqueIdentifier cast | I3 |
+| A.5 | LOW | Empty object context cast | **DEFERRED** |
+| B.1 | LOW | ApiSuccessSchema missing .strict() | J2 |
+| C.5 | LOW | Layout silent catch | **DEFERRED** |
+| C.6 | LOW | Adapter silent catch blocks | J3 |
+| C.7 | LOW | Rollback swallowed error | J4 |
+| C.8 | LOW | Sessions route missing error code | J1 |
+| D.1 | LOW | Dual source of truth | L1 |
+| D.2 | LOW | Zustand isLoading redundant | K2 |
+| E.2 | LOW | NewTaskDialog onSuccess vs optimistic | M1 (optional) |
+| E.3 | LOW | throwOnError not configured | **DEFERRED** |
+| F.1 | LOW | Ad-hoc query keys | K1 |
+| F.2 | LOW | Hardcoded pagination limit | **DEFERRED** |
+| F.3 | INFO | npm/pnpm config warning | **DEFERRED** |
+| F.4 | LOW | BOLA stubs inert | L2 |
+| F.5 | LOW | Async helpers in component | K3 |
+| G.1 | INFO | Roadmap outdated | L3 |
+| G.2 | INFO | README version mismatch | L4 |
+| G.3 | INFO | Split documentation | **DEFERRED** |
+
+---
+
+## Block 3 Acceptance Criteria
+
+### Automated
+- [ ] `npm run build` passes
+- [ ] `npm run lint` passes (no errors)
+- [ ] `npm run test` - 104+ tests pass
+- [ ] `grep "as string" src/features/kanban/components/kanban-board.tsx` - 0 matches (after I3)
+- [ ] `grep "isLoading" src/features/kanban/utils/store.ts` - 0 matches (after K2)
+
+### Manual
+- [ ] Create project via dialog → works (verifies I2)
+- [ ] Drag task between columns → works (verifies I3)

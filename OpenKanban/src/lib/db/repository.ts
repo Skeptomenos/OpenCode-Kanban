@@ -12,6 +12,8 @@ import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { Issue, Board, IssueSession } from './schema';
 import * as schema from './schema';
 import { now } from '../date-utils';
+import { z } from 'zod';
+import { logger } from '../logger';
 
 // =============================================================================
 // Input Types
@@ -234,9 +236,11 @@ export interface IPMRepository {
 
   /**
    * Get a config value by key.
-   * Returns undefined if not found.
+   * Returns undefined if not found or if schema validation fails.
+   * @param key - Config key to retrieve
+   * @param schema - Optional Zod schema for runtime validation
    */
-  getConfig<T = unknown>(key: string): T | undefined;
+  getConfig<T = unknown>(key: string, schema?: z.ZodType<T>): T | undefined;
 
   /**
    * Set a config value.
@@ -577,7 +581,7 @@ export class SqlitePMRepository implements IPMRepository {
   // Config (Key-Value Store)
   // ---------------------------------------------------------------------------
 
-  getConfig<T = unknown>(key: string): T | undefined {
+  getConfig<T = unknown>(key: string, validationSchema?: z.ZodType<T>): T | undefined {
     const result = this.db
       .select()
       .from(schema.config)
@@ -587,7 +591,18 @@ export class SqlitePMRepository implements IPMRepository {
     if (!result) return undefined;
 
     try {
-      return JSON.parse(result.value) as T;
+      const parsed = JSON.parse(result.value);
+
+      if (validationSchema) {
+        const validated = validationSchema.safeParse(parsed);
+        if (!validated.success) {
+          logger.error('getConfig schema validation failed', { key, error: validated.error.message });
+          return undefined;
+        }
+        return validated.data;
+      }
+
+      return parsed as T;
     } catch {
       return undefined;
     }

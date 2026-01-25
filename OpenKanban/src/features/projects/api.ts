@@ -73,8 +73,19 @@ export type CreateProjectInput = {
  * @throws ProjectApiError if the request fails
  */
 export async function fetchProjects(): Promise<Project[]> {
-  const response = await fetch('/api/issues?type=project');
-  const result: ApiResponse<Project[]> = await response.json();
+  let response: Response;
+  try {
+    response = await fetch('/api/issues?type=project');
+  } catch {
+    throw new ProjectApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
+
+  let result: ApiResponse<Project[]>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ProjectApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ProjectApiError(
@@ -173,13 +184,25 @@ export async function createProjectWithBoard(
     );
   }
 
-  const boardResponse = await fetch('/api/boards', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(sanitizedBoardInput),
-  });
+  let boardResponse: Response;
+  try {
+    boardResponse = await fetch('/api/boards', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sanitizedBoardInput),
+    });
+  } catch {
+    await rollbackProject(project.id);
+    throw new ProjectApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
 
-  const boardResult: ApiResponse<BoardData> = await boardResponse.json();
+  let boardResult: ApiResponse<BoardData>;
+  try {
+    boardResult = await boardResponse.json();
+  } catch {
+    await rollbackProject(project.id);
+    throw new ProjectApiError('Invalid response from server', 'PARSE_ERROR', boardResponse.status);
+  }
 
   if (!boardResult.success) {
     logger.warn('Board creation failed, rolling back project', {
@@ -236,13 +259,23 @@ export async function createProject(input: CreateProjectInput): Promise<Project>
     );
   }
 
-  const response = await fetch('/api/issues', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(sanitizedInput),
-  });
+  let response: Response;
+  try {
+    response = await fetch('/api/issues', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sanitizedInput),
+    });
+  } catch {
+    throw new ProjectApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
 
-  const result: ApiResponse<Project> = await response.json();
+  let result: ApiResponse<Project>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ProjectApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ProjectApiError(

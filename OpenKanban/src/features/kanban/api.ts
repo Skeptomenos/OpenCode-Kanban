@@ -91,8 +91,19 @@ export async function fetchIssues(filters?: {
   const queryString = params.toString();
   const url = queryString ? `/api/issues?${queryString}` : '/api/issues';
 
-  const response = await fetch(url);
-  const result: ApiResponse<Issue[]> = await response.json();
+  let response: Response;
+  try {
+    response = await fetch(url);
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
+
+  let result: ApiResponse<Issue[]>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ApiError(
@@ -117,13 +128,23 @@ export async function createIssue(input: CreateIssueInput): Promise<Issue> {
   // @see specs/352-frontend-modernization.md:L25
   const sanitizedInput = CreateIssueSchema.strip().parse(input);
 
-  const response = await fetch('/api/issues', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(sanitizedInput),
-  });
+  let response: Response;
+  try {
+    response = await fetch('/api/issues', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sanitizedInput),
+    });
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
 
-  const result: ApiResponse<Issue> = await response.json();
+  let result: ApiResponse<Issue>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ApiError(
@@ -152,13 +173,23 @@ export async function updateIssue(
   // @see specs/352-frontend-modernization.md:L25
   const sanitizedInput = UpdateIssueSchema.strip().parse(input);
 
-  const response = await fetch(`/api/issues/${encodeURIComponent(id)}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(sanitizedInput),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`/api/issues/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sanitizedInput),
+    });
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
 
-  const result: ApiResponse<Issue> = await response.json();
+  let result: ApiResponse<Issue>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ApiError(
@@ -178,11 +209,21 @@ export async function updateIssue(
  * @throws ApiError if the request fails
  */
 export async function deleteIssue(id: string): Promise<{ id: string }> {
-  const response = await fetch(`/api/issues/${encodeURIComponent(id)}`, {
-    method: 'DELETE',
-  });
+  let response: Response;
+  try {
+    response = await fetch(`/api/issues/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    });
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
 
-  const result: ApiResponse<{ id: string }> = await response.json();
+  let result: ApiResponse<{ id: string }>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ApiError(
@@ -202,13 +243,23 @@ export async function deleteIssue(id: string): Promise<{ id: string }> {
  * @throws ApiError if the request fails (except 404)
  */
 export async function fetchIssue(id: string): Promise<Issue | null> {
-  const response = await fetch(`/api/issues/${encodeURIComponent(id)}`);
+  let response: Response;
+  try {
+    response = await fetch(`/api/issues/${encodeURIComponent(id)}`);
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
 
   if (response.status === 404) {
     return null;
   }
 
-  const result: ApiResponse<Issue> = await response.json();
+  let result: ApiResponse<Issue>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ApiError(
@@ -253,8 +304,19 @@ export type BoardWithIssues = {
  * @throws ApiError if the request fails
  */
 export async function fetchBoards(): Promise<BoardListItem[]> {
-  const response = await fetch('/api/boards');
-  const result: ApiResponse<BoardListItem[]> = await response.json();
+  let response: Response;
+  try {
+    response = await fetch('/api/boards');
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
+
+  let result: ApiResponse<BoardListItem[]>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ApiError(
@@ -274,8 +336,19 @@ export async function fetchBoards(): Promise<BoardListItem[]> {
  * @throws ApiError if the request fails
  */
 export async function fetchBoard(id: string): Promise<BoardWithIssues> {
-  const response = await fetch(`/api/boards/${encodeURIComponent(id)}`);
-  const result: ApiResponse<BoardWithIssues> = await response.json();
+  let response: Response;
+  try {
+    response = await fetch(`/api/boards/${encodeURIComponent(id)}`);
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
+
+  let result: ApiResponse<BoardWithIssues>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ApiError(
@@ -322,13 +395,23 @@ export async function createBoard(
     );
   }
 
-  const response = await fetch('/api/boards', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(sanitizedInput),
-  });
+  let response: Response;
+  try {
+    response = await fetch('/api/boards', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sanitizedInput),
+    });
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
 
-  const result: ApiResponse<BoardWithIssues> = await response.json();
+  let result: ApiResponse<BoardWithIssues>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ApiError(
@@ -377,13 +460,23 @@ export async function updateBoard(
     );
   }
 
-  const response = await fetch(`/api/boards/${encodeURIComponent(id)}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(sanitizedInput),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`/api/boards/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sanitizedInput),
+    });
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
 
-  const result: ApiResponse<BoardWithIssues> = await response.json();
+  let result: ApiResponse<BoardWithIssues>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
 
   if (!result.success) {
     throw new ApiError(

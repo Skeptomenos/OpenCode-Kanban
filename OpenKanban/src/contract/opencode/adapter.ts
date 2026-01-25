@@ -120,7 +120,17 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
     if (!fs.existsSync(projectDir)) return [];
 
     const projects: OpenCodeProject[] = [];
-    const files = await fs.promises.readdir(projectDir);
+    
+    let files: string[];
+    try {
+      files = await fs.promises.readdir(projectDir);
+    } catch (error) {
+      logger.error('Failed to read project directory', { 
+        projectDir, 
+        error: String(error) 
+      });
+      return []; // Graceful degradation
+    }
 
     for (const file of files) {
       if (!file.endsWith('.json')) continue;
@@ -148,10 +158,16 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
 
     const sessionsMap = new Map<string, OpenCodeSession>();
 
-    // Helper to process a directory of session files
     const processDir = async (dirPath: string) => {
       if (!fs.existsSync(dirPath)) return;
-      const files = await fs.promises.readdir(dirPath);
+      
+      let files: string[];
+      try {
+        files = await fs.promises.readdir(dirPath);
+      } catch (error) {
+        logger.debug('Directory read failed, skipping', { dirPath, error: String(error) });
+        return;
+      }
       
       for (const file of files) {
         if (!file.endsWith('.json')) continue;
@@ -174,13 +190,27 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
     // 1. Global Sessions
     await processDir(path.join(sessionBaseDir, 'global'));
 
-    // 2. Project Sessions
-    const dirs = await fs.promises.readdir(sessionBaseDir);
+    let dirs: string[];
+    try {
+      dirs = await fs.promises.readdir(sessionBaseDir);
+    } catch (error) {
+      logger.error('Failed to read session base directory', { 
+        sessionBaseDir, 
+        error: String(error) 
+      });
+      return Array.from(sessionsMap.values())
+        .sort((a, b) => b.time.updated - a.time.updated);
+    }
+
     for (const dir of dirs) {
       if (dir === 'global' || dir.startsWith('.')) continue;
       const projectPath = path.join(sessionBaseDir, dir);
-      if ((await fs.promises.stat(projectPath)).isDirectory()) {
-        await processDir(projectPath);
+      try {
+        if ((await fs.promises.stat(projectPath)).isDirectory()) {
+          await processDir(projectPath);
+        }
+      } catch {
+        logger.debug('Directory stat failed, skipping', { projectPath });
       }
     }
 
