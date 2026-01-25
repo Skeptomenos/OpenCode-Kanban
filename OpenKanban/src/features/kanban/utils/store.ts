@@ -28,6 +28,14 @@ export type Actions = {
   setBoardId: (boardId: string | null) => void;
   setProjectId: (projectId: string | null) => void;
 
+  // Data Fetching
+  /**
+   * Fetch tasks for a specific project from the API.
+   * Calls GET /api/issues?parentId=[projectId] and updates tasks state.
+   * @see specs/33-board-integration.md:L20-22
+   */
+  fetchTasks: (projectId: string) => Promise<void>;
+
   // UI Helpers
   addTask: (title: string, description?: string) => Promise<void>;
   addCol: (title: string) => Promise<void>;
@@ -96,6 +104,32 @@ export const useTaskStore = create<State & Actions>((set) => ({
   setIsLoading: (isLoading: boolean) => set({ isLoading }),
   setBoardId: (currentBoardId: string | null) => set({ currentBoardId }),
   setProjectId: (currentProjectId: string | null) => set({ currentProjectId }),
+
+  fetchTasks: async (projectId: string) => {
+    set({ isLoading: true });
+    try {
+      const response = await fetch(`/api/issues?parentId=${encodeURIComponent(projectId)}`);
+      const result = await response.json();
+
+      if (!result.success) {
+        console.error('Failed to fetch tasks:', result.error?.message);
+        set({ isLoading: false });
+        return;
+      }
+
+      const tasks: Task[] = result.data.map((issue: { id: string; title: string; description?: string | null; status: string }) => ({
+        id: issue.id,
+        title: issue.title,
+        description: issue.description ?? undefined,
+        columnId: issue.status,
+      }));
+
+      set({ tasks, isLoading: false });
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error);
+      set({ isLoading: false });
+    }
+  },
 
   addTask: async (title: string, description?: string) => {
     const state = useTaskStore.getState();

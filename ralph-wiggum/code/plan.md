@@ -36,7 +36,7 @@
 | [x] | **Task 2.4**: Add "+" button and integrate CreateProjectDialog in sidebar | `specs/32-dynamic-sidebar.md:L45-46` | Done in v0.3.0-task2.4 |
 | [x] | **Task 3.1**: Add `currentProjectId` to Zustand store | `specs/33-board-integration.md:L14-17` | Done in v0.3.0-task3.1 |
 | [x] | **Task 3.2**: Update `addTask` to include `parentId` in API payload | `specs/33-board-integration.md:L25-28` | Done in v0.3.0-task3.2 |
-| [ ] | **Task 3.3**: Create `fetchTasks(projectId)` action in store | `specs/33-board-integration.md:L20-22` | `GET /api/issues?parentId=[projectId]` |
+| [x] | **Task 3.3**: Create `fetchTasks(projectId)` action in store | `specs/33-board-integration.md:L20-22` | Done in v0.3.0-task3.3 |
 | [ ] | **Task 3.4**: Update `KanbanViewPage` to accept and use `projectId`/`boardId` props | `specs/33-board-integration.md:L36-44` | Initialize store on mount |
 | [ ] | **Task 3.5**: Update `KanbanBoard` component to be project-aware | `specs/33-board-integration.md:L40-44` | Use props for context, pass to children |
 | [ ] | **Task 4.1**: Update root page (`src/app/page.tsx`) for smart redirect | `specs/31-route-structure.md:L57-62` | Fetch projects, redirect or show empty state |
