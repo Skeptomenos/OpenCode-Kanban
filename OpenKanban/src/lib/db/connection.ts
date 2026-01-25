@@ -10,6 +10,22 @@ import * as schema from './schema';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
+/**
+ * Extended globalThis type for singleton database connections.
+ *
+ * WHY THIS PATTERN EXISTS:
+ * Next.js in development mode uses Fast Refresh (HMR), which re-executes module
+ * code on every file change. Without caching connections on globalThis, each
+ * hot reload would create a new SQLite connection, eventually exhausting file
+ * descriptors or causing "database is locked" errors.
+ *
+ * The pattern:
+ * 1. Store connections on globalThis (survives module re-execution)
+ * 2. Only cache in development mode (production creates fresh connections)
+ * 3. Check for existing connection before creating new one
+ *
+ * @see https://nextjs.org/docs/app/building-your-application/data-fetching/patterns#storing-data-in-global-singletons
+ */
 type GlobalWithDb = typeof globalThis & {
   __kanbanDb?: BetterSQLite3Database<typeof schema>;
   __kanbanSqlite?: Database.Database;
