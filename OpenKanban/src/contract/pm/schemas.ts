@@ -56,12 +56,14 @@ export const UpdateIssueSchema = z
  * Schema for filtering Issues in list queries.
  * @see specs/SCHEMA.md:L220-226
  */
-export const IssueFilterSchema = z.object({
-  types: z.array(z.string()).optional(),
-  statuses: z.array(z.string()).optional(),
-  parentId: z.string().nullable().optional(),
-  labelIds: z.array(z.string()).optional(),
-});
+export const IssueFilterSchema = z
+  .object({
+    types: z.array(z.string()).optional(),
+    statuses: z.array(z.string()).optional(),
+    parentId: z.string().nullable().optional(),
+    labelIds: z.array(z.string()).optional(),
+  })
+  .strict();
 
 // =============================================================================
 // Board Schemas
@@ -71,22 +73,26 @@ export const IssueFilterSchema = z.object({
  * Column configuration for a Board.
  * @see specs/SCHEMA.md:L247-251
  */
-export const ColumnConfigSchema = z.object({
-  id: z.string().min(1),
-  title: z.string().min(1),
-  statusMappings: z.array(z.string()),
-});
+export const ColumnConfigSchema = z
+  .object({
+    id: z.string().min(1),
+    title: z.string().min(1),
+    statusMappings: z.array(z.string()),
+  })
+  .strict();
 
 /**
  * Filter criteria stored on a Board.
  * @see specs/SCHEMA.md:L240-245
  */
-export const BoardFiltersSchema = z.object({
-  types: z.array(z.string()).optional(),
-  statuses: z.array(z.string()).optional(),
-  parentId: z.string().nullable().optional(),
-  labelIds: z.array(z.string()).optional(),
-});
+export const BoardFiltersSchema = z
+  .object({
+    types: z.array(z.string()).optional(),
+    statuses: z.array(z.string()).optional(),
+    parentId: z.string().nullable().optional(),
+    labelIds: z.array(z.string()).optional(),
+  })
+  .strict();
 
 /**
  * Schema for creating a new Board.
@@ -120,10 +126,12 @@ export const UpdateBoardSchema = z
  * Schema for linking a session to an issue.
  * @see specs/SCHEMA.md:L314-319
  */
-export const LinkSessionSchema = z.object({
-  sessionId: z.string().min(1, 'Session ID is required').max(100),
-  linkType: z.string().max(50).nullable().optional(),
-});
+export const LinkSessionSchema = z
+  .object({
+    sessionId: z.string().min(1, 'Session ID is required').max(100),
+    linkType: z.string().max(50).nullable().optional(),
+  })
+  .strict();
 
 // =============================================================================
 // Config Schemas
@@ -133,10 +141,12 @@ export const LinkSessionSchema = z.object({
  * Schema for setting a config value.
  * Value can be any JSON-serializable data.
  */
-export const SetConfigSchema = z.object({
-  key: z.string().min(1, 'Key is required').max(100),
-  value: z.unknown(),
-});
+export const SetConfigSchema = z
+  .object({
+    key: z.string().min(1, 'Key is required').max(100),
+    value: z.unknown(),
+  })
+  .strict();
 
 // =============================================================================
 // API Response Schemas
@@ -152,10 +162,14 @@ export const ApiSuccessSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
     data: dataSchema,
   });
 
-export const ApiErrorSchema = z.object({
-  success: z.literal(false),
-  error: z.object({
-    message: z.string(),
-    code: z.string().optional(),
-  }),
-});
+export const ApiErrorSchema = z
+  .object({
+    success: z.literal(false),
+    error: z
+      .object({
+        message: z.string(),
+        code: z.string().optional(),
+      })
+      .strict(),
+  })
+  .strict();
