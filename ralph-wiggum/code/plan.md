@@ -30,7 +30,7 @@
 | [x] | **Task 1.3**: Implement project root redirect page (`/project/[projectId]/page.tsx`) | `specs/31-route-structure.md:L37-46` | Done in v0.3.0-task1.3 |
 | [x] | **Task 1.4**: Implement board page (`/project/[projectId]/board/[boardId]/page.tsx`) | `specs/31-route-structure.md:L48-55` | Done in v0.3.0-task1.4 |
 | [x] | **Task 1.5**: Add loading and not-found states for project routes | `specs/31-route-structure.md:L19-24` | Done in v0.3.0-task1.5 |
-| [ ] | **Task 2.1**: Create `CreateProjectDialog` component | `specs/32-dynamic-sidebar.md:L10-28` | Dialog with Name/Description form |
+| [x] | **Task 2.1**: Create `CreateProjectDialog` component | `specs/32-dynamic-sidebar.md:L10-28` | Done in v0.3.0-task2.1 |
 | [ ] | **Task 2.2**: Create `useProjects` hook for fetching projects | `specs/32-dynamic-sidebar.md:L37-41` | `GET /api/issues?type=project` |
 | [ ] | **Task 2.3**: Refactor `AppSidebar` for dynamic project listing | `specs/32-dynamic-sidebar.md:L32-48` | Replace static "Overview" with "Projects" group |
 | [ ] | **Task 2.4**: Add "+" button and integrate CreateProjectDialog in sidebar | `specs/32-dynamic-sidebar.md:L45-46` | Trigger dialog, refresh on success |
