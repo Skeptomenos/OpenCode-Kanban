@@ -26,27 +26,31 @@ export const MetadataSchema = z.record(z.string(), z.unknown()).optional();
  * Schema for creating a new Issue.
  * @see specs/SCHEMA.md:L209-216
  */
-export const CreateIssueSchema = z.object({
-  type: z.string().min(1, 'Type is required').max(50),
-  parentId: z.string().max(100).nullable().optional(),
-  title: z.string().min(1, 'Title is required').max(500),
-  description: z.string().max(10000).nullable().optional(),
-  status: z.string().max(50).optional(),
-  metadata: MetadataSchema,
-});
+export const CreateIssueSchema = z
+  .object({
+    type: z.string().min(1, 'Type is required').max(50),
+    parentId: z.string().max(100).nullable().optional(),
+    title: z.string().min(1, 'Title is required').max(500),
+    description: z.string().max(10000).nullable().optional(),
+    status: z.string().max(50).optional(),
+    metadata: MetadataSchema,
+  })
+  .strict();
 
 /**
  * Schema for updating an existing Issue.
  * All fields optional except those that can't be changed (type).
  * @see specs/SCHEMA.md:L218
  */
-export const UpdateIssueSchema = z.object({
-  parentId: z.string().max(100).nullable().optional(),
-  title: z.string().min(1).max(500).optional(),
-  description: z.string().max(10000).nullable().optional(),
-  status: z.string().max(50).optional(),
-  metadata: MetadataSchema,
-});
+export const UpdateIssueSchema = z
+  .object({
+    parentId: z.string().max(100).nullable().optional(),
+    title: z.string().min(1).max(500).optional(),
+    description: z.string().max(10000).nullable().optional(),
+    status: z.string().max(50).optional(),
+    metadata: MetadataSchema,
+  })
+  .strict();
 
 /**
  * Schema for filtering Issues in list queries.
@@ -88,21 +92,25 @@ export const BoardFiltersSchema = z.object({
  * Schema for creating a new Board.
  * @see specs/SCHEMA.md:L253-257
  */
-export const CreateBoardSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(200),
-  filters: BoardFiltersSchema.optional(),
-  columnConfig: z.array(ColumnConfigSchema).optional(),
-});
+export const CreateBoardSchema = z
+  .object({
+    name: z.string().min(1, 'Name is required').max(200),
+    filters: BoardFiltersSchema.optional(),
+    columnConfig: z.array(ColumnConfigSchema).optional(),
+  })
+  .strict();
 
 /**
  * Schema for updating an existing Board.
  * @see specs/SCHEMA.md:L259
  */
-export const UpdateBoardSchema = z.object({
-  name: z.string().min(1).max(200).optional(),
-  filters: BoardFiltersSchema.optional(),
-  columnConfig: z.array(ColumnConfigSchema).optional(),
-});
+export const UpdateBoardSchema = z
+  .object({
+    name: z.string().min(1).max(200).optional(),
+    filters: BoardFiltersSchema.optional(),
+    columnConfig: z.array(ColumnConfigSchema).optional(),
+  })
+  .strict();
 
 // =============================================================================
 // Session Link Schemas

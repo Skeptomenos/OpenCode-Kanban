@@ -49,7 +49,7 @@ Part D (Verify) ────┴── D1: Final integration test
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **A1**: Create `src/lib/date-utils.ts` with `now()` wrapper | `353:L41-46` | Done v0.3.1 - Replaced 6x in repository.ts + 1x in adapter.ts. Verified: `grep "Date.now()" src/` → only `date-utils.ts` |
-| [ ] | **A2**: Add `.strict()` to Zod schemas | `351:L45-55` | Update `CreateIssueSchema`, `UpdateIssueSchema`, `CreateBoardSchema`, `UpdateBoardSchema`. Add unit test: unknown field throws |
+| [x] | **A2**: Add `.strict()` to Zod schemas | `351:L45-55` | Done v0.3.2 - Added `.strict()` to 4 schemas. Tests: 8 new cases (4 valid, 4 rejection) |
 | [ ] | **A3**: Create Issue Service + Tests (TDD) | `351:L14-42` | Create `src/services/issue-service.ts`. Methods: `listIssues`, `createIssue`, `getIssue`, `updateIssue`, `deleteIssue`. Tests in `__tests__/issue-service.test.ts` |
 | [ ] | **A4**: Create Board Service + Tests (TDD) | `351:L23-28` | Create `src/services/board-service.ts`. Methods: `getBoard`, `listBoards`, `createBoard`, `updateBoard`, `deleteBoard`. Tests in `__tests__/board-service.test.ts` |
 | [ ] | **A5**: Add BOLA stubs to Services | `353:L10-18` | Add `ownerId: string = 'local-owner'` param to service constructors. Pass-through (no enforcement yet). Update service tests |
