@@ -14,35 +14,14 @@ import {
   UpdateBoardSchema,
 } from '@/contract/pm/schemas';
 import type { Issue } from '@/lib/db/schema';
+import type { CreateIssueInput, UpdateIssueInput } from '@/lib/db/repository';
+
+// Re-export for consumers that import from this module
+export type { CreateIssueInput, UpdateIssueInput };
 
 // =============================================================================
 // Types
 // =============================================================================
-
-/**
- * Input for creating a new issue via the API.
- * Mirrors CreateIssueSchema but as a TypeScript type.
- */
-export type CreateIssueInput = {
-  type: string;
-  parentId?: string | null;
-  title: string;
-  description?: string | null;
-  status?: string;
-  metadata?: Record<string, unknown>;
-};
-
-/**
- * Input for updating an existing issue via the API.
- * Mirrors UpdateIssueSchema but as a TypeScript type.
- */
-export type UpdateIssueInput = {
-  parentId?: string | null;
-  title?: string;
-  description?: string | null;
-  status?: string;
-  metadata?: Record<string, unknown>;
-};
 
 /**
  * API response envelope for success cases.
