@@ -32,7 +32,7 @@
 | [x] | **Task 1.5**: Add loading and not-found states for project routes | `specs/31-route-structure.md:L19-24` | Done in v0.3.0-task1.5 |
 | [x] | **Task 2.1**: Create `CreateProjectDialog` component | `specs/32-dynamic-sidebar.md:L10-28` | Done in v0.3.0-task2.1 |
 | [x] | **Task 2.2**: Create `useProjects` hook for fetching projects | `specs/32-dynamic-sidebar.md:L37-41` | Done in v0.3.0-task2.2 |
-| [ ] | **Task 2.3**: Refactor `AppSidebar` for dynamic project listing | `specs/32-dynamic-sidebar.md:L32-48` | Replace static "Overview" with "Projects" group |
+| [x] | **Task 2.3**: Refactor `AppSidebar` for dynamic project listing | `specs/32-dynamic-sidebar.md:L32-48` | Done in v0.3.0-task2.3 |
 | [ ] | **Task 2.4**: Add "+" button and integrate CreateProjectDialog in sidebar | `specs/32-dynamic-sidebar.md:L45-46` | Trigger dialog, refresh on success |
 | [ ] | **Task 3.1**: Add `currentProjectId` to Zustand store | `specs/33-board-integration.md:L14-17` | New state field + setter action |
 | [ ] | **Task 3.2**: Update `addTask` to include `parentId` in API payload | `specs/33-board-integration.md:L25-28` | Use `currentProjectId` when creating tasks |

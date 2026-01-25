@@ -1,10 +1,5 @@
 'use client';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger
-} from '@/components/ui/collapsible';
-import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
@@ -12,82 +7,77 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarRail
 } from '@/components/ui/sidebar';
-import { navItems } from '@/config/nav-config';
-import { useFilteredNavItems } from '@/hooks/use-nav';
-import { IconChevronRight } from '@tabler/icons-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useProjects } from '@/features/projects/hooks/use-projects';
+import { IconFolder } from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import * as React from 'react';
-import { Icons } from '../icons';
 
 export default function AppSidebar() {
   const pathname = usePathname();
-  const filteredItems = useFilteredNavItems(navItems);
+  const { projects, isLoading, error } = useProjects();
 
   return (
     <Sidebar collapsible='icon'>
       <SidebarContent className='overflow-x-hidden'>
         <SidebarGroup>
-          <SidebarGroupLabel>Overview</SidebarGroupLabel>
+          <SidebarGroupLabel>Projects</SidebarGroupLabel>
           <SidebarMenu>
-            {filteredItems.map((item) => {
-              const Icon = item.icon ? Icons[item.icon] : Icons.logo;
-              return item?.items && item?.items?.length > 0 ? (
-                <Collapsible
-                  key={item.title}
-                  asChild
-                  defaultOpen={item.isActive}
-                  className='group/collapsible'
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton
-                        tooltip={item.title}
-                        isActive={pathname === item.url}
-                      >
-                        {item.icon && <Icon />}
-                        <span>{item.title}</span>
-                        <IconChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items?.map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton
-                              asChild
-                              isActive={pathname === subItem.url}
-                            >
-                              <Link href={subItem.url}>
-                                <span>{subItem.title}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              ) : (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={pathname === item.url}
-                  >
-                    <Link href={item.url}>
-                      <Icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
+            {isLoading ? (
+              <>
+                <SidebarMenuItem>
+                  <div className='flex items-center gap-2 px-2 py-1.5'>
+                    <Skeleton className='h-4 w-4' />
+                    <Skeleton className='h-4 w-24' />
+                  </div>
                 </SidebarMenuItem>
-              );
-            })}
+                <SidebarMenuItem>
+                  <div className='flex items-center gap-2 px-2 py-1.5'>
+                    <Skeleton className='h-4 w-4' />
+                    <Skeleton className='h-4 w-20' />
+                  </div>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <div className='flex items-center gap-2 px-2 py-1.5'>
+                    <Skeleton className='h-4 w-4' />
+                    <Skeleton className='h-4 w-28' />
+                  </div>
+                </SidebarMenuItem>
+              </>
+            ) : error ? (
+              <SidebarMenuItem>
+                <div className='px-2 py-1.5 text-sm text-muted-foreground'>
+                  Failed to load projects
+                </div>
+              </SidebarMenuItem>
+            ) : projects.length === 0 ? (
+              <SidebarMenuItem>
+                <div className='px-2 py-1.5 text-sm text-muted-foreground'>
+                  No projects yet
+                </div>
+              </SidebarMenuItem>
+            ) : (
+              projects.map((project) => {
+                const isActive = pathname.includes(`/project/${project.id}`);
+                
+                return (
+                  <SidebarMenuItem key={project.id}>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={project.title}
+                      isActive={isActive}
+                    >
+                      <Link href={`/project/${project.id}`}>
+                        <IconFolder className='h-4 w-4' />
+                        <span>{project.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })
+            )}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
