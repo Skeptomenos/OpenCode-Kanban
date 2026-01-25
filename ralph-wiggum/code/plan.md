@@ -44,7 +44,7 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 | [x] | **Task 7.2**: Connect store column operations to PATCH /api/boards | `specs/04-boards-integration.md:L38` | Done: addCol, updateCol, removeCol persist columnConfig via PATCH /api/boards/[id], optimistic update with rollback on failure |
 | [x] | **Task 7.3**: Connect store removeTask to DELETE /api/issues | `specs/phase2-plan.md:L410-411` | Done: removeTask now async with DELETE /api/issues/[id] call |
 | [x] | **Task 7.4**: Update kanban-board.tsx to fetch from API on mount | `specs/04-boards-integration.md:L41-43` | Done: useEffect fetches boards list, selects first (or creates default), hydrates store with columnConfig and issues |
-| [ ] | **Task 8.1**: Copy SCHEMA.md to docs directory | `specs/phase2-plan.md:L124-130` | OpenKanban/docs/SCHEMA.md |
+| [x] | **Task 8.1**: Copy SCHEMA.md to docs directory | `specs/phase2-plan.md:L124-130` | Done: OpenKanban/docs/SCHEMA.md created |
 | [ ] | **Task 8.2**: Update ROADMAP.md to mark Phase 2 complete | `specs/04-boards-integration.md:L48`, `specs/phase2-plan.md:L439-448` | Update status table |
 | [ ] | **Task 8.3**: Update TECH.md with SQLite/Drizzle stack details | `specs/04-boards-integration.md:L49`, `specs/phase2-plan.md:L447` | Document database layer |
 
