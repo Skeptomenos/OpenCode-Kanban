@@ -223,4 +223,85 @@ describe('IssueService', () => {
       expect(service.getIssue(created.id)).toBeNull();
     });
   });
+
+  describe('getSessionLinks', () => {
+    it('returns empty array for issue with no linked sessions', () => {
+      const issue = service.createIssue({ type: 'task', title: 'No Sessions' });
+
+      const links = service.getSessionLinks(issue.id);
+
+      expect(links).toEqual([]);
+    });
+
+    it('returns all linked sessions for an issue', () => {
+      const issue = service.createIssue({ type: 'task', title: 'With Sessions' });
+      service.linkSession(issue.id, 'session-1', 'planning');
+      service.linkSession(issue.id, 'session-2', 'execution');
+
+      const links = service.getSessionLinks(issue.id);
+
+      expect(links).toHaveLength(2);
+      expect(links.map((l) => l.sessionId)).toContain('session-1');
+      expect(links.map((l) => l.sessionId)).toContain('session-2');
+    });
+  });
+
+  describe('linkSession', () => {
+    it('links a session to an issue', () => {
+      const issue = service.createIssue({ type: 'task', title: 'Link Test' });
+
+      service.linkSession(issue.id, 'session-abc');
+
+      const links = service.getSessionLinks(issue.id);
+      expect(links).toHaveLength(1);
+      expect(links[0].sessionId).toBe('session-abc');
+      expect(links[0].issueId).toBe(issue.id);
+    });
+
+    it('links a session with a link type', () => {
+      const issue = service.createIssue({ type: 'task', title: 'Link Type Test' });
+
+      service.linkSession(issue.id, 'session-xyz', 'planning');
+
+      const links = service.getSessionLinks(issue.id);
+      expect(links).toHaveLength(1);
+      expect(links[0].linkType).toBe('planning');
+    });
+
+    it('links multiple sessions to the same issue', () => {
+      const issue = service.createIssue({ type: 'epic', title: 'Multi Session' });
+
+      service.linkSession(issue.id, 'session-1');
+      service.linkSession(issue.id, 'session-2');
+      service.linkSession(issue.id, 'session-3');
+
+      const links = service.getSessionLinks(issue.id);
+      expect(links).toHaveLength(3);
+    });
+  });
+
+  describe('unlinkSession', () => {
+    it('unlinks a session from an issue', () => {
+      const issue = service.createIssue({ type: 'task', title: 'Unlink Test' });
+      service.linkSession(issue.id, 'session-to-remove');
+      service.linkSession(issue.id, 'session-to-keep');
+
+      service.unlinkSession(issue.id, 'session-to-remove');
+
+      const links = service.getSessionLinks(issue.id);
+      expect(links).toHaveLength(1);
+      expect(links[0].sessionId).toBe('session-to-keep');
+    });
+
+    it('does nothing when unlinking non-existent session link', () => {
+      const issue = service.createIssue({ type: 'task', title: 'Unlink Non-Existent' });
+      service.linkSession(issue.id, 'session-1');
+
+      // Should not throw - unlinking non-existent is a no-op
+      service.unlinkSession(issue.id, 'non-existent-session');
+
+      const links = service.getSessionLinks(issue.id);
+      expect(links).toHaveLength(1);
+    });
+  });
 });

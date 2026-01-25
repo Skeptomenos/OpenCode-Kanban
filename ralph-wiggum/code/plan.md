@@ -79,7 +79,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 | [x] | **E5**: Refactor `/api/issues/[id]/sessions/[sessionId]/route.ts` to use IssueService | `354:L43-46` | Done v0.3.25 - Issue A.2 |
 | [x] | **E6**: Add `.strip().parse()` to Board API fetchers | `354:L51-59` | Done v0.3.26 - `createBoard`, `updateBoard`. Issue D.1 |
 | [x] | **E7**: Add tests for `OpenCodeService` | `354:L67-70` | Done v0.3.27 - 9 tests: getAllSessions, getAllProjects, getSessionById, error propagation |
-| [ ] | **E8**: Add tests for session linking methods in `IssueService` | `354:L72-74` | 3 new test cases |
+| [x] | **E8**: Add tests for session linking methods in `IssueService` | `354:L72-74` | Done v0.3.28 - 6 tests: getSessionLinks (2), linkSession (3), unlinkSession (1) |
 
 ### Part F: Code Consistency (~30 min)
 
