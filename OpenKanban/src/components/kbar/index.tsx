@@ -8,14 +8,14 @@ import {
 } from 'kbar';
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
-import RenderResults from './render-result';
-import useThemeSwitching from './use-theme-switching';
+import { RenderResults } from './render-result';
+import { useThemeSwitching } from './use-theme-switching';
 import { useFilteredNavItems } from '@/hooks/use-nav';
 import type { NavItem } from '@/types';
 
 const navItems: NavItem[] = [];
 
-export default function KBar({ children }: { children: React.ReactNode }) {
+export function KBar({ children }: { children: React.ReactNode }): React.ReactElement {
   const router = useRouter();
   const filteredItems = useFilteredNavItems(navItems);
 

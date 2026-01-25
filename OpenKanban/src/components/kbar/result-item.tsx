@@ -1,7 +1,7 @@
 import type { ActionId, ActionImpl } from 'kbar';
 import * as React from 'react';
 
-const ResultItem = React.forwardRef(
+export const ResultItem = React.forwardRef(
   (
     {
       action,
@@ -73,5 +73,3 @@ const ResultItem = React.forwardRef(
 );
 
 ResultItem.displayName = 'KBarResultItem';
-
-export default ResultItem;
