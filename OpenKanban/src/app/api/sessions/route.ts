@@ -25,7 +25,7 @@ export async function GET() {
     logger.error('GET /api/sessions failed', { error: String(error) });
     return NextResponse.json({ 
       success: false, 
-      error: { message: 'Failed to load sessions' } 
+      error: { message: 'Failed to load sessions', code: 'INTERNAL_ERROR' } 
     }, { status: 500 });
   }
 }
