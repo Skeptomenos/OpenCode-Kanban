@@ -3,6 +3,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -10,20 +11,27 @@ import {
   SidebarRail
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CreateProjectDialog } from '@/features/projects/components/create-project-dialog';
 import { useProjects } from '@/features/projects/hooks/use-projects';
-import { IconFolder } from '@tabler/icons-react';
+import { IconFolder, IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export default function AppSidebar() {
   const pathname = usePathname();
-  const { projects, isLoading, error } = useProjects();
+  const { projects, isLoading, error, refresh } = useProjects();
 
   return (
     <Sidebar collapsible='icon'>
       <SidebarContent className='overflow-x-hidden'>
         <SidebarGroup>
           <SidebarGroupLabel>Projects</SidebarGroupLabel>
+          <CreateProjectDialog onSuccess={refresh}>
+            <SidebarGroupAction title='Create Project'>
+              <IconPlus className='h-4 w-4' />
+              <span className='sr-only'>Create Project</span>
+            </SidebarGroupAction>
+          </CreateProjectDialog>
           <SidebarMenu>
             {isLoading ? (
               <>
