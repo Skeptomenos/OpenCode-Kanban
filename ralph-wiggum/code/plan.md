@@ -40,7 +40,7 @@
 | [x] | **Task 3.4**: Update `KanbanViewPage` to accept and use `projectId`/`boardId` props | `specs/33-board-integration.md:L36-44` | Done in v0.3.0-task3.4 |
 | [x] | **Task 3.5**: Update `KanbanBoard` component to be project-aware | `specs/33-board-integration.md:L40-44` | Done in v0.3.0-task3.5 (verified: already implemented via Zustand store pattern) |
 | [x] | **Task 4.1**: Update root page (`src/app/page.tsx`) for smart redirect | `specs/31-route-structure.md:L57-62` | Done in v0.3.0-task4.1 |
-| [ ] | **Task 4.2**: Create empty state "Welcome/Create Project" UI | `specs/31-route-structure.md:L62` | Shown when no projects exist |
+| [x] | **Task 4.2**: Create empty state "Welcome/Create Project" UI | `specs/31-route-structure.md:L62` | Done in v0.3.0-task4.2 - Created `WelcomeScreen` component with centered Card and prominent CTA |
 | [ ] | **Task 5.1**: Verify build passes with all new routes | `specs/31-route-structure.md:L72` | `npm run build` |
 | [ ] | **Task 5.2**: Manual verification of project isolation | `specs/33-board-integration.md:L56-60` | Tasks only appear in correct project |
 | [ ] | **Task 6.1**: Delete legacy `/dashboard` routes | `specs/phase3-plan.md:L156-163` | Clean up after verification |
