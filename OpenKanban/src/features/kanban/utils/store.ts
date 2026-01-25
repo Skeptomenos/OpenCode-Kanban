@@ -24,7 +24,7 @@ export type Actions = {
   setIsLoading: (loading: boolean) => void;
 
   // UI Helpers
-  addTask: (title: string, description?: string) => void;
+  addTask: (title: string, description?: string) => Promise<void>;
   addCol: (title: string) => void;
   updateCol: (id: UniqueIdentifier, newName: string) => void;
   removeCol: (id: UniqueIdentifier) => void;
@@ -42,23 +42,45 @@ export const useTaskStore = create<State & Actions>((set) => ({
   dragTask: (draggedTask: string | null) => set({ draggedTask }),
   setIsLoading: (isLoading: boolean) => set({ isLoading }),
 
-  // TODO: Connect to Phase 2 Storage Engine
-  addTask: (title: string, description?: string) => {
-    console.warn('Persistence not implemented (Phase 2)');
-    set((state) => ({
-      tasks: [
-        ...state.tasks,
-        {
-          id: uuid(),
+  addTask: async (title: string, description?: string) => {
+    const state = useTaskStore.getState();
+    const defaultColumnId =
+      state.columns.length > 0 ? state.columns[0].id.toString() : 'backlog';
+
+    try {
+      const response = await fetch('/api/issues', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'task',
           title,
-          description,
-          columnId:
-            state.columns.length > 0
-              ? state.columns[0].id.toString()
-              : 'backlog'
-        }
-      ]
-    }));
+          description: description ?? null,
+          status: defaultColumnId,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        console.error('Failed to create task:', result.error?.message);
+        return;
+      }
+
+      const issue = result.data;
+      set((state) => ({
+        tasks: [
+          ...state.tasks,
+          {
+            id: issue.id,
+            title: issue.title,
+            description: issue.description ?? undefined,
+            columnId: issue.status,
+          },
+        ],
+      }));
+    } catch (error) {
+      console.error('Failed to create task:', error);
+    }
   },
 
   // TODO: Connect to Phase 2 Storage Engine

@@ -40,7 +40,7 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 | [x] | **Task 6.3**: Create Boards list and create API routes | `specs/04-boards-integration.md:L27`, `specs/SCHEMA.md:L304-312` | Done: GET/POST /api/boards with envelope format, Zod validation |
 | [x] | **Task 6.4**: Create Board detail, update, delete API routes | `specs/04-boards-integration.md:L27` | Done: GET/PATCH/DELETE /api/boards/[id] with filtered issues |
 | [x] | **Task 6.5**: Add session link/unlink API endpoints | `specs/SCHEMA.md:L314-319` | Done: POST/GET /api/issues/[id]/sessions + DELETE /api/issues/[id]/sessions/[sessionId] |
-| [ ] | **Task 7.1**: Connect store addTask to POST /api/issues | `specs/04-boards-integration.md:L36-37`, `specs/phase2-plan.md:L406-407` | Replace console.warn with fetch |
+| [x] | **Task 7.1**: Connect store addTask to POST /api/issues | `specs/04-boards-integration.md:L36-37`, `specs/phase2-plan.md:L406-407` | Done: Async fetch with error handling, updates local state on success |
 | [ ] | **Task 7.2**: Connect store column operations to PATCH /api/boards | `specs/04-boards-integration.md:L38` | addCol, updateCol, removeCol persist to board config |
 | [ ] | **Task 7.3**: Connect store removeTask to DELETE /api/issues | `specs/phase2-plan.md:L410-411` | Complete task deletion persistence |
 | [ ] | **Task 7.4**: Update kanban-board.tsx to fetch from API on mount | `specs/04-boards-integration.md:L41-43` | Initialize store from /api/boards/:id |
