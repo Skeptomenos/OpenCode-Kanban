@@ -39,7 +39,7 @@
 | [x] | **Task 3.3**: Create `fetchTasks(projectId)` action in store | `specs/33-board-integration.md:L20-22` | Done in v0.3.0-task3.3 |
 | [x] | **Task 3.4**: Update `KanbanViewPage` to accept and use `projectId`/`boardId` props | `specs/33-board-integration.md:L36-44` | Done in v0.3.0-task3.4 |
 | [x] | **Task 3.5**: Update `KanbanBoard` component to be project-aware | `specs/33-board-integration.md:L40-44` | Done in v0.3.0-task3.5 (verified: already implemented via Zustand store pattern) |
-| [ ] | **Task 4.1**: Update root page (`src/app/page.tsx`) for smart redirect | `specs/31-route-structure.md:L57-62` | Fetch projects, redirect or show empty state |
+| [x] | **Task 4.1**: Update root page (`src/app/page.tsx`) for smart redirect | `specs/31-route-structure.md:L57-62` | Done in v0.3.0-task4.1 |
 | [ ] | **Task 4.2**: Create empty state "Welcome/Create Project" UI | `specs/31-route-structure.md:L62` | Shown when no projects exist |
 | [ ] | **Task 5.1**: Verify build passes with all new routes | `specs/31-route-structure.md:L72` | `npm run build` |
 | [ ] | **Task 5.2**: Manual verification of project isolation | `specs/33-board-integration.md:L56-60` | Tasks only appear in correct project |
