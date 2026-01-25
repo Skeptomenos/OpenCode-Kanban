@@ -1,7 +1,7 @@
 'use client';
 import { Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const subscribe = () => () => {};
 const getSnapshot = () => true;
@@ -14,7 +14,7 @@ function ClientPortal({ children }: { children: ReactNode }) {
 import { Task, useTaskStore } from '../utils/store';
 import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
-import { fetchIssues, fetchBoards, fetchBoard, createBoard } from '../api';
+import { fetchIssues, fetchBoards, fetchBoard, createBoard, updateIssue } from '../api';
 import {
   Announcements,
   DndContext,
@@ -94,6 +94,7 @@ async function fetchKanbanData(
 }
 
 export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
+  const queryClient = useQueryClient();
   const columns = useTaskStore((state) => state.columns);
   const setColumns = useTaskStore((state) => state.setCols);
   const tasks = useTaskStore((state) => state.tasks);
@@ -101,9 +102,10 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const draggedTask = useTaskStore((state) => state.draggedTask);
   const setBoardId = useTaskStore((state) => state.setBoardId);
   const setProjectId = useTaskStore((state) => state.setProjectId);
-  const updateTaskStatus = useTaskStore((state) => state.updateTaskStatus);
   const pickedUpTaskColumn = useRef<string>('');
   const pendingStatusUpdates = useRef<Map<string, string>>(new Map());
+  /** Store previous tasks state for rollback on mutation error */
+  const previousTasksRef = useRef<Task[]>([]);
 
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
@@ -120,6 +122,25 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const { data, isLoading, error } = useQuery({
     queryKey: ['kanban', projectId, boardId],
     queryFn: () => fetchKanbanData(projectId, boardId),
+  });
+
+  /**
+   * Mutation for updating issue status (used during drag-and-drop).
+   * @see specs/352-frontend-modernization.md:L56-61
+   */
+  const updateIssueMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      updateIssue(id, { status }),
+    onMutate: () => {
+      previousTasksRef.current = tasks;
+    },
+    onError: (err) => {
+      logger.error('Failed to update issue status', { error: String(err) });
+      setTasks(previousTasksRef.current);
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['kanban', projectId, boardId] });
+    },
   });
 
   /**
@@ -281,7 +302,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       const updates = Array.from(pendingStatusUpdates.current.entries());
       pendingStatusUpdates.current.clear();
       updates.forEach(([taskId, newStatus]) => {
-        updateTaskStatus(taskId, newStatus);
+        updateIssueMutation.mutate({ id: taskId, status: newStatus });
       });
     }
     

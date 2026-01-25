@@ -12,18 +12,40 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { useTaskStore } from '../utils/store';
-import { createIssue } from '../api';
+import { useTaskStore, type Task } from '../utils/store';
+import { createIssue, type CreateIssueInput } from '../api';
 import { logger } from '@/lib/logger';
 
 export default function NewTaskDialog() {
+  const queryClient = useQueryClient();
   const columns = useTaskStore((state) => state.columns);
   const currentProjectId = useTaskStore((state) => state.currentProjectId);
+  const currentBoardId = useTaskStore((state) => state.currentBoardId);
   const setTasks = useTaskStore((state) => state.setTasks);
   const tasks = useTaskStore((state) => state.tasks);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const createIssueMutation = useMutation({
+    mutationFn: (input: CreateIssueInput) => createIssue(input),
+    onSuccess: (issue) => {
+      const newTask: Task = {
+        id: issue.id,
+        title: issue.title,
+        description: issue.description ?? undefined,
+        columnId: issue.status,
+      };
+      setTasks([...tasks, newTask]);
+    },
+    onError: (err) => {
+      logger.error('Failed to create task', { error: String(err) });
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['kanban', currentProjectId, currentBoardId] });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
@@ -34,27 +56,13 @@ export default function NewTaskDialog() {
 
     const defaultColumnId = columns.length > 0 ? columns[0].id.toString() : 'backlog';
 
-    try {
-      const issue = await createIssue({
-        type: 'task',
-        title,
-        description: description || null,
-        status: defaultColumnId,
-        parentId: currentProjectId ?? undefined,
-      });
-
-      setTasks([
-        ...tasks,
-        {
-          id: issue.id,
-          title: issue.title,
-          description: issue.description ?? undefined,
-          columnId: issue.status,
-        },
-      ]);
-    } catch (error) {
-      logger.error('Failed to create task', { error: String(error) });
-    }
+    createIssueMutation.mutate({
+      type: 'task',
+      title,
+      description: description || null,
+      status: defaultColumnId,
+      parentId: currentProjectId ?? undefined,
+    });
   };
 
   return (
