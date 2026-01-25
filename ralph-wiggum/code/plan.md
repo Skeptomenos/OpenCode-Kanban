@@ -26,7 +26,7 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 | [x] | **Task 2.3**: Run drizzle-kit push to create initial database | `specs/01-foundation.md:L81` | Done: data/kanban.db created with all tables |
 | [x] | **Task 3.1**: Create database connection singleton with HMR support | `specs/01-foundation.md:L25-28` | Done: src/lib/db/connection.ts with globalThis pattern, FK enforcement, WAL mode |
 | [x] | **Task 3.2**: Add auto-create database file logic and schema sync | `specs/phase2-plan.md:L230-235` | Done: initializeSchema() creates tables with CREATE IF NOT EXISTS on first connection |
-| [ ] | **Task 4.1**: Define IPMRepository interface with Issue CRUD methods | `specs/02-repository.md:L13-26`, `specs/SCHEMA.md:L209-226` | Interface contract for storage engine |
+| [x] | **Task 4.1**: Define IPMRepository interface with Issue CRUD methods | `specs/02-repository.md:L13-26`, `specs/SCHEMA.md:L209-226` | Done: src/lib/db/repository.ts with full interface + types |
 | [ ] | **Task 4.2**: Write repository tests for Issue operations (TDD red phase) | `specs/02-repository.md:L35-44` | Create tests FIRST: create, hierarchy, cascade delete |
 | [ ] | **Task 4.3**: Implement SqlitePMRepository Issue CRUD (TDD green phase) | `specs/02-repository.md:L46-48` | Make tests pass with Drizzle queries |
 | [ ] | **Task 4.4**: Add Board CRUD to repository interface and implementation | `specs/04-boards-integration.md:L25-27`, `specs/phase2-plan.md:L280-285` | Extend repository with board operations |
