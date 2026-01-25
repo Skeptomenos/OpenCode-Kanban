@@ -7,7 +7,7 @@ import { getQueryClient } from '@/lib/query-client';
 
 import { ActiveThemeProvider } from '../active-theme';
 
-export default function Providers({
+export function Providers({
   activeThemeValue,
   children
 }: {

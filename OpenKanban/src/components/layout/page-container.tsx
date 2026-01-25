@@ -18,7 +18,7 @@ function PageSkeleton() {
   );
 }
 
-export default function PageContainer({
+export function PageContainer({
   children,
   scrollable = true,
   isloading = false,

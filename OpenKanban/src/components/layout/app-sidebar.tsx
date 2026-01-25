@@ -17,7 +17,7 @@ import { IconFolder, IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-export default function AppSidebar() {
+export function AppSidebar() {
   const pathname = usePathname();
   const { projects, isLoading, error, refresh } = useProjects();
 

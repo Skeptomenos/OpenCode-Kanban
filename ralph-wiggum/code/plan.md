@@ -75,7 +75,7 @@ Part D (Verify) ────┴── D1: Final integration test
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **C1**: Convert default exports - kanban components | `353:L34-37` | Done v0.3.17 - Converted 3 files to named exports. Updated imports in `page.tsx`, `kanban-board.tsx`. All 76 tests pass |
-| [ ] | **C2**: Convert default exports - layout components | `353:L34-37` | Convert: `search-input.tsx`, `app-sidebar.tsx`, `page-container.tsx`, `header.tsx`, `providers.tsx`. Update imports |
+| [x] | **C2**: Convert default exports - layout components | `353:L34-37` | Done v0.3.18 - Converted 5 files to named exports: `search-input.tsx`, `app-sidebar.tsx`, `page-container.tsx`, `header.tsx`, `providers.tsx`. Updated imports in `layout.tsx`, `kanban-view-page.tsx`, `header.tsx`. All 76 tests pass |
 | [ ] | **C3**: Convert default exports - kbar components | `353:L34-37` | Convert: `kbar/index.tsx`, `render-result.tsx`, `result-item.tsx`, `use-theme-switching.tsx` |
 | [ ] | **C4**: Add ESLint no-default-export rule | `353:L24-32` | Install `eslint-plugin-import`. Add rule with override for Next.js pages. Run `npm run lint` |
 
