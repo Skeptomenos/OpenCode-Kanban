@@ -6,12 +6,16 @@
  * - info: General operational messages
  * - warn: Recoverable issues
  * - error: Failures requiring attention
+ *
+ * @see Issue B.1 - Centralized date handling
  */
+
+import { nowISO } from './date-utils';
 
 type LogContext = Record<string, unknown>;
 
 const formatMessage = (level: string, msg: string, ctx?: LogContext): string => {
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
   const ctxStr = ctx ? ` ${JSON.stringify(ctx)}` : '';
   return `[${timestamp}] ${level.toUpperCase()}: ${msg}${ctxStr}`;
 };
