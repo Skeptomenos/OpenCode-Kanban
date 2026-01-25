@@ -11,6 +11,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
+import { IssueService } from '@/services/issue-service';
 import { UpdateIssueSchema } from '@/contract/pm/schemas';
 import { logger } from '@/lib/logger';
 
@@ -34,8 +35,9 @@ export async function GET(
     const { id } = await context.params;
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new IssueService(repo);
 
-    const issue = repo.getIssueWithRelations(id);
+    const issue = service.getIssueWithRelations(id);
     if (!issue) {
       return NextResponse.json(
         {
@@ -79,8 +81,9 @@ export async function PATCH(
     const { id } = await context.params;
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new IssueService(repo);
 
-    const existing = repo.getIssue(id);
+    const existing = service.getIssue(id);
     if (!existing) {
       return NextResponse.json(
         {
@@ -119,7 +122,7 @@ export async function PATCH(
       );
     }
 
-    const updatedIssue = repo.updateIssue(id, result.data);
+    const updatedIssue = service.updateIssue(id, result.data);
 
     return NextResponse.json({
       success: true,
@@ -154,8 +157,9 @@ export async function DELETE(
     const { id } = await context.params;
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new IssueService(repo);
 
-    const existing = repo.getIssue(id);
+    const existing = service.getIssue(id);
     if (!existing) {
       return NextResponse.json(
         {
@@ -166,7 +170,7 @@ export async function DELETE(
       );
     }
 
-    repo.deleteIssue(id);
+    service.deleteIssue(id);
 
     return NextResponse.json({
       success: true,
