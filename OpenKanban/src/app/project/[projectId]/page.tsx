@@ -1,13 +1,10 @@
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
+import { getDb } from '@/lib/db/connection';
+import { SqlitePMRepository } from '@/lib/db/repository';
+import type { BoardFilters } from '@/lib/db/repository';
 
 /**
- * Project root page - redirects to the first available board.
- *
- * Current implementation: Simple placeholder that redirects to a default board.
- * Full implementation (Task 1.3) will:
- * - Query boards filtered by parentId
- * - Auto-create a board if none exist
- *
+ * Project root redirect: verifies project, finds/creates board, redirects.
  * @see specs/31-route-structure.md:L37-46
  */
 export default async function ProjectPage({
@@ -17,8 +14,37 @@ export default async function ProjectPage({
 }) {
   const { projectId } = await params;
 
-  // TODO (Task 1.3): Fetch boards for this project and redirect to first one
-  // For now, redirect to a placeholder board ID
-  // This will be replaced with actual board fetching logic
-  redirect(`/project/${projectId}/board/default`);
+  const db = getDb();
+  const repo = new SqlitePMRepository(db);
+
+  const project = repo.getIssue(projectId);
+  if (!project || project.type !== 'project') {
+    notFound();
+  }
+
+  const allBoards = repo.listBoards();
+  const projectBoards = allBoards.filter(
+    (board) => board.filters?.parentId === projectId
+  );
+
+  if (projectBoards.length > 0) {
+    redirect(`/project/${projectId}/board/${projectBoards[0].id}`);
+  }
+
+  const defaultFilters: BoardFilters = {
+    parentId: projectId,
+    types: ['task']
+  };
+
+  const newBoard = repo.createBoard({
+    name: 'Main Board',
+    filters: defaultFilters,
+    columnConfig: [
+      { id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] },
+      { id: 'in-progress', title: 'In Progress', statusMappings: ['in-progress'] },
+      { id: 'done', title: 'Done', statusMappings: ['done'] }
+    ]
+  });
+
+  redirect(`/project/${projectId}/board/${newBoard.id}`);
 }

@@ -27,7 +27,7 @@
 |--------|------|----------------|-------|
 | [x] | **Task 1.1**: Create project route structure (`src/app/project/[projectId]/...`) | `specs/31-route-structure.md:L10-25` | Done in v0.3.0-task1.1 |
 | [x] | **Task 1.2**: Implement project layout with shared sidebar/header | `specs/31-route-structure.md:L29-35` | Done in v0.3.0-task1.2 |
-| [ ] | **Task 1.3**: Implement project root redirect page (`/project/[projectId]/page.tsx`) | `specs/31-route-structure.md:L37-46` | Redirect to first board or auto-create |
+| [x] | **Task 1.3**: Implement project root redirect page (`/project/[projectId]/page.tsx`) | `specs/31-route-structure.md:L37-46` | Done in v0.3.0-task1.3 |
 | [ ] | **Task 1.4**: Implement board page (`/project/[projectId]/board/[boardId]/page.tsx`) | `specs/31-route-structure.md:L48-55` | Extract params, render `KanbanViewPage` |
 | [ ] | **Task 1.5**: Add loading and not-found states for project routes | `specs/31-route-structure.md:L19-24` | `loading.tsx`, `not-found.tsx` |
 | [ ] | **Task 2.1**: Create `CreateProjectDialog` component | `specs/32-dynamic-sidebar.md:L10-28` | Dialog with Name/Description form |
