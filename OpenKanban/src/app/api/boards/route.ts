@@ -1,0 +1,103 @@
+/**
+ * Boards API Routes - List and Create
+ * @see specs/04-boards-integration.md:L27
+ * @see specs/SCHEMA.md:L304-312
+ *
+ * GET  /api/boards - List all boards
+ * POST /api/boards - Create a new board
+ */
+
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getDb } from '@/lib/db/connection';
+import { SqlitePMRepository } from '@/lib/db/repository';
+import { CreateBoardSchema } from '@/contract/pm/schemas';
+
+/**
+ * GET /api/boards
+ * List all boards.
+ * @see specs/SCHEMA.md:L308
+ *
+ * Response: { success: true, data: Board[] }
+ */
+export async function GET() {
+  try {
+    const db = getDb();
+    const repo = new SqlitePMRepository(db);
+
+    const boards = repo.listBoards();
+
+    return NextResponse.json({
+      success: true,
+      data: boards,
+    });
+  } catch (error) {
+    console.error('GET /api/boards error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: { message: 'Failed to list boards', code: 'INTERNAL_ERROR' },
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * POST /api/boards
+ * Create a new board.
+ * @see specs/SCHEMA.md:L310
+ *
+ * Request body: CreateBoardInput
+ * Response: { success: true, data: Board }
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const db = getDb();
+    const repo = new SqlitePMRepository(db);
+
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        {
+          success: false,
+          error: { message: 'Invalid JSON body', code: 'PARSE_ERROR' },
+        },
+        { status: 400 }
+      );
+    }
+
+    const result = CreateBoardSchema.safeParse(body);
+    if (!result.success) {
+      const firstError = result.error.issues[0];
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            message: firstError?.message ?? 'Validation failed',
+            code: 'VALIDATION_ERROR',
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    const board = repo.createBoard(result.data);
+
+    return NextResponse.json({
+      success: true,
+      data: board,
+    });
+  } catch (error) {
+    console.error('POST /api/boards error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: { message: 'Failed to create board', code: 'INTERNAL_ERROR' },
+      },
+      { status: 500 }
+    );
+  }
+}
