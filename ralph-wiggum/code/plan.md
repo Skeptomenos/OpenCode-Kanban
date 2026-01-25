@@ -99,7 +99,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 | [x] | **G2**: Refactor `use-projects.ts` to use `useQuery` | `356:L18-20` | Done v0.3.35 - Issue D.2 |
 | [x] | **G3**: Refactor `create-project-dialog.tsx` to use `useMutation` | `356:L23-25` | Done v0.3.36 - Issue D.2 |
 | [x] | **G4**: Create tests for `/api/sessions` route | `356:L32-37` | Done v0.3.37 - 3 tests: success, empty state, error propagation. Issue E.1 |
-| [ ] | **G5**: Create tests for `/api/issues/[id]/sessions` route | `356:L40-46` | 5 test cases. Issue E.1 |
+| [x] | **G5**: Create tests for `/api/issues/[id]/sessions` route | `356:L40-46` | Done v0.3.38 - 7 tests: GET (2), POST (5). Issue E.1 |
 | [ ] | **G6**: Create tests for `/api/issues/[id]/sessions/[sessionId]` route | `356:L48-51` | 2 test cases. Issue E.1 |
 
 ### Part H: Final Verification
