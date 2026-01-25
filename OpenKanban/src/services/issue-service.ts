@@ -10,7 +10,7 @@ import type {
   IssueFilter,
   IssueWithRelations,
 } from '../lib/db/repository';
-import type { Issue } from '../lib/db/schema';
+import type { Issue, IssueSession } from '../lib/db/schema';
 
 /**
  * Default owner ID for local-first mode (no multi-tenancy).
@@ -54,5 +54,17 @@ export class IssueService {
 
   deleteIssue(id: string): void {
     this.repo.deleteIssue(id);
+  }
+
+  getSessionLinks(issueId: string): IssueSession[] {
+    return this.repo.getSessionLinks(issueId);
+  }
+
+  linkSession(issueId: string, sessionId: string, linkType?: string | null): void {
+    this.repo.linkSession(issueId, sessionId, linkType);
+  }
+
+  unlinkSession(issueId: string, sessionId: string): void {
+    this.repo.unlinkSession(issueId, sessionId);
   }
 }
