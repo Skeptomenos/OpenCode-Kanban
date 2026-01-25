@@ -8,19 +8,9 @@ type BreadcrumbItem = {
   link: string;
 };
 
-// This allows to add custom title as well
-const routeMapping: Record<string, BreadcrumbItem[]> = {
-  '/dashboard': [{ title: 'Dashboard', link: '/dashboard' }],
-  '/dashboard/employee': [
-    { title: 'Dashboard', link: '/dashboard' },
-    { title: 'Employee', link: '/dashboard/employee' }
-  ],
-  '/dashboard/product': [
-    { title: 'Dashboard', link: '/dashboard' },
-    { title: 'Product', link: '/dashboard/product' }
-  ]
-  // Add more custom mappings as needed
-};
+// Custom breadcrumb mappings for specific routes
+// Dynamic routes (e.g., /project/[id]/board/[id]) use the fallback logic below
+const routeMapping: Record<string, BreadcrumbItem[]> = {};
 
 export function useBreadcrumbs() {
   const pathname = usePathname();
