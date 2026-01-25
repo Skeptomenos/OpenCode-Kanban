@@ -11,6 +11,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
+import { BoardService } from '@/services/board-service';
 import { CreateBoardSchema } from '@/contract/pm/schemas';
 import { logger } from '@/lib/logger';
 
@@ -25,8 +26,9 @@ export async function GET() {
   try {
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new BoardService(repo);
 
-    const boards = repo.listBoards();
+    const boards = service.listBoards();
 
     return NextResponse.json({
       success: true,
@@ -56,6 +58,7 @@ export async function POST(request: NextRequest) {
   try {
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new BoardService(repo);
 
     let body: unknown;
     try {
@@ -85,7 +88,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const board = repo.createBoard(result.data);
+    const board = service.createBoard(result.data);
 
     return NextResponse.json({
       success: true,
