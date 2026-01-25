@@ -1,15 +1,9 @@
 'use client';
 
-/**
- * Projects Hook using TanStack Query
- * @see specs/356-tech-debt.md:L18-20
- */
-
 import { useQuery } from '@tanstack/react-query';
 import { fetchProjects, ProjectApiError } from '../api';
 import type { Project } from '@/contract/pm/types';
-
-export const PROJECTS_QUERY_KEY = ['projects'] as const;
+import { queryKeys } from '@/lib/query-keys';
 
 interface UseProjectsReturn {
   projects: Project[];
@@ -24,7 +18,7 @@ interface UseProjectsReturn {
  */
 export function useProjects(): UseProjectsReturn {
   const query = useQuery({
-    queryKey: PROJECTS_QUERY_KEY,
+    queryKey: queryKeys.projects,
     queryFn: fetchProjects,
   });
 

@@ -6,6 +6,7 @@ import type { UniqueIdentifier } from '@dnd-kit/core';
 import { updateBoard } from '../api';
 import { useTaskStore } from '../utils/store';
 import type { Column } from '../components/board-column';
+import { queryKeys } from '@/lib/query-keys';
 import { logger } from '@/lib/logger';
 
 type ColumnConfig = {
@@ -54,7 +55,7 @@ export function useColumnMutations(projectId?: string, boardId?: string) {
       }
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ['kanban', projectId, boardId] });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.kanban(projectId, boardId) });
     },
   });
 
@@ -90,7 +91,7 @@ export function useColumnMutations(projectId?: string, boardId?: string) {
       }
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ['kanban', projectId, boardId] });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.kanban(projectId, boardId) });
     },
   });
 
@@ -127,7 +128,7 @@ export function useColumnMutations(projectId?: string, boardId?: string) {
       }
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ['kanban', projectId, boardId] });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.kanban(projectId, boardId) });
     },
   });
 

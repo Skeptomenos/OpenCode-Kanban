@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 import { createProjectWithBoard, type CreateProjectInput, ProjectApiError } from '../api';
-import { PROJECTS_QUERY_KEY } from '../hooks/use-projects';
+import { queryKeys } from '@/lib/query-keys';
 import { logger } from '@/lib/logger';
 
 interface CreateProjectDialogProps {
@@ -51,7 +51,7 @@ export function CreateProjectDialog({
       toast.error(message);
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.projects });
     },
   });
 

@@ -16,6 +16,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useTaskStore, type Task } from '../utils/store';
 import { createIssue, type CreateIssueInput } from '../api';
+import { queryKeys } from '@/lib/query-keys';
 import { logger } from '@/lib/logger';
 
 export function NewTaskDialog() {
@@ -41,7 +42,7 @@ export function NewTaskDialog() {
       logger.error('Failed to create task', { error: String(err) });
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ['kanban', currentProjectId, currentBoardId] });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.kanban(currentProjectId ?? undefined, currentBoardId ?? undefined) });
     },
   });
 

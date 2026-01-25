@@ -14,6 +14,7 @@ function ClientPortal({ children }: { children: ReactNode }) {
 import { Task, useTaskStore } from '../utils/store';
 import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
+import { queryKeys } from '@/lib/query-keys';
 import { fetchIssues, fetchBoards, fetchBoard, createBoard, updateIssue } from '../api';
 import { ColumnMutationsProvider } from '../hooks/column-mutations-context';
 import {
@@ -121,7 +122,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
    * @see specs/352-frontend-modernization.md:L44-54
    */
   const { data, isLoading, error } = useQuery({
-    queryKey: ['kanban', projectId, boardId],
+    queryKey: queryKeys.kanban(projectId, boardId),
     queryFn: () => fetchKanbanData(projectId, boardId),
   });
 
@@ -140,7 +141,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       setTasks(previousTasksRef.current);
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ['kanban', projectId, boardId] });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.kanban(projectId, boardId) });
     },
   });
 
