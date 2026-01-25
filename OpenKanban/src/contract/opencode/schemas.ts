@@ -6,7 +6,7 @@ export const TimestampSchema = z.object({
   created: z.number(),
   updated: z.number(),
   initialized: z.number().optional()
-});
+}).strict();
 
 // --- Project ---
 
@@ -17,9 +17,9 @@ export const ProjectSchema = z.object({
   icon: z.object({
     color: z.string(),
     url: z.string().optional()
-  }).optional(),
+  }).strict().optional(),
   time: TimestampSchema.optional()
-});
+}).strict();
 
 // --- Session ---
 
@@ -27,7 +27,7 @@ export const SessionSummarySchema = z.object({
   additions: z.number().optional(),
   deletions: z.number().optional(),
   files: z.number().optional()
-});
+}).strict();
 
 export const SessionSchema = z.object({
   id: z.string(),
@@ -38,7 +38,7 @@ export const SessionSchema = z.object({
   parentID: z.string().optional().nullable(),
   time: TimestampSchema,
   summary: SessionSummarySchema.optional()
-});
+}).strict();
 
 // --- Message ---
 
@@ -49,6 +49,6 @@ export const MessageSchema = z.object({
   time: z.object({
     created: z.number(),
     completed: z.number().optional()
-  }),
+  }).strict(),
   // We can add more specific fields later if we need to parse message content
-});
+}).strict();

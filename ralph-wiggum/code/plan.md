@@ -88,7 +88,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 | [x] | **F1**: Add `nowISO()` to `date-utils.ts` | `355:L13-14` | Done v0.3.29 - Issue B.1 |
 | [x] | **F2**: Update `logger.ts` to use `nowISO()` | `355:L17-18` | Done v0.3.30 - Issue B.1 |
 | [x] | **F3**: Add `.strict()` to PM support schemas | `355:L25-31` | Done v0.3.31 - 6 schemas. Issue C.1 |
-| [ ] | **F4**: Add `.strict()` to OpenCode schemas | `355:L35-41` | 5 schemas. Issue C.2 |
+| [x] | **F4**: Add `.strict()` to OpenCode schemas | `355:L35-41` | Done v0.3.32 - 5 schemas + 2 nested objects. Issue C.2 |
 | [ ] | **F5**: Deduplicate types in `api.ts` | `355:L48-50` | Import from repository. Issue F.1 |
 
 ### Part G: Technical Debt (~45 min)
