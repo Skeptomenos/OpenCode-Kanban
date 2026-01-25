@@ -12,8 +12,21 @@ import type {
 } from '../lib/db/repository';
 import type { Issue } from '../lib/db/schema';
 
+/**
+ * Default owner ID for local-first mode (no multi-tenancy).
+ * @see ralph-wiggum/specs/353-security-hygiene.md:L10-18
+ */
+const DEFAULT_OWNER_ID = 'local-owner';
+
 export class IssueService {
-  constructor(private readonly repo: IPMRepository) {}
+  /**
+   * BOLA stub: ownerId is accepted but not enforced yet.
+   * Future: Use this to filter queries by owner for multi-tenant security.
+   */
+  constructor(
+    private readonly repo: IPMRepository,
+    private readonly ownerId: string = DEFAULT_OWNER_ID
+  ) {}
 
   listIssues(filter?: IssueFilter): Issue[] {
     return this.repo.listIssues(filter);

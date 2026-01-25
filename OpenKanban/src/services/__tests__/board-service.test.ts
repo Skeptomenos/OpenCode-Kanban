@@ -80,7 +80,7 @@ describe('BoardService', () => {
     db = testDb.db;
     sqlite = testDb.sqlite;
     repo = new SqlitePMRepository(db);
-    service = new BoardService(repo);
+    service = new BoardService(repo, 'test-owner');
   });
 
   afterEach(() => {

@@ -10,8 +10,21 @@ import type {
   BoardWithParsedFields,
 } from '../lib/db/repository';
 
+/**
+ * Default owner ID for local-first mode (no multi-tenancy).
+ * @see ralph-wiggum/specs/353-security-hygiene.md:L10-18
+ */
+const DEFAULT_OWNER_ID = 'local-owner';
+
 export class BoardService {
-  constructor(private readonly repo: IPMRepository) {}
+  /**
+   * BOLA stub: ownerId is accepted but not enforced yet.
+   * Future: Use this to filter queries by owner for multi-tenant security.
+   */
+  constructor(
+    private readonly repo: IPMRepository,
+    private readonly ownerId: string = DEFAULT_OWNER_ID
+  ) {}
 
   listBoards(): BoardWithParsedFields[] {
     return this.repo.listBoards();

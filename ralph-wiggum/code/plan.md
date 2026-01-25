@@ -52,7 +52,7 @@ Part D (Verify) ────┴── D1: Final integration test
 | [x] | **A2**: Add `.strict()` to Zod schemas | `351:L45-55` | Done v0.3.2 - Added `.strict()` to 4 schemas. Tests: 8 new cases (4 valid, 4 rejection) |
 | [x] | **A3**: Create Issue Service + Tests (TDD) | `351:L14-42` | Done v0.3.3 - IssueService with 6 methods + 13 tests. All 63 tests pass |
 | [x] | **A4**: Create Board Service + Tests (TDD) | `351:L23-28` | Done v0.3.4 - BoardService with 5 methods + 13 tests. All 76 tests pass |
-| [ ] | **A5**: Add BOLA stubs to Services | `353:L10-18` | Add `ownerId: string = 'local-owner'` param to service constructors. Pass-through (no enforcement yet). Update service tests |
+| [x] | **A5**: Add BOLA stubs to Services | `353:L10-18` | Done v0.3.5 - Added ownerId to IssueService + BoardService constructors. Tests updated to pass 'test-owner'. Hints for unused ownerId expected (stub pattern). |
 | [ ] | **A6**: Refactor `/api/issues/route.ts` to use Service | `351:L59-73` | Replace `repo.listIssues()` / `repo.createIssue()` with `service.listIssues()` / `service.createIssue()` |
 | [ ] | **A7**: Refactor `/api/issues/[id]/route.ts` to use Service | `351:L75-79` | Replace `repo.getIssueWithRelations()`, `repo.updateIssue()`, `repo.deleteIssue()` with service calls |
 | [ ] | **A8**: Refactor `/api/boards/route.ts` to use Service | `351:L76-79` | Replace repo calls with `BoardService` |

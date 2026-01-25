@@ -80,7 +80,7 @@ describe('IssueService', () => {
     db = testDb.db;
     sqlite = testDb.sqlite;
     repo = new SqlitePMRepository(db);
-    service = new IssueService(repo);
+    service = new IssueService(repo, 'test-owner');
   });
 
   afterEach(() => {
