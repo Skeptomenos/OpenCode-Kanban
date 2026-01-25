@@ -10,6 +10,8 @@
 import {
   CreateIssueSchema,
   UpdateIssueSchema,
+  CreateBoardSchema,
+  UpdateBoardSchema,
 } from '@/contract/pm/schemas';
 import type { Issue } from '@/lib/db/schema';
 
@@ -308,23 +310,43 @@ export async function fetchBoard(id: string): Promise<BoardWithIssues> {
 }
 
 /**
- * Create a new board.
- * @param data Board creation data
- * @returns The created board
- * @throws ApiError if the request fails
+ * Input for creating a new board via the API.
  */
-export async function createBoard(data: {
+export type CreateBoardInput = {
   name: string;
-  columnConfig: Array<{
+  columnConfig?: Array<{
     id: string;
     title: string;
     statusMappings: string[];
   }>;
-}): Promise<BoardWithIssues> {
+};
+
+/**
+ * Create a new board.
+ * Uses Schema.strip().parse() to strip unknown fields before sending.
+ * @param data Board creation data
+ * @returns The created board
+ * @throws ApiError if validation fails or the request fails
+ */
+export async function createBoard(
+  data: CreateBoardInput
+): Promise<BoardWithIssues> {
+  // CRITICAL: Strip unknown fields to prevent 400 errors from strict backend
+  // @see specs/354-service-completion.md:L56-59
+  let sanitizedInput: CreateBoardInput;
+  try {
+    sanitizedInput = CreateBoardSchema.strip().parse(data);
+  } catch (error) {
+    throw new ApiError(
+      'Invalid board data: ' + (error instanceof Error ? error.message : 'validation failed'),
+      'VALIDATION_ERROR'
+    );
+  }
+
   const response = await fetch('/api/boards', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify(sanitizedInput),
   });
 
   const result: ApiResponse<BoardWithIssues> = await response.json();
@@ -354,19 +376,32 @@ export type UpdateBoardInput = {
 
 /**
  * Update an existing board.
+ * Uses Schema.strip().parse() to strip unknown fields before sending.
  * @param id Board ID to update
  * @param input Partial board update input
  * @returns The updated board
- * @throws ApiError if the request fails
+ * @throws ApiError if validation fails or the request fails
  */
 export async function updateBoard(
   id: string,
   input: UpdateBoardInput
 ): Promise<BoardWithIssues> {
+  // CRITICAL: Strip unknown fields to prevent 400 errors from strict backend
+  // @see specs/354-service-completion.md:L56-59
+  let sanitizedInput: UpdateBoardInput;
+  try {
+    sanitizedInput = UpdateBoardSchema.strip().parse(input);
+  } catch (error) {
+    throw new ApiError(
+      'Invalid board data: ' + (error instanceof Error ? error.message : 'validation failed'),
+      'VALIDATION_ERROR'
+    );
+  }
+
   const response = await fetch(`/api/boards/${encodeURIComponent(id)}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
+    body: JSON.stringify(sanitizedInput),
   });
 
   const result: ApiResponse<BoardWithIssues> = await response.json();
