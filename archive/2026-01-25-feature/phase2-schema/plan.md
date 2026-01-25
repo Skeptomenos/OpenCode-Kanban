@@ -25,7 +25,7 @@
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 1.1**: Create project route structure (`src/app/project/[projectId]/...`) | `specs/31-route-structure.md:L10-25` | Done in v0.3.0-task1.1 |
+| [ ] | **Task 1.1**: Create project route structure (`src/app/project/[projectId]/...`) | `specs/31-route-structure.md:L10-25` | Directory + placeholder files |
 | [ ] | **Task 1.2**: Implement project layout with shared sidebar/header | `specs/31-route-structure.md:L29-35` | Reuse `dashboard/layout.tsx` pattern |
 | [ ] | **Task 1.3**: Implement project root redirect page (`/project/[projectId]/page.tsx`) | `specs/31-route-structure.md:L37-46` | Redirect to first board or auto-create |
 | [ ] | **Task 1.4**: Implement board page (`/project/[projectId]/board/[boardId]/page.tsx`) | `specs/31-route-structure.md:L48-55` | Extract params, render `KanbanViewPage` |
