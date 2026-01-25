@@ -1,5 +1,5 @@
 'use client';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Task, useTaskStore } from '../utils/store';
 import { hasDraggableData } from '../utils';
@@ -22,6 +22,41 @@ import type { Column } from './board-column';
 import NewSectionDialog from './new-section-dialog';
 import { TaskCard } from './task-card';
 
+interface ColumnConfig {
+  id: string;
+  title: string;
+  statusMappings: string[];
+}
+
+interface ApiIssue {
+  id: string;
+  type: string;
+  title: string;
+  description?: string | null;
+  status: string;
+  parentId?: string | null;
+  metadata?: Record<string, unknown>;
+  createdAt: number;
+  updatedAt: number;
+  sessionIds?: string[];
+  labelIds?: string[];
+}
+
+interface BoardWithIssues {
+  id: string;
+  name: string;
+  filters: Record<string, unknown>;
+  columnConfig: ColumnConfig[];
+  createdAt: number;
+  updatedAt: number;
+  issues: ApiIssue[];
+}
+
+interface BoardListItem {
+  id: string;
+  name: string;
+}
+
 export function KanbanBoard() {
   const columns = useTaskStore((state) => state.columns);
   const setColumns = useTaskStore((state) => state.setCols);
@@ -29,6 +64,7 @@ export function KanbanBoard() {
   const setTasks = useTaskStore((state) => state.setTasks);
   const isLoading = useTaskStore((state) => state.isLoading);
   const setIsLoading = useTaskStore((state) => state.setIsLoading);
+  const setBoardId = useTaskStore((state) => state.setBoardId);
   const pickedUpTaskColumn = useRef<string>('');
 
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
@@ -38,10 +74,78 @@ export function KanbanBoard() {
 
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
+  const initializeBoard = useCallback(async () => {
+    try {
+      const boardsResponse = await fetch('/api/boards');
+      const boardsResult = await boardsResponse.json();
+
+      if (!boardsResult.success) {
+        console.error('Failed to fetch boards:', boardsResult.error?.message);
+        setIsLoading(false);
+        return;
+      }
+
+      const boards: BoardListItem[] = boardsResult.data;
+      let activeBoardId: string;
+
+      if (boards.length === 0) {
+        const createResponse = await fetch('/api/boards', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Default Board',
+            columnConfig: [{ id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] }],
+          }),
+        });
+        const createResult = await createResponse.json();
+
+        if (!createResult.success) {
+          console.error('Failed to create default board:', createResult.error?.message);
+          setIsLoading(false);
+          return;
+        }
+        activeBoardId = createResult.data.id;
+      } else {
+        activeBoardId = boards[0].id;
+      }
+
+      const boardResponse = await fetch(`/api/boards/${activeBoardId}`);
+      const boardResult = await boardResponse.json();
+
+      if (!boardResult.success) {
+        console.error('Failed to fetch board details:', boardResult.error?.message);
+        setIsLoading(false);
+        return;
+      }
+
+      const boardData: BoardWithIssues = boardResult.data;
+
+      setBoardId(activeBoardId);
+
+      const uiColumns: Column[] = boardData.columnConfig.map((col) => ({
+        id: col.id,
+        title: col.title,
+      }));
+      setColumns(uiColumns.length > 0 ? uiColumns : [{ id: 'backlog', title: 'Backlog' }]);
+
+      const uiTasks: Task[] = boardData.issues.map((issue) => ({
+        id: issue.id,
+        title: issue.title,
+        description: issue.description ?? undefined,
+        columnId: issue.status,
+      }));
+      setTasks(uiTasks);
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to initialize board:', error);
+      setIsLoading(false);
+    }
+  }, [setBoardId, setColumns, setIsLoading, setTasks]);
+
   useEffect(() => {
-    // Phase 2: Will load from storage-engine
-    setIsLoading(false);
-  }, [setIsLoading]);
+    initializeBoard();
+  }, [initializeBoard]);
 
   if (isLoading) {
     return (
