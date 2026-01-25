@@ -5,7 +5,7 @@ import {
   ThemeProviderProps
 } from 'next-themes';
 
-export default function ThemeProvider({
+export function ThemeProvider({
   children,
   ...props
 }: ThemeProviderProps) {
