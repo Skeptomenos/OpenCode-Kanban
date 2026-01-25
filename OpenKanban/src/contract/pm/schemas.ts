@@ -160,7 +160,7 @@ export const ApiSuccessSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
   z.object({
     success: z.literal(true),
     data: dataSchema,
-  });
+  }).strict();
 
 export const ApiErrorSchema = z
   .object({
