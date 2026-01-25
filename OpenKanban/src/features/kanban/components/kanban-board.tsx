@@ -13,6 +13,7 @@ function ClientPortal({ children }: { children: ReactNode }) {
 import { Task, useTaskStore } from '../utils/store';
 import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
+import { fetchIssues } from '../api';
 import type { BoardWithIssues } from '@/contract/pm/types';
 import {
   Announcements,
@@ -47,7 +48,6 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const setIsLoading = useTaskStore((state) => state.setIsLoading);
   const setBoardId = useTaskStore((state) => state.setBoardId);
   const setProjectId = useTaskStore((state) => state.setProjectId);
-  const fetchTasks = useTaskStore((state) => state.fetchTasks);
   const updateTaskStatus = useTaskStore((state) => state.updateTaskStatus);
   const pickedUpTaskColumn = useRef<string>('');
   const pendingStatusUpdates = useRef<Map<string, string>>(new Map());
@@ -131,11 +131,20 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       }));
       setColumns(uiColumns.length > 0 ? uiColumns : [{ id: 'backlog', title: 'Backlog' }]);
 
-      // Fetch tasks: If projectId provided, use project-scoped fetch
-      // Otherwise, fall back to board.issues (legacy behavior)
-      // @see specs/33-board-integration.md:L20-22, L44
       if (projectId) {
-        await fetchTasks(projectId);
+        try {
+          const issues = await fetchIssues({ parentId: projectId });
+          const uiTasks: Task[] = issues.map((issue) => ({
+            id: issue.id,
+            title: issue.title,
+            description: issue.description ?? undefined,
+            columnId: issue.status,
+          }));
+          setTasks(uiTasks);
+        } catch (error) {
+          logger.error('Failed to fetch tasks', { error: String(error) });
+        }
+        setIsLoading(false);
       } else {
         const uiTasks: Task[] = boardData.issues.map((issue) => ({
           id: issue.id,
@@ -150,7 +159,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       logger.error('Failed to initialize board', { error: String(error) });
       setIsLoading(false);
     }
-  }, [boardId, projectId, setBoardId, setColumns, setIsLoading, setProjectId, setTasks, fetchTasks]);
+  }, [boardId, projectId, setBoardId, setColumns, setIsLoading, setProjectId, setTasks]);
 
   useEffect(() => {
     initializeBoard();

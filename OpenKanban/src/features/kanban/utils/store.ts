@@ -21,6 +21,14 @@ export type State = {
   currentProjectId: string | null;
 };
 
+/**
+ * Store Actions
+ *
+ * NOTE: Async data fetching actions (fetchTasks, addTask, removeTask) were removed
+ * in Phase 3.5 refactor. Components should use the api.ts layer directly, which will
+ * be wrapped with TanStack Query in B5-B6.
+ * @see specs/352-frontend-modernization.md:L29-38
+ */
 export type Actions = {
   setTasks: (tasks: Task[]) => void;
   setCols: (cols: Column[]) => void;
@@ -29,20 +37,9 @@ export type Actions = {
   setBoardId: (boardId: string | null) => void;
   setProjectId: (projectId: string | null) => void;
 
-  // Data Fetching
-  /**
-   * Fetch tasks for a specific project from the API.
-   * Calls GET /api/issues?parentId=[projectId] and updates tasks state.
-   * @see specs/33-board-integration.md:L20-22
-   */
-  fetchTasks: (projectId: string) => Promise<void>;
-
-  // UI Helpers
-  addTask: (title: string, description?: string) => Promise<void>;
   addCol: (title: string) => Promise<void>;
   updateCol: (id: UniqueIdentifier, newName: string) => Promise<void>;
   removeCol: (id: UniqueIdentifier) => Promise<void>;
-  removeTask: (id: string) => Promise<void>;
   updateTaskStatus: (taskId: string, newStatus: string) => Promise<boolean>;
 };
 
@@ -107,88 +104,6 @@ export const useTaskStore = create<State & Actions>((set) => ({
   setBoardId: (currentBoardId: string | null) => set({ currentBoardId }),
   setProjectId: (currentProjectId: string | null) => set({ currentProjectId }),
 
-  fetchTasks: async (projectId: string) => {
-    set({ isLoading: true });
-    try {
-      const response = await fetch(`/api/issues?parentId=${encodeURIComponent(projectId)}`);
-      const result = await response.json();
-
-      if (!result.success) {
-        logger.error('Failed to fetch tasks', { message: result.error?.message });
-        set({ isLoading: false });
-        return;
-      }
-
-      const tasks: Task[] = result.data.map((issue: { id: string; title: string; description?: string | null; status: string }) => ({
-        id: issue.id,
-        title: issue.title,
-        description: issue.description ?? undefined,
-        columnId: issue.status,
-      }));
-
-      set({ tasks, isLoading: false });
-    } catch (error) {
-      logger.error('Failed to fetch tasks', { error: String(error) });
-      set({ isLoading: false });
-    }
-  },
-
-  addTask: async (title: string, description?: string) => {
-    const state = useTaskStore.getState();
-    const defaultColumnId =
-      state.columns.length > 0 ? state.columns[0].id.toString() : 'backlog';
-
-    // Include parentId to scope tasks to the current project
-    // @see specs/33-board-integration.md:L25-28
-    const payload: {
-      type: string;
-      title: string;
-      description: string | null;
-      status: string;
-      parentId?: string;
-    } = {
-      type: 'task',
-      title,
-      description: description ?? null,
-      status: defaultColumnId,
-    };
-
-    // Only include parentId if we have a current project context
-    if (state.currentProjectId) {
-      payload.parentId = state.currentProjectId;
-    }
-
-    try {
-      const response = await fetch('/api/issues', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        logger.error('Failed to create task', { message: result.error?.message });
-        return;
-      }
-
-      const issue = result.data;
-      set((state) => ({
-        tasks: [
-          ...state.tasks,
-          {
-            id: issue.id,
-            title: issue.title,
-            description: issue.description ?? undefined,
-            columnId: issue.status,
-          },
-        ],
-      }));
-    } catch (error) {
-      logger.error('Failed to create task', { error: String(error) });
-    }
-  },
-
   addCol: async (title: string) => {
     const state = useTaskStore.getState();
     const newColumn: Column = { title, id: uuid() };
@@ -232,27 +147,6 @@ export const useTaskStore = create<State & Actions>((set) => ({
       if (!success) {
         set({ columns: state.columns, tasks: state.tasks });
       }
-    }
-  },
-
-  removeTask: async (id: string) => {
-    try {
-      const response = await fetch(`/api/issues/${id}`, {
-        method: 'DELETE',
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        logger.error('Failed to delete task', { message: result.error?.message });
-        return;
-      }
-
-      set((state) => ({
-        tasks: state.tasks.filter((task) => task.id !== id),
-      }));
-    } catch (error) {
-      logger.error('Failed to delete task', { error: String(error) });
     }
   },
 

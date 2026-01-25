@@ -65,7 +65,7 @@ Part D (Verify) ────┴── D1: Final integration test
 | [x] | **B1**: Install TanStack Query | `352:L12-13` | Done v0.3.10 - Installed `@tanstack/react-query@^5.90.20`. Build passes, all 76 tests pass |
 | [x] | **B2**: Create QueryClient + Provider | `352:L14-15` | Done v0.3.11 - Created `src/lib/query-client.ts` with lazy singleton pattern. Wrapped app via `providers.tsx`. Build passes, all 76 tests pass |
 | [x] | **B3**: Create `src/features/kanban/api.ts` fetcher layer | `352:L19-25` | Done v0.3.12 - Created typed fetchers: `fetchIssues`, `fetchIssue`, `createIssue`, `updateIssue`, `deleteIssue`. Uses `Schema.strip().parse()` before sending. Includes `ApiError` class for error handling |
-| [ ] | **B4**: Refactor Zustand store - remove async actions | `352:L29-38` | Remove `fetchTasks`, `addTask`, `removeTask`. Keep: `tasks`, `setTasks`, `draggedTask`, `columns`, `updateTaskStatus` |
+| [x] | **B4**: Refactor Zustand store - remove async actions | `352:L29-38` | Done v0.3.13 - Removed `fetchTasks`, `addTask`, `removeTask` from store. Updated `kanban-board.tsx` to use `fetchIssues` from api.ts. Updated `new-task-dialog.tsx` to use `createIssue` from api.ts. All 76 tests pass |
 | [ ] | **B5**: Refactor KanbanViewPage to useQuery | `352:L44-54` | Replace `useEffect` fetch with `useQuery`. Add sync effect: `if (data && !isDragging) store.setTasks(data)` |
 | [ ] | **B6**: Add mutations for CRUD operations | `352:L56-61` | Create `useMutation` for create/update/delete. `onSettled`: invalidate `['issues']`. `onError`: rollback Zustand |
 | [ ] | **B7**: Wire column operations to mutations | `352:L56-61` | Convert `addCol`, `updateCol`, `removeCol` to use `api.ts` + mutations for board updates |

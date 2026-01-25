@@ -14,11 +14,16 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 import { useTaskStore } from '../utils/store';
+import { createIssue } from '../api';
+import { logger } from '@/lib/logger';
 
 export default function NewTaskDialog() {
-  const addTask = useTaskStore((state) => state.addTask);
+  const columns = useTaskStore((state) => state.columns);
+  const currentProjectId = useTaskStore((state) => state.currentProjectId);
+  const setTasks = useTaskStore((state) => state.setTasks);
+  const tasks = useTaskStore((state) => state.tasks);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
@@ -26,7 +31,30 @@ export default function NewTaskDialog() {
     const { title, description } = Object.fromEntries(formData);
 
     if (typeof title !== 'string' || typeof description !== 'string') return;
-    addTask(title, description);
+
+    const defaultColumnId = columns.length > 0 ? columns[0].id.toString() : 'backlog';
+
+    try {
+      const issue = await createIssue({
+        type: 'task',
+        title,
+        description: description || null,
+        status: defaultColumnId,
+        parentId: currentProjectId ?? undefined,
+      });
+
+      setTasks([
+        ...tasks,
+        {
+          id: issue.id,
+          title: issue.title,
+          description: issue.description ?? undefined,
+          columnId: issue.status,
+        },
+      ]);
+    } catch (error) {
+      logger.error('Failed to create task', { error: String(error) });
+    }
   };
 
   return (
