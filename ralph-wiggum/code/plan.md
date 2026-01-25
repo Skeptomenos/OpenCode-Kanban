@@ -20,7 +20,7 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 | [x] | **Task 1.1**: Install Drizzle ORM, better-sqlite3, and vitest dependencies | `specs/01-foundation.md:L11-17` | Done: drizzle-orm@0.45.1, better-sqlite3@12.6.2, vitest@4.0.18, drizzle-kit@0.31.8 |
 | [x] | **Task 1.2**: Configure vitest for Next.js environment | `specs/01-foundation.md:L20` | Done: vitest.config.ts + vitest.setup.ts with jsdom, tsconfigPaths, React mocks |
 | [x] | **Task 1.3**: Configure drizzle-kit and environment variables | `specs/01-foundation.md:L21-22` | Done: drizzle.config.ts, env.example.txt with DATABASE_PATH, data/ dir, src/lib/db/ dir |
-| [ ] | **Task 1.4**: Verify native module bundling with Next.js build | `specs/01-foundation.md:L79-80` | Run npm run build to ensure better-sqlite3 works |
+| [x] | **Task 1.4**: Verify native module bundling with Next.js build | `specs/01-foundation.md:L79-80` | Done: npm run build passes with better-sqlite3 |
 | [ ] | **Task 2.1**: Create Drizzle schema for issues, issue_sessions, labels, issue_labels tables | `specs/01-foundation.md:L36-66`, `specs/SCHEMA.md:L52-127` | src/lib/db/schema.ts - core PM entities |
 | [ ] | **Task 2.2**: Add boards and config tables to Drizzle schema | `specs/04-boards-integration.md:L11-22`, `specs/SCHEMA.md:L144-177` | Complete schema with boards and config tables |
 | [ ] | **Task 2.3**: Run drizzle-kit push to create initial database | `specs/01-foundation.md:L81` | Generate data/kanban.db file |
