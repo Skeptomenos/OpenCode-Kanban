@@ -29,12 +29,12 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 | [x] | **Task 4.1**: Define IPMRepository interface with Issue CRUD methods | `specs/02-repository.md:L13-26`, `specs/SCHEMA.md:L209-226` | Done: src/lib/db/repository.ts with full interface + types |
 | [x] | **Task 4.2**: Write repository tests for Issue operations (TDD red phase) | `specs/02-repository.md:L35-44` | Done: 42 tests for Issue CRUD, hierarchy, cascade delete, sessions, boards, config |
 | [x] | **Task 4.3**: Implement SqlitePMRepository Issue CRUD (TDD green phase) | `specs/02-repository.md:L46-48` | Done: SqlitePMRepository class with all 42 tests passing |
-| [ ] | **Task 4.4**: Add Board CRUD to repository interface and implementation | `specs/04-boards-integration.md:L25-27`, `specs/phase2-plan.md:L280-285` | Extend repository with board operations |
-| [ ] | **Task 4.5**: Write and implement Config get/set operations | `specs/02-repository.md:L23-24`, `specs/SCHEMA.md:L167-177` | Key-value store for extensible settings |
-| [ ] | **Task 4.6**: Add session link/unlink operations to repository | `specs/phase2-plan.md:L275-277`, `specs/SCHEMA.md:L314-319` | Issue-session many-to-many linking |
-| [ ] | **Task 5.1**: Create Zod schemas for Issue create/update/filter | `specs/03-api-contracts.md:L9-14`, `specs/SCHEMA.md:L209-226` | src/contract/pm/schemas.ts |
-| [ ] | **Task 5.2**: Create Zod schemas for Board create/update | `specs/SCHEMA.md:L253-260` | Board input validation |
-| [ ] | **Task 5.3**: Export inferred TypeScript types from Zod schemas | `specs/03-api-contracts.md:L16` | src/contract/pm/types.ts |
+| [x] | **Task 4.4**: Add Board CRUD to repository interface and implementation | `specs/04-boards-integration.md:L25-27`, `specs/phase2-plan.md:L280-285` | Done: createBoard, getBoard, listBoards, updateBoard, deleteBoard implemented with tests |
+| [x] | **Task 4.5**: Write and implement Config get/set operations | `specs/02-repository.md:L23-24`, `specs/SCHEMA.md:L167-177` | Done: getConfig, setConfig, deleteConfig implemented with tests |
+| [x] | **Task 4.6**: Add session link/unlink operations to repository | `specs/phase2-plan.md:L275-277`, `specs/SCHEMA.md:L314-319` | Done: linkSession, unlinkSession, getSessionLinks implemented with tests |
+| [x] | **Task 5.1**: Create Zod schemas for Issue create/update/filter | `specs/03-api-contracts.md:L9-14`, `specs/SCHEMA.md:L209-226` | Done: CreateIssueSchema, UpdateIssueSchema, IssueFilterSchema + Board/Session/Config schemas |
+| [x] | **Task 5.2**: Create Zod schemas for Board create/update | `specs/SCHEMA.md:L253-260` | Done: CreateBoardSchema, UpdateBoardSchema, BoardFiltersSchema, ColumnConfigSchema |
+| [x] | **Task 5.3**: Export inferred TypeScript types from Zod schemas | `specs/03-api-contracts.md:L16` | Done: src/contract/pm/types.ts with all inferred types |
 | [ ] | **Task 6.1**: Create Issues list and create API routes | `specs/03-api-contracts.md:L25-27`, `specs/SCHEMA.md:L296-302` | GET/POST /api/issues |
 | [ ] | **Task 6.2**: Create Issue detail, update, delete API routes | `specs/03-api-contracts.md:L28-30` | GET/PATCH/DELETE /api/issues/[id] |
 | [ ] | **Task 6.3**: Create Boards list and create API routes | `specs/04-boards-integration.md:L27`, `specs/SCHEMA.md:L304-312` | GET/POST /api/boards |
