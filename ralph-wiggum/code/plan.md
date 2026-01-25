@@ -236,7 +236,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 | Status | Task | Issues | Spec Reference | Notes |
 |--------|------|--------|----------------|-------|
 | [x] | **K1**: Create `src/lib/query-keys.ts` factory | F.1 | `358:L36` | Done v0.3.50 - Refactored 5 files |
-| [ ] | **K2**: Remove `isLoading` from Zustand store | D.2 | `358:L25` | React Query handles this |
+| [x] | **K2**: Remove `isLoading` from Zustand store | D.2 | `358:L25` | Done v0.3.51 - Removed isLoading + setIsLoading from State/Actions |
 | [ ] | **K3**: Hoist async helpers outside KanbanBoard | F.5 | `358:L39` | Move to top of file |
 
 ---
