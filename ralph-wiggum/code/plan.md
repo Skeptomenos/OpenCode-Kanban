@@ -34,7 +34,7 @@
 | [x] | **Task 2.2**: Create `useProjects` hook for fetching projects | `specs/32-dynamic-sidebar.md:L37-41` | Done in v0.3.0-task2.2 |
 | [x] | **Task 2.3**: Refactor `AppSidebar` for dynamic project listing | `specs/32-dynamic-sidebar.md:L32-48` | Done in v0.3.0-task2.3 |
 | [x] | **Task 2.4**: Add "+" button and integrate CreateProjectDialog in sidebar | `specs/32-dynamic-sidebar.md:L45-46` | Done in v0.3.0-task2.4 |
-| [ ] | **Task 3.1**: Add `currentProjectId` to Zustand store | `specs/33-board-integration.md:L14-17` | New state field + setter action |
+| [x] | **Task 3.1**: Add `currentProjectId` to Zustand store | `specs/33-board-integration.md:L14-17` | Done in v0.3.0-task3.1 |
 | [ ] | **Task 3.2**: Update `addTask` to include `parentId` in API payload | `specs/33-board-integration.md:L25-28` | Use `currentProjectId` when creating tasks |
 | [ ] | **Task 3.3**: Create `fetchTasks(projectId)` action in store | `specs/33-board-integration.md:L20-22` | `GET /api/issues?parentId=[projectId]` |
 | [ ] | **Task 3.4**: Update `KanbanViewPage` to accept and use `projectId`/`boardId` props | `specs/33-board-integration.md:L36-44` | Initialize store on mount |

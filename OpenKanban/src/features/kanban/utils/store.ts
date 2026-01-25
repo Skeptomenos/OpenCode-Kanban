@@ -16,6 +16,8 @@ export type State = {
   draggedTask: string | null;
   isLoading: boolean;
   currentBoardId: string | null;
+  /** The currently active project ID for scoping tasks */
+  currentProjectId: string | null;
 };
 
 export type Actions = {
@@ -24,6 +26,7 @@ export type Actions = {
   dragTask: (id: string | null) => void;
   setIsLoading: (loading: boolean) => void;
   setBoardId: (boardId: string | null) => void;
+  setProjectId: (projectId: string | null) => void;
 
   // UI Helpers
   addTask: (title: string, description?: string) => Promise<void>;
@@ -85,12 +88,14 @@ export const useTaskStore = create<State & Actions>((set) => ({
   draggedTask: null,
   isLoading: true,
   currentBoardId: null,
+  currentProjectId: null,
 
   setTasks: (tasks: Task[]) => set({ tasks }),
   setCols: (columns: Column[]) => set({ columns }),
   dragTask: (draggedTask: string | null) => set({ draggedTask }),
   setIsLoading: (isLoading: boolean) => set({ isLoading }),
   setBoardId: (currentBoardId: string | null) => set({ currentBoardId }),
+  setProjectId: (currentProjectId: string | null) => set({ currentProjectId }),
 
   addTask: async (title: string, description?: string) => {
     const state = useTaskStore.getState();
