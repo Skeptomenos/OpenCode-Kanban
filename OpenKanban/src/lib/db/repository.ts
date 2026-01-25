@@ -11,6 +11,7 @@ import { eq, and, inArray, isNull } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { Issue, Board, IssueSession } from './schema';
 import * as schema from './schema';
+import { now } from '../date-utils';
 
 // =============================================================================
 // Input Types
@@ -258,7 +259,7 @@ export interface IPMRepository {
  * Uses a combination of timestamp and random bytes for uniqueness.
  */
 function generateId(): string {
-  const timestamp = Date.now().toString(36);
+  const timestamp = now().toString(36);
   const randomPart = Math.random().toString(36).substring(2, 10);
   return `${timestamp}-${randomPart}`;
 }
@@ -275,7 +276,7 @@ export class SqlitePMRepository implements IPMRepository {
   // ---------------------------------------------------------------------------
 
   createIssue(data: CreateIssueInput): Issue {
-    const now = Date.now();
+    const timestamp = now();
     const id = generateId();
 
     const newIssue: schema.NewIssue = {
@@ -286,8 +287,8 @@ export class SqlitePMRepository implements IPMRepository {
       description: data.description ?? null,
       status: data.status ?? 'backlog',
       metadata: data.metadata ? JSON.stringify(data.metadata) : null,
-      createdAt: now,
-      updatedAt: now,
+      createdAt: timestamp,
+      updatedAt: timestamp,
     };
 
     this.db.insert(schema.issues).values(newIssue).run();
@@ -430,9 +431,9 @@ export class SqlitePMRepository implements IPMRepository {
       throw new Error(`Issue with id "${id}" not found`);
     }
 
-    const now = Math.max(Date.now(), existing.updatedAt + 1);
+    const timestamp = Math.max(now(), existing.updatedAt + 1);
     const updateData: Partial<schema.NewIssue> = {
-      updatedAt: now,
+      updatedAt: timestamp,
     };
 
     if (data.title !== undefined) updateData.title = data.title;
@@ -466,13 +467,13 @@ export class SqlitePMRepository implements IPMRepository {
   // ---------------------------------------------------------------------------
 
   linkSession(issueId: string, sessionId: string, linkType?: string | null): void {
-    const now = Date.now();
+    const timestamp = now();
 
     const newLink: schema.NewIssueSession = {
       issueId,
       sessionId,
       linkType: linkType ?? null,
-      createdAt: now,
+      createdAt: timestamp,
     };
 
     this.db.insert(schema.issueSessions).values(newLink).run();
@@ -503,7 +504,7 @@ export class SqlitePMRepository implements IPMRepository {
   // ---------------------------------------------------------------------------
 
   createBoard(data: CreateBoardInput): BoardWithParsedFields {
-    const now = Date.now();
+    const timestamp = now();
     const id = generateId();
 
     const newBoard: schema.NewBoard = {
@@ -511,8 +512,8 @@ export class SqlitePMRepository implements IPMRepository {
       name: data.name,
       filters: JSON.stringify(data.filters ?? {}),
       columnConfig: JSON.stringify(data.columnConfig ?? []),
-      createdAt: now,
-      updatedAt: now,
+      createdAt: timestamp,
+      updatedAt: timestamp,
     };
 
     this.db.insert(schema.boards).values(newBoard).run();
@@ -543,9 +544,9 @@ export class SqlitePMRepository implements IPMRepository {
       throw new Error(`Board with id "${id}" not found`);
     }
 
-    const now = Math.max(Date.now(), existing.updatedAt + 1);
+    const timestamp = Math.max(now(), existing.updatedAt + 1);
     const updateData: Partial<schema.NewBoard> = {
-      updatedAt: now,
+      updatedAt: timestamp,
     };
 
     if (data.name !== undefined) updateData.name = data.name;

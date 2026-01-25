@@ -5,6 +5,7 @@ import { IOpenCodeRepository } from './repository';
 import { OpenCodeProject, OpenCodeSession } from './types';
 import { ProjectSchema, SessionSchema } from './schemas';
 import { logger } from '@/lib/logger';
+import { now } from '@/lib/date-utils';
 
 // Default path if not provided
 const DEFAULT_STORAGE_PATH = path.join(os.homedir(), '.local/share/opencode/storage');
@@ -34,10 +35,10 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
    * Uses module-level cache with TTL for efficiency across requests.
    */
   private async ensureSessionIndex(): Promise<Map<string, SessionIndexEntry>> {
-    const now = Date.now();
+    const timestamp = now();
     
     // Return cached index if still valid
-    if (sessionIndex && (now - sessionIndexBuiltAt) < SESSION_INDEX_TTL_MS) {
+    if (sessionIndex && (timestamp - sessionIndexBuiltAt) < SESSION_INDEX_TTL_MS) {
       return sessionIndex;
     }
 
@@ -49,7 +50,7 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
     
     if (!fs.existsSync(sessionBaseDir)) {
       sessionIndex = newIndex;
-      sessionIndexBuiltAt = now;
+      sessionIndexBuiltAt = timestamp;
       return newIndex;
     }
 
@@ -100,7 +101,7 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
     });
 
     sessionIndex = newIndex;
-    sessionIndexBuiltAt = now;
+    sessionIndexBuiltAt = timestamp;
     return newIndex;
   }
 
