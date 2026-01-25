@@ -42,7 +42,7 @@
 | [x] | **Task 4.1**: Update root page (`src/app/page.tsx`) for smart redirect | `specs/31-route-structure.md:L57-62` | Done in v0.3.0-task4.1 |
 | [x] | **Task 4.2**: Create empty state "Welcome/Create Project" UI | `specs/31-route-structure.md:L62` | Done in v0.3.0-task4.2 - Created `WelcomeScreen` component with centered Card and prominent CTA |
 | [x] | **Task 5.1**: Verify build passes with all new routes | `specs/31-route-structure.md:L72` | Done in v0.3.0-task5.1 - Build passes, all routes compiled successfully |
-| [ ] | **Task 5.2**: Manual verification of project isolation | `specs/33-board-integration.md:L56-60` | Tasks only appear in correct project |
+| [x] | **Task 5.2**: Manual verification of project isolation | `specs/33-board-integration.md:L56-60` | Done in v0.3.0-task5.2 - All isolation tests passed via Playwright |
 | [ ] | **Task 6.1**: Delete legacy `/dashboard` routes | `specs/phase3-plan.md:L156-163` | Clean up after verification |
 | [ ] | **Task 6.2**: Update `nav-config.ts` to remove static items | `specs/phase3-plan.md:L160` | Projects are now dynamic |
 
