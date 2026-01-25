@@ -28,7 +28,7 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 | [x] | **Task 3.2**: Add auto-create database file logic and schema sync | `specs/phase2-plan.md:L230-235` | Done: initializeSchema() creates tables with CREATE IF NOT EXISTS on first connection |
 | [x] | **Task 4.1**: Define IPMRepository interface with Issue CRUD methods | `specs/02-repository.md:L13-26`, `specs/SCHEMA.md:L209-226` | Done: src/lib/db/repository.ts with full interface + types |
 | [x] | **Task 4.2**: Write repository tests for Issue operations (TDD red phase) | `specs/02-repository.md:L35-44` | Done: 42 tests for Issue CRUD, hierarchy, cascade delete, sessions, boards, config |
-| [ ] | **Task 4.3**: Implement SqlitePMRepository Issue CRUD (TDD green phase) | `specs/02-repository.md:L46-48` | Make tests pass with Drizzle queries |
+| [x] | **Task 4.3**: Implement SqlitePMRepository Issue CRUD (TDD green phase) | `specs/02-repository.md:L46-48` | Done: SqlitePMRepository class with all 42 tests passing |
 | [ ] | **Task 4.4**: Add Board CRUD to repository interface and implementation | `specs/04-boards-integration.md:L25-27`, `specs/phase2-plan.md:L280-285` | Extend repository with board operations |
 | [ ] | **Task 4.5**: Write and implement Config get/set operations | `specs/02-repository.md:L23-24`, `specs/SCHEMA.md:L167-177` | Key-value store for extensible settings |
 | [ ] | **Task 4.6**: Add session link/unlink operations to repository | `specs/phase2-plan.md:L275-277`, `specs/SCHEMA.md:L314-319` | Issue-session many-to-many linking |
