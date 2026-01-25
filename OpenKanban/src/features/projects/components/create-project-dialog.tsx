@@ -60,16 +60,25 @@ export function CreateProjectDialog({
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
+    
+    // Type guards for FormData values (spec 357:L33-44)
+    const nameVal = formData.get('name');
+    if (typeof nameVal !== 'string') {
+      toast.error('Project name is required');
+      return;
+    }
+    
+    const descVal = formData.get('description');
+    // Description is optional, but if present must be a string
+    const description = typeof descVal === 'string' ? descVal : undefined;
 
-    if (!name?.trim()) {
+    if (!nameVal.trim()) {
       toast.error('Project name is required');
       return;
     }
 
     createProjectMutation.mutate({
-      title: name.trim(),
+      title: nameVal.trim(),
       description: description?.trim() || undefined,
     });
   };

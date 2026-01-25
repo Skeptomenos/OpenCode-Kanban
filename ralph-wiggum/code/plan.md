@@ -214,7 +214,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 | Status | Task | Issues | Spec Reference | Notes |
 |--------|------|--------|----------------|-------|
 | [x] | **I1**: Add optional Zod schema to `getConfig()` | A.1 | `357:L10-22` | Done v0.3.42 - Added schema param + 2 tests |
-| [ ] | **I2**: FormData type guards | A.3 | `357:L33-44` | Replace `as string` with guards |
+| [x] | **I2**: FormData type guards | A.3 | `357:L33-44` | Done v0.3.43 - Type guards for FormData.get() |
 | [ ] | **I3**: dnd-kit String() conversion | A.4 | `357:L46-53` | Use `String(overId)` |
 | [ ] | **I4**: Singleton pattern JSDoc | A.2 | `357:L25-32` | Document Next.js dev-mode pattern |
 
