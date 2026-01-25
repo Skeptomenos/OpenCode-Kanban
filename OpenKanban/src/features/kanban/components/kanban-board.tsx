@@ -368,10 +368,11 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
     if (isActiveATask && isOverAColumn) {
       const activeIndex = tasks.findIndex((t) => t.id === activeId);
       const activeTask = tasks[activeIndex];
-      if (activeTask && activeTask.columnId !== overId) {
-        pendingStatusUpdates.current.set(activeTask.id, overId as string);
+      const overIdStr = String(overId);
+      if (activeTask && activeTask.columnId !== overIdStr) {
+        pendingStatusUpdates.current.set(activeTask.id, overIdStr);
         const updatedTasks = tasks.map((t) =>
-          t.id === activeTask.id ? { ...t, columnId: overId as string } : t
+          t.id === activeTask.id ? { ...t, columnId: overIdStr } : t
         );
         setTasks(arrayMove(updatedTasks, activeIndex, activeIndex));
       }

@@ -215,7 +215,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 |--------|------|--------|----------------|-------|
 | [x] | **I1**: Add optional Zod schema to `getConfig()` | A.1 | `357:L10-22` | Done v0.3.42 - Added schema param + 2 tests |
 | [x] | **I2**: FormData type guards | A.3 | `357:L33-44` | Done v0.3.43 - Type guards for FormData.get() |
-| [ ] | **I3**: dnd-kit String() conversion | A.4 | `357:L46-53` | Use `String(overId)` |
+| [x] | **I3**: dnd-kit String() conversion | A.4 | `357:L46-53` | Done v0.3.44 - Replaced `as string` with `String(overId)` |
 | [ ] | **I4**: Singleton pattern JSDoc | A.2 | `357:L25-32` | Document Next.js dev-mode pattern |
 
 ---
@@ -306,7 +306,7 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 - [ ] `npm run build` passes
 - [ ] `npm run lint` passes (no errors)
 - [ ] `npm run test` - 104+ tests pass
-- [ ] `grep "as string" src/features/kanban/components/kanban-board.tsx` - 0 matches (after I3)
+- [x] `grep "as string" src/features/kanban/components/kanban-board.tsx` - 0 matches (after I3)
 - [ ] `grep "isLoading" src/features/kanban/utils/store.ts` - 0 matches (after K2)
 
 ### Manual
