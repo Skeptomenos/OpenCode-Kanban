@@ -1,6 +1,6 @@
 # Implementation Plan: Phase 3 - Dynamic Routing & Sidebar
 
-> **Status**: Ready for Implementation  
+> **Status**: ✅ COMPLETE  
 > **Last Updated**: 2026-01-25  
 > **Spec References**: `ralph-wiggum/specs/31-route-structure.md`, `32-dynamic-sidebar.md`, `33-board-integration.md`
 
@@ -139,9 +139,11 @@ src/config/nav-config.ts                  # Remove static items (cleanup)
 
 From `specs/phase3-plan.md:L38-43`:
 
-- [ ] Sidebar lists all projects from the database
-- [ ] "Create Project" button works in sidebar
-- [ ] Clicking a project in sidebar navigates to its board
-- [ ] URL reflects current project and board
-- [ ] Kanban board loads tasks *only* for the active project
-- [ ] Root URL `/` redirects to a valid project
+- [x] Sidebar lists all projects from the database
+- [x] "Create Project" button works in sidebar
+- [x] Clicking a project in sidebar navigates to its board
+- [x] URL reflects current project and board
+- [x] Kanban board loads tasks *only* for the active project
+- [x] Root URL `/` redirects to a valid project
+
+**All criteria verified in Task 5.2 via Playwright automation.**
