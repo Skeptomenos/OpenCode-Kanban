@@ -1,6 +1,7 @@
 'use client';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { useQuery } from '@tanstack/react-query';
 
 const subscribe = () => () => {};
 const getSnapshot = () => true;
@@ -13,8 +14,7 @@ function ClientPortal({ children }: { children: ReactNode }) {
 import { Task, useTaskStore } from '../utils/store';
 import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
-import { fetchIssues } from '../api';
-import type { BoardWithIssues } from '@/contract/pm/types';
+import { fetchIssues, fetchBoards, fetchBoard, createBoard } from '../api';
 import {
   Announcements,
   DndContext,
@@ -39,13 +39,66 @@ interface KanbanBoardProps {
   boardId?: string;
 }
 
+/**
+ * Resolves the active board ID.
+ * - If boardId provided, uses it
+ * - Otherwise fetches boards list and returns first (or creates default)
+ */
+async function resolveBoardId(boardId?: string): Promise<string> {
+  if (boardId) return boardId;
+
+  const boards = await fetchBoards();
+  if (boards.length > 0) return boards[0].id;
+
+  const newBoard = await createBoard({
+    name: 'Default Board',
+    columnConfig: [{ id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] }],
+  });
+  return newBoard.id;
+}
+
+/**
+ * Fetches kanban board data: columns from board config, tasks from project or board.
+ * @see specs/352-frontend-modernization.md:L44-54
+ */
+async function fetchKanbanData(
+  projectId?: string,
+  boardId?: string
+): Promise<{ boardId: string; columns: Column[]; tasks: Task[] }> {
+  const resolvedBoardId = await resolveBoardId(boardId);
+  const boardData = await fetchBoard(resolvedBoardId);
+
+  const columns: Column[] = boardData.columnConfig.length > 0
+    ? boardData.columnConfig.map((col) => ({ id: col.id, title: col.title }))
+    : [{ id: 'backlog', title: 'Backlog' }];
+
+  let tasks: Task[];
+  if (projectId) {
+    const issues = await fetchIssues({ parentId: projectId });
+    tasks = issues.map((issue) => ({
+      id: issue.id,
+      title: issue.title,
+      description: issue.description ?? undefined,
+      columnId: issue.status,
+    }));
+  } else {
+    tasks = boardData.issues.map((issue) => ({
+      id: issue.id,
+      title: issue.title,
+      description: issue.description ?? undefined,
+      columnId: issue.status,
+    }));
+  }
+
+  return { boardId: resolvedBoardId, columns, tasks };
+}
+
 export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const columns = useTaskStore((state) => state.columns);
   const setColumns = useTaskStore((state) => state.setCols);
   const tasks = useTaskStore((state) => state.tasks);
   const setTasks = useTaskStore((state) => state.setTasks);
-  const isLoading = useTaskStore((state) => state.isLoading);
-  const setIsLoading = useTaskStore((state) => state.setIsLoading);
+  const draggedTask = useTaskStore((state) => state.draggedTask);
   const setBoardId = useTaskStore((state) => state.setBoardId);
   const setProjectId = useTaskStore((state) => state.setProjectId);
   const updateTaskStatus = useTaskStore((state) => state.updateTaskStatus);
@@ -60,110 +113,35 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
   /**
-   * Initialize board state: set project context, fetch column config, and load tasks.
-   *
-   * When projectId is provided (new routing), tasks are fetched via fetchTasks(projectId)
-   * which calls GET /api/issues?parentId=[projectId] for project-scoped tasks.
-   *
-   * When no projectId (legacy fallback), tasks come from board.issues as before.
-   *
-   * @see specs/33-board-integration.md:L40-44
+   * Query for kanban board data (columns + tasks).
+   * Replaces the manual useEffect fetch pattern.
+   * @see specs/352-frontend-modernization.md:L44-54
    */
-  const initializeBoard = useCallback(async () => {
-    try {
-      // Set project context first - enables proper task scoping for addTask
-      // @see specs/33-board-integration.md:L42-43
-      setProjectId(projectId ?? null);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['kanban', projectId, boardId],
+    queryFn: () => fetchKanbanData(projectId, boardId),
+  });
 
-      let activeBoardId = boardId;
-
-      if (!activeBoardId) {
-        const boardsResponse = await fetch('/api/boards');
-        const boardsResult = await boardsResponse.json();
-
-        if (!boardsResult.success) {
-          logger.error('Failed to fetch boards', { message: boardsResult.error?.message });
-          setIsLoading(false);
-          return;
-        }
-
-        const boards: Array<{ id: string; name: string }> = boardsResult.data;
-
-        if (boards.length === 0) {
-          const createResponse = await fetch('/api/boards', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: 'Default Board',
-              columnConfig: [{ id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] }],
-            }),
-          });
-          const createResult = await createResponse.json();
-
-          if (!createResult.success) {
-            logger.error('Failed to create default board', { message: createResult.error?.message });
-            setIsLoading(false);
-            return;
-          }
-          activeBoardId = createResult.data.id;
-        } else {
-          activeBoardId = boards[0].id;
-        }
-      }
-
-      const boardResponse = await fetch(`/api/boards/${activeBoardId}`);
-      const boardResult = await boardResponse.json();
-
-      if (!boardResult.success) {
-        logger.error('Failed to fetch board details', { message: boardResult.error?.message });
-        setIsLoading(false);
-        return;
-      }
-
-      const boardData: BoardWithIssues = boardResult.data;
-
-      setBoardId(activeBoardId ?? null);
-
-      // Set columns from board config
-      const uiColumns: Column[] = boardData.columnConfig.map((col) => ({
-        id: col.id,
-        title: col.title,
-      }));
-      setColumns(uiColumns.length > 0 ? uiColumns : [{ id: 'backlog', title: 'Backlog' }]);
-
-      if (projectId) {
-        try {
-          const issues = await fetchIssues({ parentId: projectId });
-          const uiTasks: Task[] = issues.map((issue) => ({
-            id: issue.id,
-            title: issue.title,
-            description: issue.description ?? undefined,
-            columnId: issue.status,
-          }));
-          setTasks(uiTasks);
-        } catch (error) {
-          logger.error('Failed to fetch tasks', { error: String(error) });
-        }
-        setIsLoading(false);
-      } else {
-        const uiTasks: Task[] = boardData.issues.map((issue) => ({
-          id: issue.id,
-          title: issue.title,
-          description: issue.description ?? undefined,
-          columnId: issue.status,
-        }));
-        setTasks(uiTasks);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      logger.error('Failed to initialize board', { error: String(error) });
-      setIsLoading(false);
-    }
-  }, [boardId, projectId, setBoardId, setColumns, setIsLoading, setProjectId, setTasks]);
-
+  /**
+   * Sync effect: Update Zustand store when query data changes.
+   * CRITICAL: Skip sync while dragging to prevent visual flicker.
+   * @see specs/352-frontend-modernization.md:L46-53
+   */
   useEffect(() => {
-    initializeBoard();
-  }, [initializeBoard]);
+    if (!data) return;
+    
+    const isDragging = draggedTask !== null;
+    if (isDragging) return;
+
+    setProjectId(projectId ?? null);
+    setBoardId(data.boardId);
+    setColumns(data.columns);
+    setTasks(data.tasks);
+  }, [data, draggedTask, projectId, setBoardId, setColumns, setProjectId, setTasks]);
+
+  if (error) {
+    logger.error('Failed to load kanban board', { error: String(error) });
+  }
 
   if (isLoading) {
     return (

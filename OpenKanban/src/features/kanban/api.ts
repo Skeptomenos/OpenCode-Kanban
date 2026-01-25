@@ -239,3 +239,103 @@ export async function fetchIssue(id: string): Promise<Issue | null> {
 
   return result.data;
 }
+
+// =============================================================================
+// Board Fetchers
+// =============================================================================
+
+/**
+ * Board list item type (minimal).
+ */
+export type BoardListItem = {
+  id: string;
+  name: string;
+};
+
+/**
+ * Board with full details including column config and issues.
+ */
+export type BoardWithIssues = {
+  id: string;
+  name: string;
+  columnConfig: Array<{
+    id: string;
+    title: string;
+    statusMappings: string[];
+  }>;
+  issues: Issue[];
+};
+
+/**
+ * Fetch all boards (list view).
+ * @returns Array of BoardListItem
+ * @throws ApiError if the request fails
+ */
+export async function fetchBoards(): Promise<BoardListItem[]> {
+  const response = await fetch('/api/boards');
+  const result: ApiResponse<BoardListItem[]> = await response.json();
+
+  if (!result.success) {
+    throw new ApiError(
+      result.error.message,
+      result.error.code,
+      response.status
+    );
+  }
+
+  return result.data;
+}
+
+/**
+ * Fetch a single board by ID with its column config and issues.
+ * @param id Board ID to fetch
+ * @returns The board with issues
+ * @throws ApiError if the request fails
+ */
+export async function fetchBoard(id: string): Promise<BoardWithIssues> {
+  const response = await fetch(`/api/boards/${encodeURIComponent(id)}`);
+  const result: ApiResponse<BoardWithIssues> = await response.json();
+
+  if (!result.success) {
+    throw new ApiError(
+      result.error.message,
+      result.error.code,
+      response.status
+    );
+  }
+
+  return result.data;
+}
+
+/**
+ * Create a new board.
+ * @param data Board creation data
+ * @returns The created board
+ * @throws ApiError if the request fails
+ */
+export async function createBoard(data: {
+  name: string;
+  columnConfig: Array<{
+    id: string;
+    title: string;
+    statusMappings: string[];
+  }>;
+}): Promise<BoardWithIssues> {
+  const response = await fetch('/api/boards', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  const result: ApiResponse<BoardWithIssues> = await response.json();
+
+  if (!result.success) {
+    throw new ApiError(
+      result.error.message,
+      result.error.code,
+      response.status
+    );
+  }
+
+  return result.data;
+}
