@@ -35,7 +35,7 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 | [x] | **Task 5.1**: Create Zod schemas for Issue create/update/filter | `specs/03-api-contracts.md:L9-14`, `specs/SCHEMA.md:L209-226` | Done: CreateIssueSchema, UpdateIssueSchema, IssueFilterSchema + Board/Session/Config schemas |
 | [x] | **Task 5.2**: Create Zod schemas for Board create/update | `specs/SCHEMA.md:L253-260` | Done: CreateBoardSchema, UpdateBoardSchema, BoardFiltersSchema, ColumnConfigSchema |
 | [x] | **Task 5.3**: Export inferred TypeScript types from Zod schemas | `specs/03-api-contracts.md:L16` | Done: src/contract/pm/types.ts with all inferred types |
-| [ ] | **Task 6.1**: Create Issues list and create API routes | `specs/03-api-contracts.md:L25-27`, `specs/SCHEMA.md:L296-302` | GET/POST /api/issues |
+| [x] | **Task 6.1**: Create Issues list and create API routes | `specs/03-api-contracts.md:L25-27`, `specs/SCHEMA.md:L296-302` | Done: GET/POST /api/issues with envelope format, Zod validation |
 | [ ] | **Task 6.2**: Create Issue detail, update, delete API routes | `specs/03-api-contracts.md:L28-30` | GET/PATCH/DELETE /api/issues/[id] |
 | [ ] | **Task 6.3**: Create Boards list and create API routes | `specs/04-boards-integration.md:L27`, `specs/SCHEMA.md:L304-312` | GET/POST /api/boards |
 | [ ] | **Task 6.4**: Create Board detail, update, delete API routes | `specs/04-boards-integration.md:L27` | GET/PATCH/DELETE /api/boards/[id] - includes filtered issues |
