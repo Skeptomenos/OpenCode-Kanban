@@ -65,6 +65,8 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const isLoading = useTaskStore((state) => state.isLoading);
   const setIsLoading = useTaskStore((state) => state.setIsLoading);
   const setBoardId = useTaskStore((state) => state.setBoardId);
+  const setProjectId = useTaskStore((state) => state.setProjectId);
+  const fetchTasks = useTaskStore((state) => state.fetchTasks);
   const pickedUpTaskColumn = useRef<string>('');
 
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
@@ -74,8 +76,22 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
 
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
+  /**
+   * Initialize board state: set project context, fetch column config, and load tasks.
+   *
+   * When projectId is provided (new routing), tasks are fetched via fetchTasks(projectId)
+   * which calls GET /api/issues?parentId=[projectId] for project-scoped tasks.
+   *
+   * When no projectId (legacy fallback), tasks come from board.issues as before.
+   *
+   * @see specs/33-board-integration.md:L40-44
+   */
   const initializeBoard = useCallback(async () => {
     try {
+      // Set project context first - enables proper task scoping for addTask
+      // @see specs/33-board-integration.md:L42-43
+      setProjectId(projectId ?? null);
+
       let activeBoardId = boardId;
 
       if (!activeBoardId) {
@@ -125,26 +141,33 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
 
       setBoardId(activeBoardId ?? null);
 
+      // Set columns from board config
       const uiColumns: Column[] = boardData.columnConfig.map((col) => ({
         id: col.id,
         title: col.title,
       }));
       setColumns(uiColumns.length > 0 ? uiColumns : [{ id: 'backlog', title: 'Backlog' }]);
 
-      const uiTasks: Task[] = boardData.issues.map((issue) => ({
-        id: issue.id,
-        title: issue.title,
-        description: issue.description ?? undefined,
-        columnId: issue.status,
-      }));
-      setTasks(uiTasks);
-
-      setIsLoading(false);
+      // Fetch tasks: If projectId provided, use project-scoped fetch
+      // Otherwise, fall back to board.issues (legacy behavior)
+      // @see specs/33-board-integration.md:L20-22, L44
+      if (projectId) {
+        await fetchTasks(projectId);
+      } else {
+        const uiTasks: Task[] = boardData.issues.map((issue) => ({
+          id: issue.id,
+          title: issue.title,
+          description: issue.description ?? undefined,
+          columnId: issue.status,
+        }));
+        setTasks(uiTasks);
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error('Failed to initialize board:', error);
       setIsLoading(false);
     }
-  }, [boardId, setBoardId, setColumns, setIsLoading, setTasks]);
+  }, [boardId, projectId, setBoardId, setColumns, setIsLoading, setProjectId, setTasks, fetchTasks]);
 
   useEffect(() => {
     initializeBoard();
