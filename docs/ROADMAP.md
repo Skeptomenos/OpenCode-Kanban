@@ -63,6 +63,14 @@ A local-first Project Management tool where:
 - [ ] Root `/` redirects to first available project
 - [ ] Legacy `/dashboard` routes removed
 
+### Pre-Phase 4: Tooling Migration
+*Goal: Standardize on pnpm before feature work.*
+- [ ] Delete `node_modules/` and `package-lock.json`
+- [ ] Run `pnpm install`
+- [ ] Remove `shamefully-hoist=true` from `.npmrc` (start strict)
+- [ ] Verify build passes (`pnpm run build`)
+- [ ] Update team docs to reference `pnpm` commands
+
 ### Phase 4: The Hierarchical Board
 *Goal: Visualize the complex structure and manage board views.*
 - [ ] **Board Management**: UI to Create/Rename/Delete boards within a project.
