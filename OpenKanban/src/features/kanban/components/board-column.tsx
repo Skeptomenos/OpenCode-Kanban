@@ -5,6 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { cva } from 'class-variance-authority';
 import { IconGripVertical } from '@tabler/icons-react';
 import { useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ColumnActions } from './column-action';
@@ -30,8 +31,8 @@ interface BoardColumnProps {
 }
 
 export function BoardColumn({ column, tasks: tasksProp, isOverlay }: BoardColumnProps) {
-  const tasksFromStore = useTaskStore((state) => 
-    state.tasks.filter((t) => t.columnId === column.id)
+  const tasksFromStore = useTaskStore(
+    useShallow((state) => state.tasks.filter((t) => t.columnId === column.id))
   );
   const tasks = tasksProp ?? tasksFromStore;
   

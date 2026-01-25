@@ -55,11 +55,26 @@ A local-first Project Management tool where:
 - [ ] Sidebar: Dynamically list projects from `storage`.
 - [ ] Home: Redirect to last active project.
 
+**Phase 3 Deliverables Checklist:**
+- [ ] `src/app/project/[projectId]/board/[boardId]/page.tsx` created
+- [ ] Sidebar fetches projects from SQLite
+- [ ] "Create Project" button/dialog implemented in Sidebar
+- [ ] Kanban Board filters tasks by `parentId` (Project ID)
+- [ ] Root `/` redirects to first available project
+- [ ] Legacy `/dashboard` routes removed
+
 ### Phase 4: The Hierarchical Board
-*Goal: Visualize the complex structure.*
-- [ ] Refactor `KanbanBoard` to support "Issue" type.
-- [ ] Add "Filters" (Show Milestones vs Tasks).
-- [ ] Implement "Link Session" UI (Modal to select session).
+*Goal: Visualize the complex structure and manage board views.*
+- [ ] **Board Management**: UI to Create/Rename/Delete boards within a project.
+- [ ] **Filter Builder**: UI to configure board filters (e.g., "Status=In Progress", "Type=Task").
+- [ ] **Hierarchical Display**: Visualize parent/child relationships on cards.
+- [ ] **Link Session UI**: Modal to search and link OpenCode sessions to issues.
+
+**Phase 4 Deliverables Checklist:**
+- [ ] `src/features/boards/components/create-board-dialog.tsx`
+- [ ] `src/features/boards/components/board-filter-controls.tsx`
+- [ ] `src/features/kanban/components/issue-card.tsx` updated with hierarchy indicators
+- [ ] `src/features/sessions/components/link-session-dialog.tsx`
 
 ### Phase 5: Polish & Workflow
 - [ ] Drag & Drop persistence.

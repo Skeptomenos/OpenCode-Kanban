@@ -1,15 +1,23 @@
-# Implementation Plan - Phase 2: PM Data Layer
+# Implementation Plan: Phase 3 - Dynamic Routing & Sidebar
 
-> **Status**: Planning Complete  
+> **Status**: Ready for Implementation  
 > **Last Updated**: 2026-01-25  
-> **Spec Source**: `ralph-wiggum/specs/01-foundation.md` through `04-boards-integration.md`
+> **Spec References**: `ralph-wiggum/specs/31-route-structure.md`, `32-dynamic-sidebar.md`, `33-board-integration.md`
 
-## Summary
+## Context Summary
 
-Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence via Drizzle ORM, a repository pattern for CRUD operations, and API routes for Issues/Boards management.
+### Current State
+- **Data Layer**: Phase 2 complete - SQLite/Drizzle repository with full CRUD, 42 tests passing
+- **Routing**: Flat `/dashboard/kanban` structure pointing to a single "Default Board"
+- **Sidebar**: Static navigation from `nav-config.ts` with one item ("Kanban")
+- **Store**: `useTaskStore` manages tasks/columns but lacks `currentProjectId`
+- **API**: `parentId` filtering already implemented in repository
 
-**Current State**: Phase 1 Complete (application shell, session loading).  
-**Target State**: Full persistence with SQLite, TDD-verified repository, API routes, and store integration.
+### Target State
+- **Routing**: `/project/[projectId]/board/[boardId]` hierarchy
+- **Sidebar**: Dynamic project list from DB with "Create Project" dialog
+- **Board**: Context-aware - filters tasks by `parentId` (project scope)
+- **Root**: Smart redirect to first project or "Create Project" empty state
 
 ---
 
@@ -17,36 +25,26 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 1.1**: Install Drizzle ORM, better-sqlite3, and vitest dependencies | `specs/01-foundation.md:L11-17` | Done: drizzle-orm@0.45.1, better-sqlite3@12.6.2, vitest@4.0.18, drizzle-kit@0.31.8 |
-| [x] | **Task 1.2**: Configure vitest for Next.js environment | `specs/01-foundation.md:L20` | Done: vitest.config.ts + vitest.setup.ts with jsdom, tsconfigPaths, React mocks |
-| [x] | **Task 1.3**: Configure drizzle-kit and environment variables | `specs/01-foundation.md:L21-22` | Done: drizzle.config.ts, env.example.txt with DATABASE_PATH, data/ dir, src/lib/db/ dir |
-| [x] | **Task 1.4**: Verify native module bundling with Next.js build | `specs/01-foundation.md:L79-80` | Done: npm run build passes with better-sqlite3 |
-| [x] | **Task 2.1**: Create Drizzle schema for issues, issue_sessions, labels, issue_labels tables | `specs/01-foundation.md:L36-66`, `specs/SCHEMA.md:L52-127` | Done: src/lib/db/schema.ts with all 6 tables |
-| [x] | **Task 2.2**: Add boards and config tables to Drizzle schema | `specs/04-boards-integration.md:L11-22`, `specs/SCHEMA.md:L144-177` | Done: boards, config tables included in schema.ts |
-| [x] | **Task 2.3**: Run drizzle-kit push to create initial database | `specs/01-foundation.md:L81` | Done: data/kanban.db created with all tables |
-| [x] | **Task 3.1**: Create database connection singleton with HMR support | `specs/01-foundation.md:L25-28` | Done: src/lib/db/connection.ts with globalThis pattern, FK enforcement, WAL mode |
-| [x] | **Task 3.2**: Add auto-create database file logic and schema sync | `specs/phase2-plan.md:L230-235` | Done: initializeSchema() creates tables with CREATE IF NOT EXISTS on first connection |
-| [x] | **Task 4.1**: Define IPMRepository interface with Issue CRUD methods | `specs/02-repository.md:L13-26`, `specs/SCHEMA.md:L209-226` | Done: src/lib/db/repository.ts with full interface + types |
-| [x] | **Task 4.2**: Write repository tests for Issue operations (TDD red phase) | `specs/02-repository.md:L35-44` | Done: 42 tests for Issue CRUD, hierarchy, cascade delete, sessions, boards, config |
-| [x] | **Task 4.3**: Implement SqlitePMRepository Issue CRUD (TDD green phase) | `specs/02-repository.md:L46-48` | Done: SqlitePMRepository class with all 42 tests passing |
-| [x] | **Task 4.4**: Add Board CRUD to repository interface and implementation | `specs/04-boards-integration.md:L25-27`, `specs/phase2-plan.md:L280-285` | Done: createBoard, getBoard, listBoards, updateBoard, deleteBoard implemented with tests |
-| [x] | **Task 4.5**: Write and implement Config get/set operations | `specs/02-repository.md:L23-24`, `specs/SCHEMA.md:L167-177` | Done: getConfig, setConfig, deleteConfig implemented with tests |
-| [x] | **Task 4.6**: Add session link/unlink operations to repository | `specs/phase2-plan.md:L275-277`, `specs/SCHEMA.md:L314-319` | Done: linkSession, unlinkSession, getSessionLinks implemented with tests |
-| [x] | **Task 5.1**: Create Zod schemas for Issue create/update/filter | `specs/03-api-contracts.md:L9-14`, `specs/SCHEMA.md:L209-226` | Done: CreateIssueSchema, UpdateIssueSchema, IssueFilterSchema + Board/Session/Config schemas |
-| [x] | **Task 5.2**: Create Zod schemas for Board create/update | `specs/SCHEMA.md:L253-260` | Done: CreateBoardSchema, UpdateBoardSchema, BoardFiltersSchema, ColumnConfigSchema |
-| [x] | **Task 5.3**: Export inferred TypeScript types from Zod schemas | `specs/03-api-contracts.md:L16` | Done: src/contract/pm/types.ts with all inferred types |
-| [x] | **Task 6.1**: Create Issues list and create API routes | `specs/03-api-contracts.md:L25-27`, `specs/SCHEMA.md:L296-302` | Done: GET/POST /api/issues with envelope format, Zod validation |
-| [x] | **Task 6.2**: Create Issue detail, update, delete API routes | `specs/03-api-contracts.md:L28-30` | Done: GET/PATCH/DELETE /api/issues/[id] with envelope format, 404 handling |
-| [x] | **Task 6.3**: Create Boards list and create API routes | `specs/04-boards-integration.md:L27`, `specs/SCHEMA.md:L304-312` | Done: GET/POST /api/boards with envelope format, Zod validation |
-| [x] | **Task 6.4**: Create Board detail, update, delete API routes | `specs/04-boards-integration.md:L27` | Done: GET/PATCH/DELETE /api/boards/[id] with filtered issues |
-| [x] | **Task 6.5**: Add session link/unlink API endpoints | `specs/SCHEMA.md:L314-319` | Done: POST/GET /api/issues/[id]/sessions + DELETE /api/issues/[id]/sessions/[sessionId] |
-| [x] | **Task 7.1**: Connect store addTask to POST /api/issues | `specs/04-boards-integration.md:L36-37`, `specs/phase2-plan.md:L406-407` | Done: Async fetch with error handling, updates local state on success |
-| [x] | **Task 7.2**: Connect store column operations to PATCH /api/boards | `specs/04-boards-integration.md:L38` | Done: addCol, updateCol, removeCol persist columnConfig via PATCH /api/boards/[id], optimistic update with rollback on failure |
-| [x] | **Task 7.3**: Connect store removeTask to DELETE /api/issues | `specs/phase2-plan.md:L410-411` | Done: removeTask now async with DELETE /api/issues/[id] call |
-| [x] | **Task 7.4**: Update kanban-board.tsx to fetch from API on mount | `specs/04-boards-integration.md:L41-43` | Done: useEffect fetches boards list, selects first (or creates default), hydrates store with columnConfig and issues |
-| [x] | **Task 8.1**: Copy SCHEMA.md to docs directory | `specs/phase2-plan.md:L124-130` | Done: OpenKanban/docs/SCHEMA.md created |
-| [x] | **Task 8.2**: Update ROADMAP.md to mark Phase 2 complete | `specs/04-boards-integration.md:L48`, `specs/phase2-plan.md:L439-448` | Done: Updated Phase 2 section, status table, and architecture section |
-| [x] | **Task 8.3**: Update TECH.md with SQLite/Drizzle stack details | `specs/04-boards-integration.md:L49`, `specs/phase2-plan.md:L447` | Done: Comprehensive docs for database layer, connection, schema, repository, API routes, testing |
+| [ ] | **Task 1.1**: Create project route structure (`src/app/project/[projectId]/...`) | `specs/31-route-structure.md:L10-25` | Directory + placeholder files |
+| [ ] | **Task 1.2**: Implement project layout with shared sidebar/header | `specs/31-route-structure.md:L29-35` | Reuse `dashboard/layout.tsx` pattern |
+| [ ] | **Task 1.3**: Implement project root redirect page (`/project/[projectId]/page.tsx`) | `specs/31-route-structure.md:L37-46` | Redirect to first board or auto-create |
+| [ ] | **Task 1.4**: Implement board page (`/project/[projectId]/board/[boardId]/page.tsx`) | `specs/31-route-structure.md:L48-55` | Extract params, render `KanbanViewPage` |
+| [ ] | **Task 1.5**: Add loading and not-found states for project routes | `specs/31-route-structure.md:L19-24` | `loading.tsx`, `not-found.tsx` |
+| [ ] | **Task 2.1**: Create `CreateProjectDialog` component | `specs/32-dynamic-sidebar.md:L10-28` | Dialog with Name/Description form |
+| [ ] | **Task 2.2**: Create `useProjects` hook for fetching projects | `specs/32-dynamic-sidebar.md:L37-41` | `GET /api/issues?type=project` |
+| [ ] | **Task 2.3**: Refactor `AppSidebar` for dynamic project listing | `specs/32-dynamic-sidebar.md:L32-48` | Replace static "Overview" with "Projects" group |
+| [ ] | **Task 2.4**: Add "+" button and integrate CreateProjectDialog in sidebar | `specs/32-dynamic-sidebar.md:L45-46` | Trigger dialog, refresh on success |
+| [ ] | **Task 3.1**: Add `currentProjectId` to Zustand store | `specs/33-board-integration.md:L14-17` | New state field + setter action |
+| [ ] | **Task 3.2**: Update `addTask` to include `parentId` in API payload | `specs/33-board-integration.md:L25-28` | Use `currentProjectId` when creating tasks |
+| [ ] | **Task 3.3**: Create `fetchTasks(projectId)` action in store | `specs/33-board-integration.md:L20-22` | `GET /api/issues?parentId=[projectId]` |
+| [ ] | **Task 3.4**: Update `KanbanViewPage` to accept and use `projectId`/`boardId` props | `specs/33-board-integration.md:L36-44` | Initialize store on mount |
+| [ ] | **Task 3.5**: Update `KanbanBoard` component to be project-aware | `specs/33-board-integration.md:L40-44` | Use props for context, pass to children |
+| [ ] | **Task 4.1**: Update root page (`src/app/page.tsx`) for smart redirect | `specs/31-route-structure.md:L57-62` | Fetch projects, redirect or show empty state |
+| [ ] | **Task 4.2**: Create empty state "Welcome/Create Project" UI | `specs/31-route-structure.md:L62` | Shown when no projects exist |
+| [ ] | **Task 5.1**: Verify build passes with all new routes | `specs/31-route-structure.md:L72` | `npm run build` |
+| [ ] | **Task 5.2**: Manual verification of project isolation | `specs/33-board-integration.md:L56-60` | Tasks only appear in correct project |
+| [ ] | **Task 6.1**: Delete legacy `/dashboard` routes | `specs/phase3-plan.md:L156-163` | Clean up after verification |
+| [ ] | **Task 6.2**: Update `nav-config.ts` to remove static items | `specs/phase3-plan.md:L160` | Projects are now dynamic |
 
 ---
 
@@ -58,86 +56,92 @@ Phase 2 implements the PM Data Layer for OpenKanban - adding SQLite persistence 
 
 ---
 
-## Task Dependencies
+## Implementation Notes
+
+### File Creation Order (Dependencies)
 
 ```
-Task 1.1-1.4 (Dependencies & Config)
-    └── Task 2.1-2.3 (Schema)
-        └── Task 3.1-3.2 (Connection)
-            └── Task 4.1-4.6 (Repository TDD)
-                └── Task 5.1-5.3 (Zod Schemas)
-                    └── Task 6.1-6.5 (API Routes)
-                        └── Task 7.1-7.4 (Store Integration)
-                            └── Task 8.1-8.3 (Documentation)
+Phase 1: Route Structure (Tasks 1.1-1.5)
+├── Task 1.1 creates directories
+├── Task 1.2-1.5 can run in parallel after 1.1
+
+Phase 2: Sidebar & Dialog (Tasks 2.1-2.4)
+├── Task 2.1 (Dialog) and 2.2 (Hook) are independent
+├── Task 2.3-2.4 depend on 2.1 and 2.2
+
+Phase 3: Store & Board Integration (Tasks 3.1-3.5)
+├── Task 3.1 (Store state) must be first
+├── Tasks 3.2-3.3 depend on 3.1
+├── Tasks 3.4-3.5 depend on Phase 1 routes + 3.1
+
+Phase 4: Root Redirect (Tasks 4.1-4.2)
+├── Depends on Phase 2 (needs project fetching)
+
+Phase 5: Verification (Tasks 5.1-5.2)
+├── Depends on all above
+
+Phase 6: Cleanup (Tasks 6.1-6.2)
+├── Only after Phase 5 verification passes
+```
+
+### Key Code Patterns to Follow
+
+1. **Dialog Pattern**: See `src/features/kanban/components/new-section-dialog.tsx`
+2. **Layout Pattern**: See `src/app/dashboard/layout.tsx`
+3. **Async Params** (Next.js 16): `params: Promise<{ projectId: string }>`
+4. **API Fetch Pattern**: See `useTaskStore.addTask` for `try/catch` + toast errors
+
+### API Endpoints Used
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/issues?type=project` | GET | List all projects for sidebar |
+| `/api/issues?parentId=[id]` | GET | List tasks for a project |
+| `/api/issues` | POST | Create project or task |
+| `/api/boards` | POST | Create board for new project |
+| `/api/boards/[id]` | GET | Get board with filtered issues |
+
+### Files to Create
+
+```
+src/app/project/
+├── [projectId]/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── loading.tsx
+│   ├── not-found.tsx
+│   └── board/
+│       └── [boardId]/
+│           ├── page.tsx
+│           └── loading.tsx
+
+src/features/projects/
+├── components/
+│   └── create-project-dialog.tsx
+└── hooks/
+    └── use-projects.ts
+```
+
+### Files to Modify
+
+```
+src/components/layout/app-sidebar.tsx     # Dynamic project list
+src/features/kanban/utils/store.ts        # Add projectId state
+src/features/kanban/components/kanban-view-page.tsx  # Accept props
+src/features/kanban/components/kanban-board.tsx      # Project context
+src/app/page.tsx                          # Smart redirect
+src/config/nav-config.ts                  # Remove static items (cleanup)
 ```
 
 ---
 
-## Key Patterns to Follow
+## Verification Checklist (Definition of Done)
 
-### Existing Codebase Patterns (from explore agents)
+From `specs/phase3-plan.md:L38-43`:
 
-1. **Zod Schema Pattern**: See `src/contract/opencode/schemas.ts` - composable primitives
-2. **API Envelope Pattern**: See `src/app/api/sessions/route.ts` - `{ success: boolean, data?, error? }`
-3. **Zustand Store Pattern**: See `src/features/kanban/utils/store.ts` - separate State/Actions types
-4. **Repository Interface Pattern**: See `src/contract/opencode/repository.ts`
-
-### New Patterns for Phase 2
-
-1. **Drizzle Schema**: Define tables in `src/lib/db/schema.ts`
-2. **Singleton Connection**: Use `globalThis` for HMR survival in dev
-3. **TDD Flow**: Tests first in `src/lib/db/__tests__/repository.test.ts`
-4. **In-Memory Testing**: Use `:memory:` SQLite for isolated tests
-
----
-
-## Verification Commands
-
-After each major task group:
-
-```bash
-cd OpenKanban
-npm install        # After Task 1.1
-npm run build      # After Tasks 1.4, 2.3, 3.2, 5.3, 6.5
-npx vitest run     # After Tasks 4.3, 4.6
-npm run dev        # After Task 7.4 - manual verification
-```
-
----
-
-## Success Criteria
-
-- [ ] SQLite database file exists at `data/kanban.db`
-- [ ] All repository tests pass (`npx vitest run`)
-- [ ] All API routes return envelope format responses
-- [ ] Data persists across browser refreshes
-- [ ] No Phase 2 TODO comments remaining in store.ts
-- [ ] `npm run build` passes with zero errors
-
----
-
-## Files to Create/Modify
-
-### New Files
-- `OpenKanban/vitest.config.ts`
-- `OpenKanban/drizzle.config.ts`
-- `OpenKanban/src/lib/db/schema.ts`
-- `OpenKanban/src/lib/db/connection.ts`
-- `OpenKanban/src/lib/db/repository.ts`
-- `OpenKanban/src/lib/db/__tests__/repository.test.ts`
-- `OpenKanban/src/contract/pm/schemas.ts`
-- `OpenKanban/src/contract/pm/types.ts`
-- `OpenKanban/src/app/api/issues/route.ts`
-- `OpenKanban/src/app/api/issues/[id]/route.ts`
-- `OpenKanban/src/app/api/issues/[id]/sessions/route.ts`
-- `OpenKanban/src/app/api/boards/route.ts`
-- `OpenKanban/src/app/api/boards/[id]/route.ts`
-- `OpenKanban/docs/SCHEMA.md`
-
-### Modified Files
-- `OpenKanban/package.json` (add dependencies)
-- `OpenKanban/.env.example` (add DATABASE_PATH)
-- `OpenKanban/src/features/kanban/utils/store.ts` (connect to API)
-- `OpenKanban/src/features/kanban/components/kanban-board.tsx` (fetch on mount)
-- `OpenKanban/docs/ROADMAP.md` (mark Phase 2 complete)
-- `OpenKanban/docs/TECH.md` (add SQLite/Drizzle docs)
+- [ ] Sidebar lists all projects from the database
+- [ ] "Create Project" button works in sidebar
+- [ ] Clicking a project in sidebar navigates to its board
+- [ ] URL reflects current project and board
+- [ ] Kanban board loads tasks *only* for the active project
+- [ ] Root URL `/` redirects to a valid project
