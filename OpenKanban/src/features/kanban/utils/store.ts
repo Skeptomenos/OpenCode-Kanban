@@ -102,16 +102,31 @@ export const useTaskStore = create<State & Actions>((set) => ({
     const defaultColumnId =
       state.columns.length > 0 ? state.columns[0].id.toString() : 'backlog';
 
+    // Include parentId to scope tasks to the current project
+    // @see specs/33-board-integration.md:L25-28
+    const payload: {
+      type: string;
+      title: string;
+      description: string | null;
+      status: string;
+      parentId?: string;
+    } = {
+      type: 'task',
+      title,
+      description: description ?? null,
+      status: defaultColumnId,
+    };
+
+    // Only include parentId if we have a current project context
+    if (state.currentProjectId) {
+      payload.parentId = state.currentProjectId;
+    }
+
     try {
       const response = await fetch('/api/issues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'task',
-          title,
-          description: description ?? null,
-          status: defaultColumnId,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
