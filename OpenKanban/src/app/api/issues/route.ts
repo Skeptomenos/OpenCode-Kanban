@@ -11,6 +11,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
+import { IssueService } from '@/services/issue-service';
 import { CreateIssueSchema, IssueFilterSchema } from '@/contract/pm/schemas';
 import type { IssueFilter } from '@/lib/db/repository';
 import { logger } from '@/lib/logger';
@@ -29,6 +30,7 @@ export async function GET(request: NextRequest) {
   try {
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new IssueService(repo);
 
     const searchParams = request.nextUrl.searchParams;
     const filter: IssueFilter = {};
@@ -59,7 +61,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const issues = repo.listIssues(
+    const issues = service.listIssues(
       Object.keys(filter).length > 0 ? filter : undefined
     );
 
@@ -91,6 +93,7 @@ export async function POST(request: NextRequest) {
   try {
     const db = getDb();
     const repo = new SqlitePMRepository(db);
+    const service = new IssueService(repo);
 
     let body: unknown;
     try {
@@ -120,7 +123,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const issue = repo.createIssue(result.data);
+    const issue = service.createIssue(result.data);
 
     return NextResponse.json({
       success: true,
