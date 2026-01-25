@@ -71,8 +71,9 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
             filePath,
             updatedAt: stat.mtimeMs
           });
-        } catch {
+        } catch (error) {
           // File may have been deleted between readdir and stat - skip
+          logger.debug('Session file stat failed, skipping', { filePath, error: String(error) });
         }
       }
     };
@@ -89,8 +90,9 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
         if ((await fs.promises.stat(projectPath)).isDirectory()) {
           await indexDir(projectPath);
         }
-      } catch {
+      } catch (error) {
         // Directory may have been deleted - skip
+        logger.debug('Project directory stat failed, skipping', { projectPath, error: String(error) });
       }
     }
 
