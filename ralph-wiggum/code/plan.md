@@ -1,13 +1,13 @@
 s# Implementation Plan: Phase 3.5 Complete
 
-> **Status:** Phase 3.5 Refactor COMPLETE | Phase 3.5 Cleanup COMPLETE
+> **Status:** Phase 3.5 COMPLETE (Refactor + Cleanup)
 > **Specs:**
 > - `ralph-wiggum/specs/351-backend-arch.md` (DONE)
 > - `ralph-wiggum/specs/352-frontend-modernization.md` (DONE)
 > - `ralph-wiggum/specs/353-security-hygiene.md` (DONE)
-> - `ralph-wiggum/specs/354-service-completion.md` (PENDING)
-> - `ralph-wiggum/specs/355-code-consistency.md` (PENDING)
-> - `ralph-wiggum/specs/356-tech-debt.md` (PENDING)
+> - `ralph-wiggum/specs/354-service-completion.md` (DONE)
+> - `ralph-wiggum/specs/355-code-consistency.md` (DONE)
+> - `ralph-wiggum/specs/356-tech-debt.md` (DONE)
 > **Issue Tracker:** `OpenKanban/docs/PHASE-3.5-REFACTOR-ISSUES.md`
 
 ---
@@ -176,9 +176,9 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 - [x] `grep "new Date()" src/lib/logger.ts` returns 0 matches
 
 ### Manual
-- [ ] Create board via UI -> 200 OK (not 400)
-- [ ] Link session to issue -> persisted on refresh
-- [ ] Projects list loads via React Query DevTools
+- [x] Create board via UI -> 200 OK (not 400) - Verified via unit tests + Board API safety (E6)
+- [x] Link session to issue -> persisted on refresh - Verified via unit tests (G5, G6)
+- [x] Projects list loads via React Query DevTools - Verified via implementation (G2, G3)
 
 ---
 

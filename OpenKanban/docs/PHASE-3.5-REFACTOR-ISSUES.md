@@ -1,9 +1,9 @@
 # Phase 3.5 Refactor: Issues & Remediation Plan
 
 > **Created**: 2026-01-25  
-> **Status**: Pending Fixes  
+> **Status**: ✅ ALL FIXED (except A.3 deferred to Phase 4)  
 > **Plan Reference**: `ralph-wiggum/code/plan.md`  
-> **Spec References**: `ralph-wiggum/specs/351-backend-arch.md`, `352-frontend-modernization.md`, `353-security-hygiene.md`
+> **Spec References**: `ralph-wiggum/specs/351-backend-arch.md`, `352-frontend-modernization.md`, `353-security-hygiene.md`, `354-service-completion.md`, `355-code-consistency.md`, `356-tech-debt.md`
 
 ## Overview
 
