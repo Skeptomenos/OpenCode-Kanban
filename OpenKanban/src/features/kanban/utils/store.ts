@@ -15,6 +15,7 @@ export type State = {
   columns: Column[];
   draggedTask: string | null;
   isLoading: boolean;
+  currentBoardId: string | null;
 };
 
 export type Actions = {
@@ -22,25 +23,74 @@ export type Actions = {
   setCols: (cols: Column[]) => void;
   dragTask: (id: string | null) => void;
   setIsLoading: (loading: boolean) => void;
+  setBoardId: (boardId: string | null) => void;
 
   // UI Helpers
   addTask: (title: string, description?: string) => Promise<void>;
-  addCol: (title: string) => void;
-  updateCol: (id: UniqueIdentifier, newName: string) => void;
-  removeCol: (id: UniqueIdentifier) => void;
+  addCol: (title: string) => Promise<void>;
+  updateCol: (id: UniqueIdentifier, newName: string) => Promise<void>;
+  removeCol: (id: UniqueIdentifier) => Promise<void>;
   removeTask: (id: string) => void;
 };
+
+/**
+ * Converts UI columns to board columnConfig format for API persistence.
+ * Each column maps to a status with the same ID.
+ */
+function columnsToColumnConfig(columns: Column[]): Array<{
+  id: string;
+  title: string;
+  statusMappings: string[];
+}> {
+  return columns.map((col) => ({
+    id: col.id.toString(),
+    title: col.title,
+    // Column ID equals the status it represents
+    statusMappings: [col.id.toString()],
+  }));
+}
+
+/**
+ * Persists the current column configuration to the board via API.
+ * Returns true on success, false on failure.
+ */
+async function persistColumnConfig(
+  boardId: string,
+  columns: Column[]
+): Promise<boolean> {
+  try {
+    const response = await fetch(`/api/boards/${boardId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        columnConfig: columnsToColumnConfig(columns),
+      }),
+    });
+
+    const result = await response.json();
+    if (!result.success) {
+      console.error('Failed to persist column config:', result.error?.message);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Failed to persist column config:', error);
+    return false;
+  }
+}
 
 export const useTaskStore = create<State & Actions>((set) => ({
   tasks: [],
   columns: [{ id: 'backlog', title: 'Backlog' }],
   draggedTask: null,
   isLoading: true,
+  currentBoardId: null,
 
   setTasks: (tasks: Task[]) => set({ tasks }),
   setCols: (columns: Column[]) => set({ columns }),
   dragTask: (draggedTask: string | null) => set({ draggedTask }),
   setIsLoading: (isLoading: boolean) => set({ isLoading }),
+  setBoardId: (currentBoardId: string | null) => set({ currentBoardId }),
 
   addTask: async (title: string, description?: string) => {
     const state = useTaskStore.getState();
@@ -83,31 +133,50 @@ export const useTaskStore = create<State & Actions>((set) => ({
     }
   },
 
-  // TODO: Connect to Phase 2 Storage Engine
-  addCol: (title: string) => {
-    console.warn('Persistence not implemented (Phase 2)');
-    set((state) => ({
-      columns: [...state.columns, { title, id: uuid() }]
-    }));
+  addCol: async (title: string) => {
+    const state = useTaskStore.getState();
+    const newColumn: Column = { title, id: uuid() };
+    const newColumns = [...state.columns, newColumn];
+
+    set({ columns: newColumns });
+
+    if (state.currentBoardId) {
+      const success = await persistColumnConfig(state.currentBoardId, newColumns);
+      if (!success) {
+        set({ columns: state.columns });
+      }
+    }
   },
 
-  // TODO: Connect to Phase 2 Storage Engine
-  updateCol: (id: UniqueIdentifier, newName: string) => {
-    console.warn('Persistence not implemented (Phase 2)');
-    set((state) => ({
-      columns: state.columns.map((col) =>
-        col.id === id ? { ...col, title: newName } : col
-      )
-    }));
+  updateCol: async (id: UniqueIdentifier, newName: string) => {
+    const state = useTaskStore.getState();
+    const newColumns = state.columns.map((col) =>
+      col.id === id ? { ...col, title: newName } : col
+    );
+
+    set({ columns: newColumns });
+
+    if (state.currentBoardId) {
+      const success = await persistColumnConfig(state.currentBoardId, newColumns);
+      if (!success) {
+        set({ columns: state.columns });
+      }
+    }
   },
 
-  // TODO: Connect to Phase 2 Storage Engine
-  removeCol: (id: UniqueIdentifier) => {
-    console.warn('Persistence not implemented (Phase 2)');
-    set((state) => ({
-      columns: state.columns.filter((col) => col.id !== id),
-      tasks: state.tasks.filter((task) => task.columnId !== id)
-    }));
+  removeCol: async (id: UniqueIdentifier) => {
+    const state = useTaskStore.getState();
+    const newColumns = state.columns.filter((col) => col.id !== id);
+    const newTasks = state.tasks.filter((task) => task.columnId !== id);
+
+    set({ columns: newColumns, tasks: newTasks });
+
+    if (state.currentBoardId) {
+      const success = await persistColumnConfig(state.currentBoardId, newColumns);
+      if (!success) {
+        set({ columns: state.columns, tasks: state.tasks });
+      }
+    }
   },
 
   removeTask: (id: string) =>
