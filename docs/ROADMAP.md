@@ -10,11 +10,12 @@ A local-first Project Management tool where:
 4.  **Local-First**: All data lives in `~/.local/share/opencode/storage` or the project root. No cloud database.
 
 ## 2. Architecture
--   **Framework**: Next.js 14 (App Router).
+-   **Framework**: Next.js 16 (App Router).
 -   **State**: Zustand (Global Store).
+-   **Database**: SQLite with Drizzle ORM (`data/kanban.db`).
 -   **Data Store**:
-    -   **PM Data**: `kanban.json` (New file for Issues/Hierarchy).
-    -   **Session Data**: `session/*.json` (Read-only reference).
+    -   **PM Data**: SQLite database (Issues, Boards, Labels, Config).
+    -   **Session Data**: `~/.local/share/opencode/storage/` (Read-only reference via adapter).
 -   **Routing**: `/project/[projectId]/board/[boardId]`.
 
 ---
@@ -35,11 +36,18 @@ A local-first Project Management tool where:
 - [x] Fix ESLint Configuration (resolved 2026-01-25).
 - [x] Remove "Session = Card" demo logic (resolved 2026-01-25).
 
-### Phase 2: The PM Data Layer
+### Phase 2: The PM Data Layer ✅ COMPLETE
 *Goal: Create the "brain" of the system.*
-- [ ] Define Schema (`Issue`, `Project`, `Board`) in `docs/SCHEMA.md`.
-- [ ] Create `storage-engine` (Read/Write `kanban.json`).
-- [ ] Create API routes (`GET/POST /api/issues`).
+- [x] Define Schema (`Issue`, `Project`, `Board`) in `docs/SCHEMA.md`.
+- [x] Create `storage-engine` (SQLite/Drizzle with TDD-verified repository).
+- [x] Create API routes (`GET/POST/PATCH/DELETE /api/issues`, `/api/boards`, `/api/issues/[id]/sessions`).
+
+**Phase 2 Deliverables (completed 2026-01-25):**
+- SQLite database with Drizzle ORM (`data/kanban.db`)
+- 42 passing repository tests (vitest)
+- Full CRUD API routes with Zod validation
+- Zustand store integration with API persistence
+- Session linking for issue-to-OpenCode integration
 
 ### Phase 3: Dynamic Routing & Sidebar
 *Goal: Navigate between projects.*
@@ -64,21 +72,24 @@ A local-first Project Management tool where:
 
 **Last Updated:** 2026-01-25
 
-**State:** Phase 1 COMPLETE. Ready for Phase 2.
+**State:** Phase 2 COMPLETE. Ready for Phase 3.
 
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Template cleanup | ✅ Done | 7 phases, ~47 files deleted (archived in `docs/_archive/`) |
 | Session loader | ✅ Done | Async I/O, reads from `~/.local/share/opencode/storage` |
-| API endpoint | ✅ Done | `GET /api/sessions` returns projects + sessions |
-| Kanban UI | ✅ Empty | Ready for Phase 2 (shows default Backlog column) |
-| Persistence | ❌ None | All state lost on refresh |
+| API endpoint | ✅ Done | `GET /api/sessions`, full CRUD for issues/boards |
+| Database | ✅ Done | SQLite with Drizzle ORM at `data/kanban.db` |
+| Repository | ✅ Done | TDD-verified with 42 tests (vitest) |
+| Kanban UI | ✅ Done | Connected to API, data persists across refresh |
+| Persistence | ✅ Done | SQLite-backed, survives browser refresh |
+| Session Links | ✅ Done | Issues can link to OpenCode sessions |
 | ESLint | ✅ Done | Fixed in Phase 1 Cleanup |
 
-**Next Action:** Start Phase 2 schema design.
+**Next Action:** Start Phase 3 dynamic routing and sidebar.
 
 **Documentation:**
 - `docs/ROADMAP.md` - This file (master roadmap)
 - `docs/ISSUES.md` - Technical debt tracker
 - `docs/TECH.md` - Stack decisions
-- `docs/SCHEMA.md` - To be created in Phase 2
+- `OpenKanban/docs/SCHEMA.md` - Data model specification (Phase 2)
