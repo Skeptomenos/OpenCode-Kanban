@@ -133,7 +133,7 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 21**: Create session types and query keys | `specs/4.10-link-session-ui.md:L88-192` | Done v0.3.99 - Session, SessionLink, SessionsResponse types + query keys |
-| [ ] | **Task 22**: Create session query and mutation hooks | `specs/4.10-link-session-ui.md:L195-369` | useSessions, useLinkSession, useSessionLinks |
+| [x] | **Task 22**: Create session query and mutation hooks | `specs/4.10-link-session-ui.md:L195-369` | Done v0.4.0 - useSessions, useLinkSession, useUnlinkSession, useSessionLinks |
 | [ ] | **Task 23**: Create LinkSessionDialog component | `specs/4.10-link-session-ui.md:L372-537` | Search, filter, link UI |
 | [ ] | **Task 24**: Create feature barrel export | `specs/4.10-link-session-ui.md:L553-590` | Export public API |
 | [ ] | **Task 25**: Integrate with task details | `specs/4.10-link-session-ui.md:L593-671` | Add to infobar/card actions |
