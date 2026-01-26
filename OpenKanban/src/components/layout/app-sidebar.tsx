@@ -11,6 +11,7 @@ import {
   SidebarRail
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DialogErrorBoundary } from '@/components/ui/dialog-error-boundary';
 import { CreateProjectDialog } from '@/features/projects/components/create-project-dialog';
 import { useProjects } from '@/features/projects/hooks/use-projects';
 import {
@@ -158,11 +159,13 @@ export function AppSidebar() {
                           <span>{board.name}</span>
                         </Link>
                       </SidebarMenuButton>
-                      <BoardActionsMenu
-                        boardId={board.id}
-                        boardName={board.name}
-                        projectId={projectId}
-                      />
+                      <DialogErrorBoundary>
+                        <BoardActionsMenu
+                          boardId={board.id}
+                          boardName={board.name}
+                          projectId={projectId}
+                        />
+                      </DialogErrorBoundary>
                     </SidebarMenuItem>
                   );
                 })

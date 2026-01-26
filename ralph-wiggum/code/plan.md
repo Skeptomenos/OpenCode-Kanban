@@ -74,7 +74,7 @@ pnpm run build && pnpm run lint
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 5**: Create `src/components/ui/dialog-error-boundary.tsx` | `specs/4.6-dialog-error-boundaries.md:L19-56` | Done v0.3.86 - uses logger for error logging |
-| [ ] | **Task 6**: Wrap `BoardActionsMenu` with `DialogErrorBoundary` in `app-sidebar.tsx` | `specs/4.6-dialog-error-boundaries.md:L59-70` | Import and wrap existing component |
+| [x] | **Task 6**: Wrap `BoardActionsMenu` with `DialogErrorBoundary` in `app-sidebar.tsx` | `specs/4.6-dialog-error-boundaries.md:L59-70` | Done v0.3.87 - imported and wrapped component |
 | [ ] | **Task 7**: Test error boundary catches render errors gracefully | `specs/4.6-dialog-error-boundaries.md:L76-82` | Dev-only test by throwing in dialog |
 
 **Files**:
