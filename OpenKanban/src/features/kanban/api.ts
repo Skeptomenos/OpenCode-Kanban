@@ -12,6 +12,7 @@ import {
   UpdateIssueSchema,
   CreateBoardSchema,
   UpdateBoardSchema,
+  MoveIssueSchema,
 } from '@/contract/pm/schemas';
 import type { Issue } from '@/lib/db/schema';
 import type { CreateIssueInput, UpdateIssueInput, ParentInfo } from '@/lib/db/repository';
@@ -502,6 +503,63 @@ export async function updateBoard(
   }
 
   let result: ApiResponse<BoardWithIssues>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
+
+  if (!result.success) {
+    throw new ApiError(
+      result.error.message,
+      result.error.code,
+      response.status
+    );
+  }
+
+  return result.data;
+}
+
+/**
+ * Input for moving an issue (drag-drop reordering).
+ * @see ralph-wiggum/specs/5.3-drag-persistence.md:L17-30
+ */
+export type MoveIssueInput = {
+  status: string;
+  prevIssueId: string | null;
+  nextIssueId: string | null;
+};
+
+/**
+ * Move an issue to a new position (drag-drop reordering).
+ * Updates both status (column) and sortOrder (position within column).
+ * Uses Schema.strip().parse() to strip unknown fields before sending.
+ * 
+ * @param id Issue ID to move
+ * @param input Move parameters: target status and neighbor issue IDs
+ * @returns The updated Issue
+ * @throws ApiError if the request fails
+ * @see ralph-wiggum/specs/5.3-drag-persistence.md:L17-30
+ */
+export async function moveIssue(
+  id: string,
+  input: MoveIssueInput
+): Promise<Issue> {
+  // CRITICAL: Strip unknown fields to prevent 400 errors from strict backend
+  const sanitizedInput = MoveIssueSchema.strip().parse(input);
+
+  let response: Response;
+  try {
+    response = await fetch(`/api/issues/${encodeURIComponent(id)}/move`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sanitizedInput),
+    });
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
+
+  let result: ApiResponse<Issue>;
   try {
     result = await response.json();
   } catch {

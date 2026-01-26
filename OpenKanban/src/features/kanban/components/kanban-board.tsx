@@ -18,7 +18,7 @@ import { logger } from '@/lib/logger';
 import { queryKeys, type BoardFilters } from '@/lib/query-keys';
 import { KANBAN_DIMENSIONS } from '@/lib/constants/ui-dimensions';
 import { BoardFilterControls } from '@/features/boards/components/board-filter-controls';
-import { fetchIssues, fetchBoards, fetchBoard, updateIssue } from '../api';
+import { fetchIssues, fetchBoards, fetchBoard, moveIssue } from '../api';
 import { ColumnMutationsProvider } from '../hooks/column-mutations-context';
 import {
   Announcements,
@@ -157,7 +157,8 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   const setBoardId = useTaskStore((state) => state.setBoardId);
   const setProjectId = useTaskStore((state) => state.setProjectId);
   const pickedUpTaskColumn = useRef<string>('');
-  const pendingStatusUpdates = useRef<Map<string, string>>(new Map());
+  /** Pending move operations: taskId -> { status, index in column } */
+  const pendingMoves = useRef<Map<string, { status: string; indexInColumn: number }>>(new Map());
   /** Store previous tasks state for rollback on mutation error */
   const previousTasksRef = useRef<Task[]>([]);
 
@@ -180,17 +181,21 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   });
 
   /**
-   * Mutation for updating issue status (used during drag-and-drop).
-   * @see specs/352-frontend-modernization.md:L56-61
+   * Mutation for moving issue (drag-and-drop with order persistence).
+   * @see ralph-wiggum/specs/5.3-drag-persistence.md:L32-48
    */
-  const updateIssueMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
-      updateIssue(id, { status }),
+  const moveIssueMutation = useMutation({
+    mutationFn: ({ id, status, prevIssueId, nextIssueId }: {
+      id: string;
+      status: string;
+      prevIssueId: string | null;
+      nextIssueId: string | null;
+    }) => moveIssue(id, { status, prevIssueId, nextIssueId }),
     onMutate: () => {
       previousTasksRef.current = tasks;
     },
     onError: (err) => {
-      logger.error('Failed to update issue status', { error: String(err) });
+      logger.error('Failed to move issue', { error: String(err) });
       setTasks(previousTasksRef.current);
     },
     onSettled: () => {
@@ -360,11 +365,22 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
 
     const { active, over } = event;
     
-    if (pendingStatusUpdates.current.size > 0) {
-      const updates = Array.from(pendingStatusUpdates.current.entries());
-      pendingStatusUpdates.current.clear();
-      updates.forEach(([taskId, newStatus]) => {
-        updateIssueMutation.mutate({ id: taskId, status: newStatus });
+    if (pendingMoves.current.size > 0) {
+      const currentTasks = useTaskStore.getState().tasks;
+      const moves = Array.from(pendingMoves.current.entries());
+      pendingMoves.current.clear();
+      
+      moves.forEach(([taskId, { status, indexInColumn }]) => {
+        const tasksInColumn = currentTasks.filter(t => t.columnId === status);
+        const prevIssueId = indexInColumn > 0 ? tasksInColumn[indexInColumn - 1]?.id ?? null : null;
+        const nextIssueId = indexInColumn < tasksInColumn.length - 1 ? tasksInColumn[indexInColumn + 1]?.id ?? null : null;
+        
+        moveIssueMutation.mutate({
+          id: taskId,
+          status,
+          prevIssueId,
+          nextIssueId,
+        });
       });
     }
     
@@ -451,13 +467,22 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       const activeTask = tasks[activeIndex];
       const overTask = tasks[overIndex];
       if (activeTask && overTask && activeTask.columnId !== overTask.columnId) {
-        pendingStatusUpdates.current.set(activeTask.id, overTask.columnId);
         const updatedTasks = tasks.map((t) =>
           t.id === activeTask.id ? { ...t, columnId: overTask.columnId } : t
         );
-        setTasks(arrayMove(updatedTasks, activeIndex, overIndex - 1));
+        const reorderedTasks = arrayMove(updatedTasks, activeIndex, overIndex - 1);
+        setTasks(reorderedTasks);
+        const tasksInNewColumn = reorderedTasks.filter(t => t.columnId === overTask.columnId);
+        const newIndex = tasksInNewColumn.findIndex(t => t.id === activeTask.id);
+        pendingMoves.current.set(activeTask.id, { status: overTask.columnId, indexInColumn: newIndex });
       } else {
-        setTasks(arrayMove(tasks, activeIndex, overIndex));
+        const reorderedTasks = arrayMove(tasks, activeIndex, overIndex);
+        setTasks(reorderedTasks);
+        if (activeTask) {
+          const tasksInColumn = reorderedTasks.filter(t => t.columnId === activeTask.columnId);
+          const newIndex = tasksInColumn.findIndex(t => t.id === activeTask.id);
+          pendingMoves.current.set(activeTask.id, { status: activeTask.columnId, indexInColumn: newIndex });
+        }
       }
     }
 
@@ -474,11 +499,13 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       const activeTask = tasks[activeIndex];
       const overIdStr = String(overId);
       if (activeTask && activeTask.columnId !== overIdStr) {
-        pendingStatusUpdates.current.set(activeTask.id, overIdStr);
         const updatedTasks = tasks.map((t) =>
           t.id === activeTask.id ? { ...t, columnId: overIdStr } : t
         );
-        setTasks(arrayMove(updatedTasks, activeIndex, activeIndex));
+        setTasks(updatedTasks);
+        const tasksInNewColumn = updatedTasks.filter(t => t.columnId === overIdStr);
+        const newIndex = tasksInNewColumn.findIndex(t => t.id === activeTask.id);
+        pendingMoves.current.set(activeTask.id, { status: overIdStr, indexInColumn: newIndex });
       }
     }
   }
