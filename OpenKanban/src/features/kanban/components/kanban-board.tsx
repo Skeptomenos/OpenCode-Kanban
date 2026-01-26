@@ -88,6 +88,7 @@ async function fetchKanbanData(
       title: issue.title,
       description: issue.description ?? undefined,
       columnId: issue.status,
+      parent: issue.parent ?? undefined,
     }));
   } else {
     tasks = boardData.issues.map((issue) => ({
@@ -95,6 +96,7 @@ async function fetchKanbanData(
       title: issue.title,
       description: issue.description ?? undefined,
       columnId: issue.status,
+      parent: issue.parent ?? undefined,
     }));
   }
 
