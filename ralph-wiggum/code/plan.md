@@ -38,7 +38,7 @@ This plan addresses **architectural issues** from Phase 3.5 audit that must be f
 | [x] | **Task 2.1**: Refactor `resolveBoardId()` in `kanban-board.tsx` - remove `createBoard()` call, return null or throw if no board found | `360:L27-46` | Done v0.3.58: Removed createBoard call, throws if no board |
 | [x] | **Task 2.2**: Handle "no board" state in parent route/component - show 404 or redirect | `360:L44-46` | Done v0.3.58: Verified parent route + error boundary handle this |
 | [x] | **Task 3.1**: Add `logger.warn` to all 5 silent JSON.parse catch blocks in `repository.ts` | `360:L55-64` | Done v0.3.59: Added logger.warn to lines 332, 390, 609, 642, 649 |
-| [ ] | **Task 4.1**: Create `src/lib/db/test-utils.ts` - centralize `createTestDb` helper | `360:L120-138` | Extract from `src/services/__tests__/issue-service.test.ts` pattern |
+| [x] | **Task 4.1**: Create `src/lib/db/test-utils.ts` - centralize `createTestDb` helper | `360:L120-138` | Done v0.3.60: Extracted createTestDb, updated issue-service.test.ts imports |
 | [ ] | **Task 4.2**: Create `src/app/api/issues/__tests__/route.test.ts` with GET, POST, filter tests | `360:L70-77` | 3 test cases using createTestDb integration pattern |
 | [ ] | **Task 4.3**: Create `src/app/api/boards/__tests__/route.test.ts` with GET, POST tests | `360:L78-84` | 2 test cases using createTestDb integration pattern |
 | [ ] | **Task 5.1**: Add `WelcomeScreen` export to `src/features/projects/index.ts` | `361:L13-15` | Currently missing from barrel |

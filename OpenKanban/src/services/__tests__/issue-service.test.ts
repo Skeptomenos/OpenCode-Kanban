@@ -1,73 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import Database from 'better-sqlite3';
-import { drizzle, type BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import * as schema from '../../lib/db/schema';
+import type Database from 'better-sqlite3';
+import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import { createTestDb, schema } from '../../lib/db/test-utils';
 import { SqlitePMRepository } from '../../lib/db/repository';
 import type { IPMRepository, CreateIssueInput } from '../../lib/db/repository';
 import { IssueService } from '../issue-service';
-
-function createTestDb(): {
-  db: BetterSQLite3Database<typeof schema>;
-  sqlite: Database.Database;
-} {
-  const sqlite = new Database(':memory:');
-  sqlite.pragma('foreign_keys = ON');
-
-  sqlite.exec(`
-    CREATE TABLE issues (
-      id TEXT PRIMARY KEY,
-      type TEXT NOT NULL,
-      parent_id TEXT REFERENCES issues(id) ON DELETE CASCADE,
-      title TEXT NOT NULL,
-      description TEXT,
-      status TEXT NOT NULL DEFAULT 'backlog',
-      metadata TEXT,
-      created_at INTEGER NOT NULL,
-      updated_at INTEGER NOT NULL
-    );
-
-    CREATE TABLE issue_sessions (
-      issue_id TEXT NOT NULL REFERENCES issues(id) ON DELETE CASCADE,
-      session_id TEXT NOT NULL,
-      link_type TEXT,
-      created_at INTEGER NOT NULL,
-      PRIMARY KEY (issue_id, session_id)
-    );
-
-    CREATE TABLE labels (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      color TEXT
-    );
-
-    CREATE TABLE issue_labels (
-      issue_id TEXT NOT NULL REFERENCES issues(id) ON DELETE CASCADE,
-      label_id TEXT NOT NULL REFERENCES labels(id) ON DELETE CASCADE,
-      PRIMARY KEY (issue_id, label_id)
-    );
-
-    CREATE TABLE boards (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      filters TEXT NOT NULL,
-      column_config TEXT NOT NULL,
-      created_at INTEGER NOT NULL,
-      updated_at INTEGER NOT NULL
-    );
-
-    CREATE TABLE config (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
-    );
-
-    CREATE INDEX idx_issues_parent ON issues(parent_id);
-    CREATE INDEX idx_issues_type ON issues(type);
-    CREATE INDEX idx_issues_status ON issues(status);
-  `);
-
-  const db = drizzle(sqlite, { schema });
-  return { db, sqlite };
-}
 
 describe('IssueService', () => {
   let db: BetterSQLite3Database<typeof schema>;
