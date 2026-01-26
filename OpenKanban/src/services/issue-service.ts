@@ -20,11 +20,11 @@ const DEFAULT_OWNER_ID = 'local-owner';
 
 export class IssueService {
   /**
-   * @todo Phase 4: Implement BOLA enforcement
+   * @todo Future: Implement BOLA enforcement (multi-tenant support)
    * - Add ownerId column to database schema
    * - Pass ownerId to all repository methods
    * - Filter queries by owner for multi-tenant security
-   * @see OpenKanban/docs/phase3.5-issues2.md#f4-bola-stubs-inert
+   * @see docs/ISSUES.md for tracking
    */
   constructor(
     private readonly repo: IPMRepository,

@@ -124,7 +124,7 @@ pnpm run build && pnpm run lint
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 10**: Update BOLA TODO comment from "Phase 4" to "Future" | `docs/phase4-board-management-issues.md:L227-258` | board-service.ts:21-26, issue-service.ts |
+| [x] | **Task 10**: Update BOLA TODO comment from "Phase 4" to "Future" | `docs/phase4-board-management-issues.md:L227-258` | Done v0.3.90 - issue-service.ts (board-service.ts already fixed) |
 | [ ] | **Task 11**: Add JSDoc header to `src/features/boards/index.ts` barrel | `docs/phase4-board-management-issues.md:L262-300` | Module-level documentation |
 | [ ] | **Task 12**: Add clarifying comment for `useBoards(projectId ?? '')` pattern | `docs/phase4-board-management-issues.md:L34-63` | Explain `enabled` guard in app-sidebar.tsx |
 
