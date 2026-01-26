@@ -154,11 +154,12 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
     return projects;
   }
 
-  async getAllSessions(): Promise<OpenCodeSession[]> {
+  async getAllSessions(query?: string): Promise<OpenCodeSession[]> {
     const sessionBaseDir = path.join(this.storagePath, 'session');
     if (!fs.existsSync(sessionBaseDir)) return [];
 
     const sessionsMap = new Map<string, OpenCodeSession>();
+    const searchTerm = query?.toLowerCase().trim();
 
     const processDir = async (dirPath: string) => {
       if (!fs.existsSync(dirPath)) return;
@@ -177,19 +178,24 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
           const content = await fs.promises.readFile(path.join(dirPath, file), 'utf-8');
           const raw = JSON.parse(content);
           
-          // Zod Validation
           const result = SessionSchema.safeParse(raw);
           if (result.success) {
-            sessionsMap.set(result.data.id, result.data);
+            const session = result.data;
+            
+            if (searchTerm) {
+              const matchesTitle = session.title.toLowerCase().includes(searchTerm);
+              const matchesId = session.id.toLowerCase().includes(searchTerm);
+              if (!matchesTitle && !matchesId) continue;
+            }
+            
+            sessionsMap.set(session.id, session);
           }
         } catch (error) {
-          // Log error but continue processing other files - allows partial results
           logger.warn('Failed to read/parse session file', { dirPath, file, error: String(error) });
         }
       }
     };
 
-    // 1. Global Sessions
     await processDir(path.join(sessionBaseDir, 'global'));
 
     let dirs: string[];

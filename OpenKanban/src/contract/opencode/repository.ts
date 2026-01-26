@@ -4,8 +4,9 @@ export interface IOpenCodeRepository {
   /**
    * Get all available sessions from storage.
    * Sorted by updated time (descending).
+   * @param query Optional search query - filters by title/id substring match (case-insensitive)
    */
-  getAllSessions(): Promise<OpenCodeSession[]>;
+  getAllSessions(query?: string): Promise<OpenCodeSession[]>;
 
   /**
    * Get all registered projects.

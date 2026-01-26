@@ -9,8 +9,8 @@ import type { OpenCodeProject, OpenCodeSession } from '../contract/opencode/type
 export class OpenCodeService {
   constructor(private readonly adapter: IOpenCodeRepository) {}
 
-  async getAllSessions(): Promise<OpenCodeSession[]> {
-    return this.adapter.getAllSessions();
+  async getAllSessions(query?: string): Promise<OpenCodeSession[]> {
+    return this.adapter.getAllSessions(query);
   }
 
   async getAllProjects(): Promise<OpenCodeProject[]> {
