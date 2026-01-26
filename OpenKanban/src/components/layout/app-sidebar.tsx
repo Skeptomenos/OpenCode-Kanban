@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import {
   Sidebar,
   SidebarContent,
@@ -8,35 +9,146 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarRail
 } from '@/components/ui/sidebar';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DialogErrorBoundary } from '@/components/ui/dialog-error-boundary';
 import { CreateProjectDialog } from '@/features/projects/components/create-project-dialog';
+import { ProjectActionsMenu } from '@/features/projects/components/project-actions-menu';
 import { useProjects } from '@/features/projects/hooks/use-projects';
 import {
   CreateBoardDialog,
   BoardActionsMenu,
   useBoards,
 } from '@/features/boards';
-import { IconFolder, IconPlus, IconLayoutKanban } from '@tabler/icons-react';
+import { IconFolder, IconPlus, IconLayoutKanban, IconChevronRight } from '@tabler/icons-react';
 import Link from 'next/link';
-import { usePathname, useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
+interface ProjectTreeItemProps {
+  project: { id: string; title: string };
+  isActive: boolean;
+  pathname: string;
+}
+
+/**
+ * Collapsible project item with nested boards.
+ * @see specs/5.1-sidebar-overhaul.md:L7-15
+ */
+function ProjectTreeItem({ project, isActive, pathname }: ProjectTreeItemProps) {
+  const [isOpen, setIsOpen] = useState(isActive);
+
+  const { boards, isLoading: boardsLoading, error: boardsError } = useBoards(
+    isOpen ? project.id : ''
+  );
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="group/collapsible">
+      <SidebarMenuItem className="group/project">
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton
+            tooltip={project.title}
+            isActive={isActive}
+            className="pr-8"
+          >
+            <IconChevronRight
+              className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+            />
+            <IconFolder className="h-4 w-4 shrink-0" />
+            <span className="truncate">{project.title}</span>
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        
+        <DialogErrorBoundary>
+          <ProjectActionsMenu
+            projectId={project.id}
+            projectTitle={project.title}
+          />
+        </DialogErrorBoundary>
+      </SidebarMenuItem>
+
+      <CollapsibleContent>
+        <SidebarMenuSub>
+          <SidebarMenuSubItem>
+            <CreateBoardDialog parentId={project.id}>
+              <SidebarMenuSubButton
+                className="cursor-pointer text-muted-foreground hover:text-foreground"
+              >
+                <IconPlus className="h-3 w-3" />
+                <span>New Board</span>
+              </SidebarMenuSubButton>
+            </CreateBoardDialog>
+          </SidebarMenuSubItem>
+
+          {boardsLoading && (
+            <>
+              <SidebarMenuSubItem>
+                <div className="flex items-center gap-2 px-2 py-1">
+                  <Skeleton className="h-3 w-3" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </SidebarMenuSubItem>
+            </>
+          )}
+
+          {boardsError && !boardsLoading && (
+            <SidebarMenuSubItem>
+              <div className="px-2 py-1 text-xs text-muted-foreground">
+                Failed to load boards
+              </div>
+            </SidebarMenuSubItem>
+          )}
+
+          {!boardsLoading && !boardsError && boards.map((board) => {
+            const isBoardActive = pathname.includes(`/board/${board.id}`);
+
+            return (
+              <SidebarMenuSubItem key={board.id} className="group/board">
+                <SidebarMenuSubButton
+                  asChild
+                  isActive={isBoardActive}
+                >
+                  <Link href={`/project/${project.id}/board/${board.id}`}>
+                    <IconLayoutKanban className="h-3.5 w-3.5" />
+                    <span>{board.name}</span>
+                  </Link>
+                </SidebarMenuSubButton>
+                <DialogErrorBoundary>
+                  <BoardActionsMenu
+                    boardId={board.id}
+                    boardName={board.name}
+                    projectId={project.id}
+                  />
+                </DialogErrorBoundary>
+              </SidebarMenuSubItem>
+            );
+          })}
+
+          {!boardsLoading && !boardsError && boards.length === 0 && (
+            <SidebarMenuSubItem>
+              <div className="px-2 py-1 text-xs text-muted-foreground">
+                No boards yet
+              </div>
+            </SidebarMenuSubItem>
+          )}
+        </SidebarMenuSub>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
+/** @see specs/5.1-sidebar-overhaul.md:L7-15 */
 export function AppSidebar() {
   const pathname = usePathname();
-  const params = useParams<{ projectId?: string }>();
-  const projectId = params.projectId;
-
   const { projects, isLoading, error, refresh } = useProjects();
-  
-  // Fetch boards only when inside a project
-  // Note: Hook is safe to call with empty string - `enabled` guard prevents fetch
-  const {
-    boards,
-    isLoading: boardsLoading,
-    error: boardsError,
-  } = useBoards(projectId ?? '');
 
   return (
     <Sidebar collapsible='icon'>
@@ -88,91 +200,17 @@ export function AppSidebar() {
                 const isActive = pathname.includes(`/project/${project.id}`);
                 
                 return (
-                  <SidebarMenuItem key={project.id}>
-                    <SidebarMenuButton
-                      asChild
-                      tooltip={project.title}
-                      isActive={isActive}
-                    >
-                      <Link href={`/project/${project.id}`}>
-                        <IconFolder className='h-4 w-4' />
-                        <span>{project.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <ProjectTreeItem
+                    key={project.id}
+                    project={project}
+                    isActive={isActive}
+                    pathname={pathname}
+                  />
                 );
               })
             )}
           </SidebarMenu>
         </SidebarGroup>
-
-        {projectId && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Project Boards</SidebarGroupLabel>
-            <CreateBoardDialog parentId={projectId}>
-              <SidebarGroupAction title='Create Board' aria-label='Create Board'>
-                <IconPlus className='h-4 w-4' />
-                <span className='sr-only'>Create Board</span>
-              </SidebarGroupAction>
-            </CreateBoardDialog>
-            <SidebarMenu>
-              {boardsLoading ? (
-                <>
-                  <SidebarMenuItem>
-                    <div className='flex items-center gap-2 px-2 py-1.5'>
-                      <Skeleton className='h-4 w-4' />
-                      <Skeleton className='h-4 w-24' />
-                    </div>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <div className='flex items-center gap-2 px-2 py-1.5'>
-                      <Skeleton className='h-4 w-4' />
-                      <Skeleton className='h-4 w-20' />
-                    </div>
-                  </SidebarMenuItem>
-                </>
-              ) : boardsError ? (
-                <SidebarMenuItem>
-                  <div className='px-2 py-1.5 text-sm text-muted-foreground'>
-                    Failed to load boards
-                  </div>
-                </SidebarMenuItem>
-              ) : boards.length === 0 ? (
-                <SidebarMenuItem>
-                  <div className='px-2 py-1.5 text-sm text-muted-foreground'>
-                    No boards yet
-                  </div>
-                </SidebarMenuItem>
-              ) : (
-                boards.map((board) => {
-                  const isBoardActive = pathname.includes(`/board/${board.id}`);
-
-                  return (
-                    <SidebarMenuItem key={board.id} className='group/board'>
-                      <SidebarMenuButton
-                        asChild
-                        tooltip={board.name}
-                        isActive={isBoardActive}
-                      >
-                        <Link href={`/project/${projectId}/board/${board.id}`}>
-                          <IconLayoutKanban className='h-4 w-4' />
-                          <span>{board.name}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                      <DialogErrorBoundary>
-                        <BoardActionsMenu
-                          boardId={board.id}
-                          boardName={board.name}
-                          projectId={projectId}
-                        />
-                      </DialogErrorBoundary>
-                    </SidebarMenuItem>
-                  );
-                })
-              )}
-            </SidebarMenu>
-          </SidebarGroup>
-        )}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
