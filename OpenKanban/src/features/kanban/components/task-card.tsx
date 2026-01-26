@@ -3,13 +3,37 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useInfobar, type InfobarContent } from '@/components/ui/infobar';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import type { Task, TaskDragData } from '../types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { cva } from 'class-variance-authority';
-import { IconGripVertical } from '@tabler/icons-react';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import {
+  IconGripVertical,
+  IconFolder,
+  IconFlag,
+  IconTarget,
+  IconBook,
+  IconSquareCheck
+} from '@tabler/icons-react';
+
+/**
+ * Icon mapping for parent type display in hierarchy badge.
+ * Each issue type maps to a distinctive Tabler icon.
+ *
+ * WHY: Users need visual cues to quickly identify parent type
+ * without reading text. Consistent iconography across the app.
+ *
+ * @see ralph-wiggum/specs/4.9-hierarchical-display.md:L328-343
+ */
+const PARENT_TYPE_ICONS: Record<string, typeof IconFolder> = {
+  project: IconFolder,
+  milestone: IconFlag,
+  epic: IconTarget,
+  story: IconBook,
+  task: IconSquareCheck
+};
 
 interface TaskCardProps {
   task: Task;
@@ -81,6 +105,17 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
       )}
       onClick={handleCardClick}
     >
+      {task.parent && (
+        <div className="flex items-center gap-1 px-3 pt-2 text-xs text-muted-foreground">
+          {(() => {
+            const Icon = PARENT_TYPE_ICONS[task.parent.type] ?? IconFolder;
+            return <Icon className="h-3 w-3 flex-shrink-0" />;
+          })()}
+          <span className="truncate max-w-[200px]" title={task.parent.title}>
+            {task.parent.title}
+          </span>
+        </div>
+      )}
       <CardHeader className='space-between border-secondary relative flex flex-row border-b-2 px-3 py-3'>
         <Button
           variant={'ghost'}

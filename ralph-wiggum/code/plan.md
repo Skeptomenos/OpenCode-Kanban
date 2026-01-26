@@ -26,7 +26,7 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 | Tech Debt (Quick) | LOW | 30 min | 10-12 | COMPLETE |
 | **BUILD FIX** | **CRITICAL** | 15 min | 13.5 | **COMPLETE (v0.3.92)** |
 | Phase 4.7 Filter Builder | HIGH | 2-3 hr | 13-15 | COMPLETE (v0.3.93) |
-| Phase 4.9 Hierarchical Display | MEDIUM | 3-4 hr | 16-20 | NOT STARTED |
+| Phase 4.9 Hierarchical Display | MEDIUM | 3-4 hr | 16-20 | COMPLETE (v0.3.98) |
 | Phase 4.10 Link Session UI | MEDIUM | 3-4 hr | 21-25 | NOT STARTED |
 
 ---
@@ -114,7 +114,7 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 | [x] | **Task 17**: Update repository with parent metadata | `specs/4.9-hierarchical-display.md:L134-190` | Done v0.3.95 - Added IssueWithParent type, listIssues returns parent info via batch query |
 | [x] | **Task 18**: Update frontend API mapping | `specs/4.9-hierarchical-display.md:L193-252` | Done v0.3.96 - Updated fetchIssues return type to IssueWithParent[], updated IssueService |
 | [x] | **Task 19**: Map parent in fetchKanbanData | `specs/4.9-hierarchical-display.md:L255-302` | Done v0.3.97 - Added parent field to Task mapping in both projectId and board paths |
-| [ ] | **Task 20**: Add parent badge to TaskCard | `specs/4.9-hierarchical-display.md:L305-406` | Type-specific icons, truncation |
+| [x] | **Task 20**: Add parent badge to TaskCard | `specs/4.9-hierarchical-display.md:L305-406` | Done v0.3.98 - Added PARENT_TYPE_ICONS mapping, parent badge UI with type icon + truncated title |
 
 **Files**:
 - `src/features/kanban/types.ts` (MODIFY - Task 16)
@@ -224,7 +224,7 @@ pnpm test         # All tests pass (140+ expected)
 **Manual Verification Checklist**:
 - [x] Build passes (Fixed in Task 13.5)
 - [x] Filter dropdown filters tasks on board (Done v0.3.93)
-- [ ] Cards show parent indicator when applicable
+- [x] Cards show parent indicator when applicable (Done v0.3.98)
 - [ ] Session linking modal searches and links correctly
 - [ ] Linked sessions visible in task details
 
