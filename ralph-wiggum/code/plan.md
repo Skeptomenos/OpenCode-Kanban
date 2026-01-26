@@ -43,7 +43,7 @@ This plan addresses **architectural issues** from Phase 3.5 audit that must be f
 | [x] | **Task 4.3**: Create `src/app/api/boards/__tests__/route.test.ts` with GET, POST tests | `360:L78-84` | Done v0.3.62: 9 tests (GET/POST/filters/errors) using mock pattern |
 | [x] | **Task 5.1**: Add `WelcomeScreen` export to `src/features/projects/index.ts` | `361:L13-15` | Done v0.3.63: Added export, updated app imports |
 | [x] | **Task 5.2**: Create `src/features/kanban/index.ts` barrel file | `361:L25-30` | Done v0.3.64: Exports KanbanBoard, KanbanViewPage, useTaskStore, useColumnMutations, API functions, types |
-| [ ] | **Task 5.3**: Refactor `src/features/kanban/utils/index.ts` - move `hasDraggableData` logic to `helpers.ts`, make index.ts pure re-export | `361:L33-34`, `364:L33-34` | Pseudo-barrel fix |
+| [x] | **Task 5.3**: Refactor `src/features/kanban/utils/index.ts` - move `hasDraggableData` logic to `helpers.ts`, make index.ts pure re-export | `361:L33-34`, `364:L33-34` | Done v0.3.65: Created helpers.ts, made index.ts pure re-export |
 | [ ] | **Task 5.4**: Update app layer imports to use barrel exports | `361:L41` | `src/app/page.tsx`, `src/app/project/[projectId]/board/[boardId]/page.tsx` |
 | [ ] | **Task 6.1**: Run full verification suite | `360:L87-90` | `npm run build && npm run test && npm run lint` |
 | [ ] | **Task 6.2**: Commit changes with message: "fix: resolve Phase 3.6a critical issues" | - | Only after all verification passes |
