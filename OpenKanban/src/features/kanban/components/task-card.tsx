@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Task } from '../utils/store';
+import type { Task, TaskDragData } from '../types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { cva } from 'class-variance-authority';
@@ -10,13 +10,6 @@ import { Badge } from '@/components/ui/badge';
 interface TaskCardProps {
   task: Task;
   isOverlay?: boolean;
-}
-
-export type TaskType = 'Task';
-
-export interface TaskDragData {
-  type: TaskType;
-  task: Task;
 }
 
 export function TaskCard({ task, isOverlay }: TaskCardProps) {

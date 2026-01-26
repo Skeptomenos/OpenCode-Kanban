@@ -11,7 +11,8 @@ function ClientPortal({ children }: { children: ReactNode }) {
   const isClient = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   return isClient ? createPortal(children, document.body) : null;
 }
-import { Task, useTaskStore } from '../utils/store';
+import { useTaskStore } from '../utils/store';
+import type { Task, Column } from '../types';
 import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
 import { queryKeys } from '@/lib/query-keys';
@@ -32,7 +33,6 @@ import {
 } from '@dnd-kit/core';
 import { SortableContext, arrayMove } from '@dnd-kit/sortable';
 import { BoardColumn, BoardContainer } from './board-column';
-import type { Column } from './board-column';
 import { NewSectionDialog } from './new-section-dialog';
 import { TaskCard } from './task-card';
 

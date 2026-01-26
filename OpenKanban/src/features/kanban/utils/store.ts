@@ -1,12 +1,7 @@
 import { create } from 'zustand';
-import { Column } from '../components/board-column';
+import type { Column, Task } from '../types';
 
-export type Task = {
-  id: string;
-  title: string;
-  description?: string;
-  columnId: string;
-};
+export type { Task } from '../types';
 
 export type State = {
   tasks: Task[];

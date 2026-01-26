@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import type { UniqueIdentifier } from '@dnd-kit/core';
 import { updateBoard } from '../api';
 import { useTaskStore } from '../utils/store';
-import type { Column } from '../components/board-column';
+import type { Column } from '../types';
 import { queryKeys } from '@/lib/query-keys';
 import { logger } from '@/lib/logger';
 

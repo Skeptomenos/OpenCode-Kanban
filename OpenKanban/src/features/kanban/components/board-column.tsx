@@ -1,5 +1,6 @@
-import { Task, useTaskStore } from '../utils/store';
-import { useDndContext, type UniqueIdentifier } from '@dnd-kit/core';
+import { useTaskStore } from '../utils/store';
+import type { Task, Column, ColumnDragData } from '../types';
+import { useDndContext } from '@dnd-kit/core';
 import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { cva } from 'class-variance-authority';
@@ -12,17 +13,7 @@ import { ColumnActions } from './column-action';
 import { TaskCard } from './task-card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-export interface Column {
-  id: UniqueIdentifier;
-  title: string;
-}
-
-export type ColumnType = 'Column';
-
-export interface ColumnDragData {
-  type: ColumnType;
-  column: Column;
-}
+export type { Column } from '../types';
 
 interface BoardColumnProps {
   column: Column;

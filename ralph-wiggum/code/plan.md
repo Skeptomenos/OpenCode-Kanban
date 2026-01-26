@@ -1,115 +1,52 @@
-# Implementation Plan: Phase 3.5 Final Polish
+# Implementation Plan: Phase 3.6 - Critical Fixes & Code Organization
 
-> **Status:** Block 3 (Final Polish) COMPLETE
-> **Specs:**
-> - `ralph-wiggum/specs/351-backend-arch.md` (DONE)
-> - `ralph-wiggum/specs/352-frontend-modernization.md` (DONE)
-> - `ralph-wiggum/specs/353-security-hygiene.md` (DONE)
-> - `ralph-wiggum/specs/354-service-completion.md` (DONE)
-> - `ralph-wiggum/specs/355-code-consistency.md` (DONE)
-> - `ralph-wiggum/specs/356-tech-debt.md` (DONE)
-> - `ralph-wiggum/specs/357-type-safety.md` (DONE)
-> - `ralph-wiggum/specs/358-code-quality.md` (DONE)
-> - `ralph-wiggum/specs/359-documentation.md` (DONE)
-> **Issue Tracker:** `OpenKanban/docs/phase3.5-issues2.md`
+> **Status:** Ready for Implementation  
+> **Specs:** 
+> - `ralph-wiggum/specs/360-critical-fixes.md` (Critical)
+> - `ralph-wiggum/specs/361-code-organization.md` (Barrels)
+> **Reference:** `OpenKanban/docs/ROADMAP.md`  
+> **Created:** 2026-01-26  
+> **Estimated Effort:** ~2 hours
 
 ---
 
-## Phase 3.5 Refactor (COMPLETE)
+## Executive Summary
 
-All 21 tasks completed. Build passes, lint passes, 76 tests pass.
+This plan addresses **architectural issues** from Phase 3.5 audit that must be fixed before proceeding to Phase 4. It consolidates Specs 360 (critical fixes) and 361 (code organization) into a cohesive set of 15 tasks.
 
-<details>
-<summary>Click to expand completed tasks</summary>
+**Deferred to Phase 3.6b:**
+- Spec 362 (Error Handling refinements)
+- Spec 363 (Type Safety & Component Tests)
+- Spec 364 (Documentation & Hygiene)
 
-### Part A: Backend Architecture
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **A1**: Create `src/lib/date-utils.ts` with `now()` wrapper | `353:L41-46` | Done v0.3.1 |
-| [x] | **A2**: Add `.strict()` to Zod schemas | `351:L45-55` | Done v0.3.2 |
-| [x] | **A3**: Create Issue Service + Tests (TDD) | `351:L14-42` | Done v0.3.3 |
-| [x] | **A4**: Create Board Service + Tests (TDD) | `351:L23-28` | Done v0.3.4 |
-| [x] | **A5**: Add BOLA stubs to Services | `353:L10-18` | Done v0.3.5 |
-| [x] | **A6**: Refactor `/api/issues/route.ts` to use Service | `351:L59-73` | Done v0.3.6 |
-| [x] | **A7**: Refactor `/api/issues/[id]/route.ts` to use Service | `351:L75-79` | Done v0.3.7 |
-| [x] | **A8**: Refactor `/api/boards/route.ts` to use Service | `351:L76-79` | Done v0.3.8 |
-| [x] | **A9**: Refactor `/api/boards/[id]/route.ts` to use Service | `351:L76-79` | Done v0.3.9 |
-
-### Part B: Frontend Modernization
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **B1**: Install TanStack Query | `352:L12-13` | Done v0.3.10 |
-| [x] | **B2**: Create QueryClient + Provider | `352:L14-15` | Done v0.3.11 |
-| [x] | **B3**: Create `src/features/kanban/api.ts` fetcher layer | `352:L19-25` | Done v0.3.12 |
-| [x] | **B4**: Refactor Zustand store - remove async actions | `352:L29-38` | Done v0.3.13 |
-| [x] | **B5**: Refactor KanbanViewPage to useQuery | `352:L44-54` | Done v0.3.14 |
-| [x] | **B6**: Add mutations for CRUD operations | `352:L56-61` | Done v0.3.15 |
-| [x] | **B7**: Wire column operations to mutations | `352:L56-61` | Done v0.3.16 |
-
-### Part C: Code Hygiene
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **C1**: Convert default exports - kanban components | `353:L34-37` | Done v0.3.17 |
-| [x] | **C2**: Convert default exports - layout components | `353:L34-37` | Done v0.3.18 |
-| [x] | **C3**: Convert default exports - kbar components | `353:L34-37` | Done v0.3.19 |
-| [x] | **C4**: Add ESLint no-default-export rule | `353:L24-32` | Done v0.3.20 |
-
-### Part D: Verification
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **D1**: Full verification suite | `351:L84-85` | Done v0.3.21 - Build/lint/76 tests pass |
-
-</details>
+**Priority Order:**
+1. Circular dependency fix (types extraction)
+2. Query side effect removal
+3. Silent catch block logging
+4. Route integration tests
+5. Barrel file standardization
 
 ---
 
-## Phase 3.5 Cleanup (COMPLETE)
-
-Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.5-REFACTOR-ISSUES.md`.
-
-### Part E: Service Layer Completion (~45 min)
+## Tasks
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **E1**: Create `OpenCodeService` class | `354:L10-26` | Done v0.3.22 - Wrap LocalOpenCodeAdapter. Issue A.1 |
-| [x] | **E2**: Add session linking methods to `IssueService` | `354:L36-41` | Done v0.3.23 - `getSessionLinks`, `linkSession`, `unlinkSession`. Issues A.2, G.1 |
-| [x] | **E3**: Refactor `/api/sessions/route.ts` to use OpenCodeService | `354:L27-29` | Done v0.3.22 - Issue A.1 |
-| [x] | **E4**: Refactor `/api/issues/[id]/sessions/route.ts` to use IssueService | `354:L43-46` | Done v0.3.24 - Issue A.2 |
-| [x] | **E5**: Refactor `/api/issues/[id]/sessions/[sessionId]/route.ts` to use IssueService | `354:L43-46` | Done v0.3.25 - Issue A.2 |
-| [x] | **E6**: Add `.strip().parse()` to Board API fetchers | `354:L51-59` | Done v0.3.26 - `createBoard`, `updateBoard`. Issue D.1 |
-| [x] | **E7**: Add tests for `OpenCodeService` | `354:L67-70` | Done v0.3.27 - 9 tests: getAllSessions, getAllProjects, getSessionById, error propagation |
-| [x] | **E8**: Add tests for session linking methods in `IssueService` | `354:L72-74` | Done v0.3.28 - 6 tests: getSessionLinks (2), linkSession (3), unlinkSession (1) |
-
-### Part F: Code Consistency (~30 min)
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **F1**: Add `nowISO()` to `date-utils.ts` | `355:L13-14` | Done v0.3.29 - Issue B.1 |
-| [x] | **F2**: Update `logger.ts` to use `nowISO()` | `355:L17-18` | Done v0.3.30 - Issue B.1 |
-| [x] | **F3**: Add `.strict()` to PM support schemas | `355:L25-31` | Done v0.3.31 - 6 schemas. Issue C.1 |
-| [x] | **F4**: Add `.strict()` to OpenCode schemas | `355:L35-41` | Done v0.3.32 - 5 schemas + 2 nested objects. Issue C.2 |
-| [x] | **F5**: Deduplicate types in `api.ts` | `355:L48-50` | Done v0.3.33 - Import CreateIssueInput, UpdateIssueInput from repository. Issue F.1 |
-
-### Part G: Technical Debt (~45 min)
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **G1**: Create `src/features/projects/api.ts` | `356:L13-15` | Done v0.3.34 - `fetchProjects`, `createProject`. Issue D.2 |
-| [x] | **G2**: Refactor `use-projects.ts` to use `useQuery` | `356:L18-20` | Done v0.3.35 - Issue D.2 |
-| [x] | **G3**: Refactor `create-project-dialog.tsx` to use `useMutation` | `356:L23-25` | Done v0.3.36 - Issue D.2 |
-| [x] | **G4**: Create tests for `/api/sessions` route | `356:L32-37` | Done v0.3.37 - 3 tests: success, empty state, error propagation. Issue E.1 |
-| [x] | **G5**: Create tests for `/api/issues/[id]/sessions` route | `356:L40-46` | Done v0.3.38 - 7 tests: GET (2), POST (5). Issue E.1 |
-| [x] | **G6**: Create tests for `/api/issues/[id]/sessions/[sessionId]` route | `356:L48-51` | Done v0.3.39 - 2 tests: DELETE success, DELETE 404. Issue E.1 |
-
-### Part H: Final Verification
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **H1**: Run full verification suite | `354:L77-80`, `355:L54-58`, `356:L55-59` | Done v0.3.40 - Build/lint pass, 104 tests pass, all grep checks pass |
+| [x] | **Task 1.1**: Create `src/features/kanban/types.ts` - extract `Column` interface from `board-column.tsx:15` and `Task` type from `store.ts:4` | `360:L13-15` | Done v0.3.10: Extracted all 6 types to types.ts |
+| [x] | **Task 1.2**: Update imports in `store.ts`, `board-column.tsx`, `task-card.tsx`, `kanban-board.tsx` to use new `types.ts` | `360:L18-20` | Done v0.3.10: Also updated utils/index.ts, hooks/use-column-mutations.ts |
+| [x] | **Task 1.3**: Verify circular dependency resolved with `npm run build` | `360:L88` | Done v0.3.10: Build + lint + tests all pass |
+| [ ] | **Task 2.1**: Refactor `resolveBoardId()` in `kanban-board.tsx` - remove `createBoard()` call, return null or throw if no board found | `360:L27-46` | Query functions must be pure - no mutations |
+| [ ] | **Task 2.2**: Handle "no board" state in parent route/component - show 404 or redirect | `360:L44-46` | Parent ensures board exists before rendering KanbanBoard |
+| [ ] | **Task 3.1**: Add `logger.warn` to all 5 silent JSON.parse catch blocks in `repository.ts` | `360:L55-64` | Lines: 331, 388, 606, 638, 644 - log context + error |
+| [ ] | **Task 4.1**: Create `src/lib/db/test-utils.ts` - centralize `createTestDb` helper | `360:L120-138` | Extract from `src/services/__tests__/issue-service.test.ts` pattern |
+| [ ] | **Task 4.2**: Create `src/app/api/issues/__tests__/route.test.ts` with GET, POST, filter tests | `360:L70-77` | 3 test cases using createTestDb integration pattern |
+| [ ] | **Task 4.3**: Create `src/app/api/boards/__tests__/route.test.ts` with GET, POST tests | `360:L78-84` | 2 test cases using createTestDb integration pattern |
+| [ ] | **Task 5.1**: Add `WelcomeScreen` export to `src/features/projects/index.ts` | `361:L13-15` | Currently missing from barrel |
+| [ ] | **Task 5.2**: Create `src/features/kanban/index.ts` barrel file | `361:L25-30` | Export: KanbanBoard, KanbanViewPage, useTaskStore, Column mutations hook, API functions, types |
+| [ ] | **Task 5.3**: Refactor `src/features/kanban/utils/index.ts` - move `hasDraggableData` logic to `helpers.ts`, make index.ts pure re-export | `361:L33-34`, `364:L33-34` | Pseudo-barrel fix |
+| [ ] | **Task 5.4**: Update app layer imports to use barrel exports | `361:L41` | `src/app/page.tsx`, `src/app/project/[projectId]/board/[boardId]/page.tsx` |
+| [ ] | **Task 6.1**: Run full verification suite | `360:L87-90` | `npm run build && npm run test && npm run lint` |
+| [ ] | **Task 6.2**: Commit changes with message: "fix: resolve Phase 3.6a critical issues" | - | Only after all verification passes |
 
 ---
 
@@ -121,194 +58,178 @@ Fixes 11 issues identified in post-refactor audit. See `OpenKanban/docs/PHASE-3.
 
 ---
 
-## Issue to Task Mapping
+## Task Details
 
-| Issue ID | Severity | Summary | Task(s) |
-|----------|----------|---------|---------|
-| A.1 | MEDIUM | Session routes bypass service layer | E1, E3 |
-| A.2 | MEDIUM | Session linking routes bypass service layer | E2, E4, E5 |
-| A.3 | LOW | BOLA stubs non-functional | Deferred to Phase 4 |
-| B.1 | LOW | Logger uses raw `new Date()` | F1, F2 |
-| C.1 | LOW | PM support schemas missing `.strict()` | F3 |
-| C.2 | LOW | OpenCode schemas missing `.strict()` | F4 |
-| D.1 | MEDIUM | Board fetchers missing `.strip().parse()` | E6 |
-| D.2 | LOW | Projects feature not modernized | G1, G2, G3 |
-| E.1 | MEDIUM | Session/linking routes have no tests | G4, G5, G6 |
-| F.1 | LOW | Duplicate type definitions | F5 |
-| G.1 | LOW | IssueService missing session link methods | E2 |
+### Task Group 1: Circular Dependency Fix (A.1)
 
----
+**Problem:** `store.ts` → `board-column.tsx` → `store.ts` creates a cycle.
 
-## Recommended Execution Order
+**Solution:** Extract shared types to a central `types.ts`:
+```
+store.ts → types.ts ← board-column.tsx
+     ↓                      ↓
+  (uses Column)        (uses Task)
+```
 
-### Session 1 - Service Layer Foundation (Tasks E1-E5, ~25 min)
-1. E1: Create `OpenCodeService` (10 min)
-2. E2: Add session linking to `IssueService` (10 min)
-3. E3-E5: Refactor session routes (5 min - simple delegation)
+**Files to create:**
+- `src/features/kanban/types.ts`
 
-### Session 2 - Service Layer Safety & Tests (Tasks E6-E8, ~20 min)
-4. E6: Board API `.strip().parse()` (5 min)
-5. E7-E8: Service tests (15 min)
+**Files to modify:**
+- `src/features/kanban/utils/store.ts`
+- `src/features/kanban/components/board-column.tsx`
+- `src/features/kanban/components/task-card.tsx`
+- `src/features/kanban/components/kanban-board.tsx`
 
-### Session 3 - Code Consistency (Tasks F1-F5, ~30 min)
-6. F1-F2: Date handling (10 min)
-7. F3-F4: Schema strictness (15 min)
-8. F5: Type deduplication (5 min)
-
-### Session 4 - Projects Modernization (Tasks G1-G3, ~25 min)
-9. G1: Projects API layer (10 min)
-10. G2-G3: React Query refactor (15 min)
-
-### Session 5 - Test Coverage (Tasks G4-G6, ~20 min)
-11. G4-G6: Route tests (20 min)
-
-### Session 6 - Final Verification (Task H1, ~10 min)
-12. H1: Full verification suite
-
-**Total Estimated Time:** ~2.5 hours
+**Types to extract:**
+- `Task` (from store.ts:4)
+- `Column` (from board-column.tsx:15)
+- `ColumnDragData` (from board-column.tsx)
+- `TaskDragData` (from task-card.tsx)
+- `ColumnType`, `TaskType` constants
 
 ---
 
-## Acceptance Criteria
+### Task Group 2: Query Side Effect Fix (A.5)
 
-### Automated
-- [x] `npm run build` passes
-- [x] `npm run lint` passes (no errors)
-- [x] `npm run test` - 104 tests pass (requirement: 85+)
-- [x] `grep -r "repo\." src/app/api/sessions/` returns 0 matches (service layer)
-- [x] `grep "new Date()" src/lib/logger.ts` returns 0 matches
+**Problem:** `resolveBoardId()` in `kanban-board.tsx:49-60` calls `createBoard()` when no boards exist. This is a mutation inside a query function, violating React Query principles.
 
-### Manual
-- [x] Create board via UI -> 200 OK (not 400) - Verified via unit tests + Board API safety (E6)
-- [x] Link session to issue -> persisted on refresh - Verified via unit tests (G5, G6)
-- [x] Projects list loads via React Query DevTools - Verified via implementation (G2, G3)
+**Current flow:**
+```
+useQuery → fetchKanbanData → resolveBoardId → createBoard (MUTATION!)
+```
 
----
+**Target flow:**
+```
+Route/Parent → ensures board exists (or shows create UI)
+useQuery → fetchKanbanData → resolveBoardId → returns boardId or throws
+```
 
-## Deferred to Phase 4
+**Decision:** If `KanbanBoard` receives a `boardId` that doesn't exist, the error boundary should catch and show 404. Board creation is a user action, not auto-magic.
 
-- **A.3: BOLA Enforcement** - Requires schema migration to add `ownerId` column. Currently stubs only.
-
----
-
-## Phase 3.5 Final Polish (Block 3) - IN PROGRESS
-
-> **Objective:** Fix remaining 22 issues from post-implementation review (`phase3.5-issues2.md`).
-> **Estimated Time:** ~2.5 hours
-
-### Deferred Issues (6 items)
-
-| Issue | Reason for Deferral |
-|-------|---------------------|
-| **A.5** - Form context cast | Standard Shadcn pattern; form fields work correctly |
-| **C.5** - Layout silent catch | Intentionally documented; graceful degradation |
-| **E.3** - throwOnError config | Requires testing strategy for error boundaries first |
-| **F.2** - Pagination params | Feature work, not a bug; API works fine |
-| **F.3** - pnpm migration | Explicitly marked for Pre-Phase 4 per ROADMAP |
-| **G.3** - Docs consolidation | Requires updating multiple references; cosmetic |
+**Files to modify:**
+- `src/features/kanban/components/kanban-board.tsx`
+- `src/app/project/[projectId]/board/[boardId]/page.tsx` (verify handling)
 
 ---
 
-### Part I: Type Safety & Critical Fixes (~35 min)
+### Task Group 3: Repository Logging (B.1)
 
-| Status | Task | Issues | Spec Reference | Notes |
-|--------|------|--------|----------------|-------|
-| [x] | **I1**: Add optional Zod schema to `getConfig()` | A.1 | `357:L10-22` | Done v0.3.42 - Added schema param + 2 tests |
-| [x] | **I2**: FormData type guards | A.3 | `357:L33-44` | Done v0.3.43 - Type guards for FormData.get() |
-| [x] | **I3**: dnd-kit String() conversion | A.4 | `357:L46-53` | Done v0.3.44 - Replaced `as string` with `String(overId)` |
-| [x] | **I4**: Singleton pattern JSDoc | A.2 | `357:L25-32` | Done v0.3.45 - Added JSDoc documenting Next.js dev-mode singleton pattern |
+**Problem:** Silent catch blocks hide data corruption issues.
 
----
+**Pattern to apply:**
+```typescript
+try {
+  return JSON.parse(result.value);
+} catch (error) {
+  logger.warn('Failed to parse [field]', { context, error: String(error) });
+  return fallbackValue;
+}
+```
 
-### Part J: Error & Schema Consistency (~20 min)
+**File:** `src/lib/db/repository.ts`
 
-| Status | Task | Issues | Spec Reference | Notes |
-|--------|------|--------|----------------|-------|
-| [x] | **J1**: Add `code: 'INTERNAL_ERROR'` to sessions route | C.8 | `358:L18-19` | Done v0.3.46 |
-| [x] | **J2**: Add `.strict()` to `ApiSuccessSchema` | B.1 | `358:L10-12` | Done v0.3.47 |
-| [x] | **J3**: Add debug logging to adapter catch blocks | C.6 | `358:L17` | Done v0.3.48 - Added logging to 2 catch blocks in adapter.ts |
-| [x] | **J4**: Return boolean from `rollbackProject` | C.7 | `358:L17` | Done v0.3.49 - Returns boolean for caller visibility, callers log orphaned projects |
-
----
-
-### Part K: Architecture & React Quality (~55 min)
-
-| Status | Task | Issues | Spec Reference | Notes |
-|--------|------|--------|----------------|-------|
-| [x] | **K1**: Create `src/lib/query-keys.ts` factory | F.1 | `358:L36` | Done v0.3.50 - Refactored 5 files |
-| [x] | **K2**: Remove `isLoading` from Zustand store | D.2 | `358:L25` | Done v0.3.51 - Removed isLoading + setIsLoading from State/Actions |
-| [x] | **K3**: Hoist async helpers outside KanbanBoard | F.5 | `358:L39` | Already hoisted v0.3.52 |
+**Locations (5 total):**
+| Line | Function | Field |
+|------|----------|-------|
+| 331 | `getIssueWithRelations` | `metadata` |
+| 388 | `getIssuesWithRelations` | `metadata` |
+| 606 | `getConfig` | config value |
+| 638 | `parseBoardFields` | `filters` |
+| 644 | `parseBoardFields` | `columnConfig` |
 
 ---
 
-### Part L: Documentation & Comments (~25 min)
+### Task Group 4: Route Integration Tests (E.1)
 
-| Status | Task | Issues | Spec Reference | Notes |
-|--------|------|--------|----------------|-------|
-| [x] | **L1**: Document dual source of truth pattern | D.1 | `358:L24` | Done v0.3.53 - JSDoc block added to KanbanBoard |
-| [x] | **L2**: Add TODO to BOLA stubs | F.4 | `358:L38` | Done v0.3.54 - @todo JSDoc added to IssueService, BoardService |
-| [x] | **L3**: Update ROADMAP (Phase 3.5 complete) | G.1 | `359:L10-13` | Done v0.3.55 - Phase 3 & 3.5 marked complete, Status updated |
-| [x] | **L4**: Update README versions (Next.js 16) | G.2 | `359:L17-20` | Done v0.3.56 - Root README now shows Next.js 16 |
+**Pre-work:** Extract `createTestDb` to `src/lib/db/test-utils.ts` to avoid duplication.
 
----
+**Pattern:** Follow `src/app/api/sessions/__tests__/route.test.ts`
 
-### Part M: Optional Enhancement
+**Test scaffold:**
+```typescript
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createTestDb } from '@/lib/db/test-utils';
 
-| Status | Task | Issues | Spec Reference | Notes |
-|--------|------|--------|----------------|-------|
-| [ ] | **M1**: NewTaskDialog optimistic updates | E.2 | `358:L30` | Nice-to-have, current pattern works |
+describe('/api/issues', () => {
+  beforeEach(() => {
+    // Mock database connection
+  });
 
----
+  it('GET returns list of issues', async () => { ... });
+  it('POST creates an issue', async () => { ... });
+  it('GET with parentId filters correctly', async () => { ... });
+});
+```
 
-### Part N: Final Verification
-
-| Status | Task | Notes |
-|--------|------|-------|
-| [x] | **N1**: `npm run build` | Pass - Next.js 16.1.4 Turbopack |
-| [x] | **N2**: `npm run lint` | Pass - No errors |
-| [x] | **N3**: `npm run test` | Pass - 106 tests |
-| [x] | **N4**: Manual verification | Verified via prior sessions + unit tests |
-
----
-
-## Block 3 Issue to Task Mapping
-
-| Issue ID | Severity | Summary | Task |
-|----------|----------|---------|------|
-| A.1 | MEDIUM | Unsafe JSON.parse cast | I1 |
-| A.2 | LOW | globalThis singleton cast | I4 |
-| A.3 | LOW | FormData unsafe cast | I2 |
-| A.4 | LOW | dnd-kit UniqueIdentifier cast | I3 |
-| A.5 | LOW | Empty object context cast | **DEFERRED** |
-| B.1 | LOW | ApiSuccessSchema missing .strict() | J2 |
-| C.5 | LOW | Layout silent catch | **DEFERRED** |
-| C.6 | LOW | Adapter silent catch blocks | J3 |
-| C.7 | LOW | Rollback swallowed error | J4 |
-| C.8 | LOW | Sessions route missing error code | J1 |
-| D.1 | LOW | Dual source of truth | L1 |
-| D.2 | LOW | Zustand isLoading redundant | K2 |
-| E.2 | LOW | NewTaskDialog onSuccess vs optimistic | M1 (optional) |
-| E.3 | LOW | throwOnError not configured | **DEFERRED** |
-| F.1 | LOW | Ad-hoc query keys | K1 |
-| F.2 | LOW | Hardcoded pagination limit | **DEFERRED** |
-| F.3 | INFO | npm/pnpm config warning | **DEFERRED** |
-| F.4 | LOW | BOLA stubs inert | L2 |
-| F.5 | LOW | Async helpers in component | K3 |
-| G.1 | INFO | Roadmap outdated | L3 |
-| G.2 | INFO | README version mismatch | L4 |
-| G.3 | INFO | Split documentation | **DEFERRED** |
+**Files to create:**
+- `src/lib/db/test-utils.ts`
+- `src/app/api/issues/__tests__/route.test.ts`
+- `src/app/api/boards/__tests__/route.test.ts`
 
 ---
 
-## Block 3 Acceptance Criteria
+### Task Group 5: Barrel File Standardization (A.2, A.3, A.4)
 
-### Automated
-- [x] `npm run build` passes
-- [x] `npm run lint` passes (no errors)
-- [x] `npm run test` - 106 tests pass
-- [x] `grep "as string" src/features/kanban/components/kanban-board.tsx` - 0 matches (after I3)
-- [x] `grep "isLoading" src/features/kanban/utils/store.ts` - 0 matches (after K2)
+**Goal:** All feature imports should go through barrel files.
 
-### Manual
-- [x] Create project via dialog → works (verifies I2)
-- [x] Drag task between columns → works (verifies I3)
+**Current state:**
+- `src/features/projects/index.ts` exists but missing `WelcomeScreen`
+- `src/features/kanban/index.ts` does NOT exist
+- App layer uses direct imports: `@/features/kanban/components/kanban-view-page`
+
+**Target state:**
+- All features have complete barrel files
+- App layer imports: `@/features/kanban`
+
+**Files to create:**
+- `src/features/kanban/index.ts`
+- `src/features/kanban/utils/helpers.ts` (move logic from utils/index.ts)
+
+**Files to modify:**
+- `src/features/projects/index.ts` (add WelcomeScreen)
+- `src/features/kanban/utils/index.ts` (make pure re-export)
+- `src/app/page.tsx` (use barrel import)
+- `src/app/project/[projectId]/board/[boardId]/page.tsx` (use barrel import)
+
+---
+
+## Verification Checklist
+
+| Check | Command | Expected |
+|-------|---------|----------|
+| Build passes | `npm run build` | Exit 0, no circular dep warnings |
+| Tests pass | `npm run test` | All tests green (including new route tests) |
+| Lint passes | `npm run lint` | No errors |
+| Circular fixed | `grep "import.*Column.*board-column" store.ts` | No matches |
+| Types centralized | `ls src/features/kanban/types.ts` | File exists |
+| Logging added | `grep "logger.warn" repository.ts \| wc -l` | ≥5 matches |
+| Barrel complete | `grep "export.*KanbanBoard" src/features/kanban/index.ts` | Match found |
+
+---
+
+## Dependencies
+
+- None external. All work is within existing codebase.
+- Follows existing patterns in `src/services/__tests__/` for testing.
+
+---
+
+## Notes
+
+1. **Pre-Phase 4 (pnpm migration)** in ROADMAP should come AFTER this Phase 3.6a.
+
+2. **Phase 3.6b (Polish)** deferred:
+   - Spec 362: Error handling refinements
+   - Spec 363: Type safety (form.tsx, chart.tsx) + component test setup
+   - Spec 364: Documentation consolidation, npmrc cleanup
+
+3. **BOLA enforcement** (`@todo Phase 4`) in services is explicitly deferred - not part of this plan.
+
+---
+
+## Change Log
+
+| Date | Change |
+|------|--------|
+| 2026-01-26 | Initial plan created (Spec 360 only) |
+| 2026-01-26 | Extended to include Spec 361 (barrels), consolidated tasks 18→15 |
