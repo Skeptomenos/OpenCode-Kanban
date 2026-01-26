@@ -328,7 +328,8 @@ export class SqlitePMRepository implements IPMRepository {
     if (issue.metadata) {
       try {
         metadata = JSON.parse(issue.metadata);
-      } catch {
+      } catch (error) {
+        logger.warn('Failed to parse issue metadata', { issueId: id, error: String(error) });
         metadata = {};
       }
     }
@@ -385,7 +386,8 @@ export class SqlitePMRepository implements IPMRepository {
       if (issue.metadata) {
         try {
           metadata = JSON.parse(issue.metadata);
-        } catch {
+        } catch (error) {
+          logger.warn('Failed to parse issue metadata', { issueId: issue.id, error: String(error) });
           metadata = {};
         }
       }
@@ -603,7 +605,8 @@ export class SqlitePMRepository implements IPMRepository {
       }
 
       return parsed as T;
-    } catch {
+    } catch (error) {
+      logger.warn('Failed to parse config value', { key, error: String(error) });
       return undefined;
     }
   }
@@ -635,13 +638,15 @@ export class SqlitePMRepository implements IPMRepository {
 
     try {
       filters = JSON.parse(board.filters);
-    } catch {
+    } catch (error) {
+      logger.warn('Failed to parse board filters', { boardId: board.id, error: String(error) });
       filters = {};
     }
 
     try {
       columnConfig = JSON.parse(board.columnConfig);
-    } catch {
+    } catch (error) {
+      logger.warn('Failed to parse board columnConfig', { boardId: board.id, error: String(error) });
       columnConfig = [];
     }
 
