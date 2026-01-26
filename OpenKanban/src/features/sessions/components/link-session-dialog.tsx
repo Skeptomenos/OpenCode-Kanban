@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { logger } from '@/lib/logger';
+import { formatTimestamp } from '@/lib/date-utils';
+import { DIALOG_DIMENSIONS } from '@/lib/constants/ui-dimensions';
 
 import { useSessions } from '../hooks/use-sessions';
 import { useLinkSession, useSessionLinks } from '../hooks/use-session-mutations';
@@ -51,7 +53,7 @@ export function LinkSessionDialog({
       .filter((session) => !linkedIds.has(session.id))
       .filter((session) => {
         if (!searchQuery) return true;
-        const query = searchQuery.toLowerCase();
+        const query = searchQuery.trim().toLowerCase();
         return (
           session.id.toLowerCase().includes(query) ||
           session.title?.toLowerCase().includes(query) ||
@@ -70,11 +72,7 @@ export function LinkSessionDialog({
     }
   };
 
-  const formatDate = (timestamp: number): string => {
-    // OpenCode stores timestamps in seconds, not milliseconds
-    const dateMs = timestamp < 1e12 ? timestamp * 1000 : timestamp;
-    return new Date(dateMs).toLocaleDateString();
-  };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -98,7 +96,7 @@ export function LinkSessionDialog({
             />
           </div>
 
-          <div className="max-h-[300px] overflow-y-auto space-y-2">
+          <div className={`${DIALOG_DIMENSIONS.SESSION_LIST_MAX_HEIGHT} overflow-y-auto space-y-2`}>
             {sessionsLoading ? (
               <>
                 <Skeleton className="h-16 w-full" />
@@ -130,7 +128,7 @@ export function LinkSessionDialog({
                     )}
                     {session.time?.created && (
                       <p className="text-xs text-muted-foreground">
-                        {formatDate(session.time.created)}
+                        {formatTimestamp(session.time.created)}
                       </p>
                     )}
                   </div>

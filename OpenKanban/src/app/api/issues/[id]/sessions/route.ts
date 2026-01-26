@@ -103,7 +103,7 @@ export async function POST(
         issueId: id,
         sessionId,
       },
-    });
+    }, { status: 201 });
   } catch (error) {
     logger.error('POST /api/issues/[id]/sessions failed', { error: String(error) });
     return NextResponse.json(

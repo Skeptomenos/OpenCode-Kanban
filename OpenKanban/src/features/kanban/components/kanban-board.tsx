@@ -16,6 +16,7 @@ import type { Task, Column } from '../types';
 import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
 import { queryKeys, type BoardFilters } from '@/lib/query-keys';
+import { KANBAN_DIMENSIONS } from '@/lib/constants/ui-dimensions';
 import { BoardFilterControls } from '@/features/boards/components/board-filter-controls';
 import { fetchIssues, fetchBoards, fetchBoard, updateIssue } from '../api';
 import { ColumnMutationsProvider } from '../hooks/column-mutations-context';
@@ -91,7 +92,11 @@ async function fetchKanbanData(
       parent: issue.parent ?? undefined,
     }));
   } else {
-    tasks = boardData.issues.map((issue) => ({
+    let issues = boardData.issues;
+    if (filters?.status) {
+      issues = issues.filter((issue) => issue.status === filters.status);
+    }
+    tasks = issues.map((issue) => ({
       id: issue.id,
       title: issue.title,
       description: issue.description ?? undefined,
@@ -378,8 +383,12 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
     if (!isActiveAColumn) return;
 
     const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
-
     const overColumnIndex = columns.findIndex((col) => col.id === overId);
+
+    if (activeColumnIndex === -1 || overColumnIndex === -1) {
+      logger.warn('DnD column reorder aborted: column not found', { activeId, overId });
+      return;
+    }
 
     setColumns(arrayMove(columns, activeColumnIndex, overColumnIndex));
   }
@@ -433,6 +442,12 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
     if (isActiveATask && isOverATask) {
       const activeIndex = tasks.findIndex((t) => t.id === activeId);
       const overIndex = tasks.findIndex((t) => t.id === overId);
+
+      if (activeIndex === -1 || overIndex === -1) {
+        logger.warn('DnD task reorder aborted: task not found', { activeId, overId });
+        return;
+      }
+
       const activeTask = tasks[activeIndex];
       const overTask = tasks[overIndex];
       if (activeTask && overTask && activeTask.columnId !== overTask.columnId) {
@@ -450,6 +465,12 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
 
     if (isActiveATask && isOverAColumn) {
       const activeIndex = tasks.findIndex((t) => t.id === activeId);
+
+      if (activeIndex === -1) {
+        logger.warn('DnD task-to-column aborted: task not found', { activeId });
+        return;
+      }
+
       const activeTask = tasks[activeIndex];
       const overIdStr = String(overId);
       if (activeTask && activeTask.columnId !== overIdStr) {
@@ -481,7 +502,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
               <Fragment key={col.id}>
                 <BoardColumn column={col} />
                 {index === columns?.length - 1 && (
-                  <div className='w-[300px]'>
+                  <div className={KANBAN_DIMENSIONS.COLUMN_WIDTH}>
                     <NewSectionDialog />
                   </div>
                 )}

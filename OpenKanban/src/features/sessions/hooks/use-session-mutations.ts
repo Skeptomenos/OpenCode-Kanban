@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { logger } from '@/lib/logger';
+import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import type { SessionLink } from '../types';
 
 /**
@@ -38,7 +39,7 @@ interface SessionLinksResponse {
  * @throws Error if the request fails
  */
 async function linkSession({ issueId, sessionId, linkType }: LinkSessionParams) {
-  const response = await fetch(`/api/issues/${issueId}/sessions`, {
+  const response = await fetch(API_ENDPOINTS.issueSessionLinks(issueId), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ sessionId, linkType }),
@@ -60,7 +61,7 @@ async function linkSession({ issueId, sessionId, linkType }: LinkSessionParams) 
  * @throws Error if the request fails
  */
 async function unlinkSession({ issueId, sessionId }: UnlinkSessionParams) {
-  const response = await fetch(`/api/issues/${issueId}/sessions/${sessionId}`, {
+  const response = await fetch(API_ENDPOINTS.issueSessionLink(issueId, sessionId), {
     method: 'DELETE',
   });
 
@@ -140,7 +141,7 @@ export function useSessionLinks(issueId: string): UseSessionLinksReturn {
   const query = useQuery({
     queryKey: queryKeys.issueSessionLinks(issueId),
     queryFn: async (): Promise<SessionLink[]> => {
-      const response = await fetch(`/api/issues/${issueId}/sessions`);
+      const response = await fetch(API_ENDPOINTS.issueSessionLinks(issueId));
       if (!response.ok) {
         throw new Error('Failed to fetch session links');
       }

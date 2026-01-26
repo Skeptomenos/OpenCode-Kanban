@@ -66,7 +66,7 @@ export function DeleteBoardDialog({
   const deleteBoardMutation = useDeleteBoard();
 
   const handleDelete = () => {
-    deleteBoardMutation.mutate(boardId, {
+    deleteBoardMutation.mutate({ boardId, parentId: projectId }, {
       onSuccess: () => {
         onOpenChange(false);
         toast.success(
@@ -74,8 +74,9 @@ export function DeleteBoardDialog({
         );
 
         // Redirect to project page if we're currently viewing the deleted board
-        // @see specs/4.3-ui-components.md:L37
-        if (pathname.includes(boardId)) {
+        // Use exact path segment match to avoid false positives with substring IDs
+        // @see docs/PHASE-4-ISSUES.md:H-03
+        if (pathname.includes(`/board/${boardId}`)) {
           router.push(`/project/${projectId}`);
         }
       },

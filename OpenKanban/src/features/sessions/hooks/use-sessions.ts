@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
+import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import type { Session, SessionsResponse } from '../types';
 
 /**
@@ -20,7 +21,7 @@ interface UseSessionsReturn {
  * @throws Error if the fetch fails or response indicates failure
  */
 async function fetchSessions(): Promise<Session[]> {
-  const response = await fetch('/api/sessions');
+  const response = await fetch(API_ENDPOINTS.SESSIONS);
   if (!response.ok) {
     throw new Error('Failed to fetch sessions');
   }

@@ -81,6 +81,7 @@ export function BoardActionsMenu({
 
       <RenameBoardDialog
         boardId={boardId}
+        projectId={projectId}
         currentName={boardName}
         open={renameDialogOpen}
         onOpenChange={setRenameDialogOpen}

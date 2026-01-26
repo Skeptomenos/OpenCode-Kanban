@@ -118,12 +118,24 @@ A local-first Project Management tool where:
 - [ ] `src/features/kanban/components/issue-card.tsx` updated with hierarchy indicators
 - [ ] `src/features/sessions/components/link-session-dialog.tsx`
 
-### Phase 5: Polish & Workflow
-- [ ] Drag & Drop persistence.
-- [ ] Session details view (within the board).
-- [ ] "Create Branch" from Task (Deep integration).
-- [ ] Optimistic updates for board mutations (improve UX responsiveness).
-- [ ] **Scale**: Implement server-side session search/pagination (currently hardcoded to top 100).
+### Phase 5: UI/UX Polish & Workflow
+- [x] **Tooling**: Integrated `agentation` for visual feedback.
+- [ ] **Sidebar Overhaul**:
+    - [ ] Hierarchy: Nest Boards under Projects.
+    - [ ] Layout: "Push Mode" (Master-Detail) layout.
+    - [ ] Actions: Edit/Delete Projects menu.
+- [ ] **Task Card**:
+    - [ ] Layout: Title in header, description preview.
+    - [ ] Editor: Auto-saving description textarea.
+    - [ ] Fix: Parent visibility on new tasks.
+- [ ] **Workflow Persistence**:
+    - [ ] Drag & Drop: Persist reordering and column moves.
+    - [ ] Optimistic Updates: Instant UI feedback.
+- [ ] **Scale**:
+    - [ ] Server-side session metadata search.
+- [ ] **Integration** (Deferred):
+    - [ ] Session details view (within board).
+    - [ ] "Create Branch" from Task.
 
 ---
 

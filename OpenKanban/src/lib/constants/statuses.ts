@@ -41,3 +41,15 @@ export type IssueStatus = (typeof ISSUE_STATUSES)[keyof typeof ISSUE_STATUSES];
  * Useful for validation and iteration.
  */
 export const ALL_ISSUE_STATUSES = Object.values(ISSUE_STATUSES);
+
+/**
+ * Human-readable labels for status values.
+ * Derived from ISSUE_STATUSES to ensure synchronization.
+ */
+export const STATUS_LABELS: Record<IssueStatus, string> = {
+  [ISSUE_STATUSES.BACKLOG]: 'Backlog',
+  [ISSUE_STATUSES.IN_PROGRESS]: 'In Progress',
+  [ISSUE_STATUSES.DONE]: 'Done',
+};
+
+export const FILTER_ALL = 'all' as const;

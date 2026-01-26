@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { useUpdateBoard } from '../hooks/use-board-mutations';
+import { useBoards } from '../hooks/use-boards';
 import { logger } from '@/lib/logger';
 
 /**
@@ -24,6 +25,8 @@ import { logger } from '@/lib/logger';
 interface RenameBoardDialogProps {
   /** The ID of the board to rename */
   boardId: string;
+  /** The parent project ID for scoped cache invalidation */
+  projectId: string;
   /** The current name of the board (pre-fills the input) */
   currentName: string;
   /** Controls dialog visibility */
@@ -34,17 +37,30 @@ interface RenameBoardDialogProps {
 
 interface RenameBoardFormProps {
   boardId: string;
+  projectId: string;
   currentName: string;
   onOpenChange: (open: boolean) => void;
 }
 
 function RenameBoardForm({
   boardId,
+  projectId,
   currentName,
   onOpenChange,
 }: RenameBoardFormProps) {
   const [name, setName] = useState(currentName);
   const updateBoardMutation = useUpdateBoard();
+  const { boards } = useBoards(projectId);
+
+  // Check for duplicate name (case-insensitive), excluding current board
+  const isDuplicateName = useMemo(() => {
+    const trimmedName = name.trim().toLowerCase();
+    if (!trimmedName) return false;
+    if (trimmedName === currentName.toLowerCase()) return false;
+    return boards.some(
+      (board) => board.id !== boardId && board.name.toLowerCase() === trimmedName
+    );
+  }, [name, boards, boardId, currentName]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,10 +76,16 @@ function RenameBoardForm({
       return;
     }
 
+    if (isDuplicateName) {
+      toast.error('A board with this name already exists');
+      return;
+    }
+
     updateBoardMutation.mutate(
       {
         id: boardId,
         input: { name: trimmedName },
+        parentId: projectId,
       },
       {
         onSuccess: (result) => {
@@ -106,9 +128,16 @@ function RenameBoardForm({
             required
             autoFocus
             aria-label="Board name"
+            aria-invalid={isDuplicateName}
+            aria-describedby={isDuplicateName ? 'duplicate-name-warning' : undefined}
             disabled={updateBoardMutation.isPending}
             maxLength={500}
           />
+          {isDuplicateName && (
+            <p id="duplicate-name-warning" className="text-sm text-destructive">
+              A board with this name already exists in this project.
+            </p>
+          )}
         </div>
       </form>
       <DialogFooter>
@@ -123,7 +152,7 @@ function RenameBoardForm({
         <Button
           type="submit"
           form="rename-board-form"
-          disabled={updateBoardMutation.isPending}
+          disabled={updateBoardMutation.isPending || isDuplicateName}
         >
           {updateBoardMutation.isPending ? 'Saving...' : 'Save'}
         </Button>
@@ -142,6 +171,7 @@ function RenameBoardForm({
  */
 export function RenameBoardDialog({
   boardId,
+  projectId,
   currentName,
   open,
   onOpenChange,
@@ -152,6 +182,7 @@ export function RenameBoardDialog({
         {open && (
           <RenameBoardForm
             boardId={boardId}
+            projectId={projectId}
             currentName={currentName}
             onOpenChange={onOpenChange}
           />

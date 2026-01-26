@@ -16,21 +16,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  ISSUE_STATUSES,
   ALL_ISSUE_STATUSES,
-  type IssueStatus,
+  FILTER_ALL,
+  STATUS_LABELS,
 } from '@/lib/constants/statuses';
 import type { BoardFilters } from '@/lib/query-keys';
-
-/**
- * Human-readable labels for status values.
- * Used in the dropdown display.
- */
-const STATUS_LABELS: Record<IssueStatus, string> = {
-  [ISSUE_STATUSES.BACKLOG]: 'Backlog',
-  [ISSUE_STATUSES.IN_PROGRESS]: 'In Progress',
-  [ISSUE_STATUSES.DONE]: 'Done',
-};
 
 interface BoardFilterControlsProps {
   /** Current filter state */
@@ -61,7 +51,7 @@ export function BoardFilterControls({
   const handleStatusChange = (value: string) => {
     onFiltersChange({
       ...filters,
-      status: value === 'all' ? null : value,
+      status: value === FILTER_ALL ? null : value,
     });
   };
 
@@ -70,14 +60,14 @@ export function BoardFilterControls({
       <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground">Status:</span>
         <Select
-          value={filters.status ?? 'all'}
+          value={filters.status ?? FILTER_ALL}
           onValueChange={handleStatusChange}
         >
-          <SelectTrigger className="w-[140px] h-8">
+          <SelectTrigger className="w-[140px] h-8" aria-label="Filter tasks by status">
             <SelectValue placeholder="All" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All</SelectItem>
+            <SelectItem value={FILTER_ALL}>All</SelectItem>
             {ALL_ISSUE_STATUSES.map((status) => (
               <SelectItem key={status} value={status}>
                 {STATUS_LABELS[status]}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,9 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { useCreateBoard } from '../hooks/use-board-mutations';
+import { useBoards } from '../hooks/use-boards';
 import { logger } from '@/lib/logger';
-import { ISSUE_STATUSES } from '@/lib/constants/statuses';
+import { DEFAULT_COLUMN_CONFIG } from '@/lib/constants/board-defaults';
 
 /**
  * Props for CreateBoardDialog component.
@@ -31,17 +32,6 @@ interface CreateBoardDialogProps {
   /** Optional callback called on successful board creation */
   onSuccess?: () => void;
 }
-
-/**
- * Default column configuration for new boards.
- * Creates a standard Kanban workflow: Backlog → In Progress → Done
- * @see specs/4.3-ui-components.md:L16
- */
-const DEFAULT_COLUMN_CONFIG = [
-  { id: ISSUE_STATUSES.BACKLOG, title: 'Backlog', statusMappings: [ISSUE_STATUSES.BACKLOG] },
-  { id: ISSUE_STATUSES.IN_PROGRESS, title: 'In Progress', statusMappings: [ISSUE_STATUSES.IN_PROGRESS] },
-  { id: ISSUE_STATUSES.DONE, title: 'Done', statusMappings: [ISSUE_STATUSES.DONE] },
-];
 
 /**
  * Dialog component for creating a new board within a project.
@@ -65,27 +55,39 @@ export function CreateBoardDialog({
   onSuccess,
 }: CreateBoardDialogProps) {
   const [open, setOpen] = useState(false);
+  const [name, setName] = useState('');
   const createBoardMutation = useCreateBoard();
+  const { boards } = useBoards(parentId);
+
+  // Check for duplicate name (case-insensitive)
+  const isDuplicateName = useMemo(() => {
+    const trimmedName = name.trim().toLowerCase();
+    if (!trimmedName) return false;
+    return boards.some((board) => board.name.toLowerCase() === trimmedName);
+  }, [name, boards]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    const nameVal = formData.get('name');
-    if (typeof nameVal !== 'string' || !nameVal.trim()) {
+    const boardName = name.trim();
+    if (!boardName) {
       toast.error('Board name is required');
       return;
     }
 
-    const boardName = nameVal.trim();
+    if (isDuplicateName) {
+      toast.error('A board with this name already exists');
+      return;
+    }
 
     createBoardMutation.mutate(
       {
-        name: boardName,
-        filters: { parentId },
-        columnConfig: DEFAULT_COLUMN_CONFIG,
+        data: {
+          name: boardName,
+          filters: { parentId },
+          columnConfig: DEFAULT_COLUMN_CONFIG,
+        },
+        parentId,
       },
       {
         onSuccess: (result) => {
@@ -102,8 +104,15 @@ export function CreateBoardDialog({
     );
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
+      setName('');
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -125,20 +134,29 @@ export function CreateBoardDialog({
             <Input
               id="board-name"
               name="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="My Board"
               required
               autoFocus
               aria-label="Board name"
+              aria-invalid={isDuplicateName}
+              aria-describedby={isDuplicateName ? 'duplicate-name-warning' : undefined}
               disabled={createBoardMutation.isPending}
               maxLength={500}
             />
+            {isDuplicateName && (
+              <p id="duplicate-name-warning" className="text-sm text-destructive">
+                A board with this name already exists in this project.
+              </p>
+            )}
           </div>
         </form>
         <DialogFooter>
           <Button
             type="submit"
             form="create-board-form"
-            disabled={createBoardMutation.isPending}
+            disabled={createBoardMutation.isPending || isDuplicateName}
           >
             {createBoardMutation.isPending ? 'Creating...' : 'Create Board'}
           </Button>

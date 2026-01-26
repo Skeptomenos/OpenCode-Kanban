@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: board,
-    });
+    }, { status: 201 });
   } catch (error) {
     logger.error('POST /api/boards failed', { error: String(error) });
     return NextResponse.json(
