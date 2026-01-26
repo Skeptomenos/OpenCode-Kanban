@@ -25,7 +25,7 @@
 | [x] | **Task 1.3**: Create `PUT /api/issues/[id]/move` endpoint | `specs/5.3-drag-persistence.md:L17-30` | DONE: Created route with MoveIssueSchema validation. Uses IssueService.moveIssue(). 7 tests pass. |
 | [x] | **Task 1.4**: Wire drag-end to move API with optimistic updates | `specs/5.3-drag-persistence.md:L32-48` | DONE: Added `moveIssue` API fetcher. Replaced `updateIssueMutation` with `moveIssueMutation` in kanban-board.tsx. onDragEnd now calculates prev/next issue IDs and calls move API. |
 | [x] | **Task 1.5**: Add `?q=` search param to `GET /api/sessions` | `specs/5.4-search-cleanup.md:L6-11` | DONE: Added `query` param to `IOpenCodeRepository.getAllSessions()`. Adapter filters by title/id (case-insensitive). API route parses `?q=` search param. |
-| [ ] | **Task 1.6**: Remove Status dropdown from `BoardFilterControls` | `specs/5.4-search-cleanup.md:L20-23` | Delete the Status Select component. Kanban columns already show status. |
+| [x] | **Task 1.6**: Remove Status dropdown from `BoardFilterControls` | `specs/5.4-search-cleanup.md:L20-23` | DONE: Deleted entire `board-filter-controls.tsx` (Status was only filter). Removed import from `kanban-board.tsx`. |
 
 ### Sprint 2: Sidebar Hierarchy (Est: 2 days)
 
@@ -75,7 +75,7 @@
 - [ ] Drag task to new position -> Refresh -> Position persists
 - [ ] Move task between columns -> Refresh -> Column persists
 - [x] Session search `/api/sessions?q=login` returns filtered results
-- [ ] Board header no longer shows Status dropdown
+- [x] Board header no longer shows Status dropdown
 
 ### Sprint 2 Completion Criteria
 - [ ] Clicking project chevron expands boards list

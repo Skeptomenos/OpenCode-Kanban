@@ -17,7 +17,6 @@ import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
 import { queryKeys, type BoardFilters } from '@/lib/query-keys';
 import { KANBAN_DIMENSIONS } from '@/lib/constants/ui-dimensions';
-import { BoardFilterControls } from '@/features/boards/components/board-filter-controls';
 import { fetchIssues, fetchBoards, fetchBoard, moveIssue } from '../api';
 import { ColumnMutationsProvider } from '../hooks/column-mutations-context';
 import {
@@ -166,7 +165,8 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
 
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const [filters, setFilters] = useState<BoardFilters>({});
+  // Status filter removed per specs/5.4-search-cleanup.md - Kanban columns ARE the status filter
+  const filters: BoardFilters = {};
 
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
@@ -512,7 +512,6 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
 
   return (
     <ColumnMutationsProvider projectId={projectId} boardId={boardId}>
-      <BoardFilterControls filters={filters} onFiltersChange={setFilters} />
       <DndContext
         accessibility={{
           announcements
