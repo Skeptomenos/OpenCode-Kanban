@@ -69,11 +69,11 @@ Files: src/lib/query-keys.ts, src/hooks/use-breadcrumb-data.tsx (NEW),
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 3.1**: Add dropTarget state and setDropTarget action to Zustand store | `specs/003-dnd-drop-indicator-store.md:L52-100` | Done in v0.3.69 |
-| [ ] | **Task 3.2**: Create DropIndicator component | `specs/003-dnd-drop-indicator-store.md:L102-131` | New file, isActive prop, CSS transitions |
-| [ ] | **Task 3.3**: Update onDragOver to track drop position | `specs/003b-dnd-drop-indicator-integration.md:L67-126` | Calculate columnId/index, call setDropTarget |
-| [ ] | **Task 3.4**: Clear dropTarget on drag end/cancel | `specs/003b-dnd-drop-indicator-integration.md:L133-179` | Add to onDragEnd, add onDragCancel handler |
-| [ ] | **Task 3.5**: Render DropIndicator in BoardColumn | `specs/003b-dnd-drop-indicator-integration.md:L184-232` | Before each task + at end, check isActive |
-| [ ] | **Task 3.6**: Verify Bug 3 fix and commit | `specs/003b-dnd-drop-indicator-integration.md:L317-416` | Build, lint, test, manual DnD test, commit |
+| [x] | **Task 3.2**: Create DropIndicator component | `specs/003-dnd-drop-indicator-store.md:L102-131` | Done in v0.3.70 |
+| [x] | **Task 3.3**: Update onDragOver to track drop position | `specs/003b-dnd-drop-indicator-integration.md:L67-126` | Done in v0.3.70 |
+| [x] | **Task 3.4**: Clear dropTarget on drag end/cancel | `specs/003b-dnd-drop-indicator-integration.md:L133-179` | Done in v0.3.70 |
+| [x] | **Task 3.5**: Render DropIndicator in BoardColumn | `specs/003b-dnd-drop-indicator-integration.md:L184-232` | Done in v0.3.70 |
+| [x] | **Task 3.6**: Verify Bug 3 fix and commit | `specs/003b-dnd-drop-indicator-integration.md:L317-416` | Build, lint, 126 tests pass. Committed v0.3.70 |
 
 **Parallelizable**: 3.1 and 3.2 can run in parallel (store vs component)  
 **Sequential**: 3.3-3.5 depend on 3.1; 3.5 depends on 3.2
@@ -93,9 +93,9 @@ Files: src/features/kanban/utils/store.ts,
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 4.1**: Run full test suite | `specs/pre-phase4-bug-fixes.md:L469-476` | `pnpm test` → 126 tests pass |
-| [ ] | **Task 4.2**: End-to-end manual verification | `specs/pre-phase4-bug-fixes.md:L477-483` | All 3 bugs confirmed fixed |
-| [ ] | **Task 4.3**: Update ROADMAP.md Phase 4.0 checkboxes | `docs/ROADMAP.md:L92-97` | Mark BLOCKER and UX items complete |
+| [x] | **Task 4.1**: Run full test suite | `specs/pre-phase4-bug-fixes.md:L469-476` | 126 tests pass. Done v0.3.71 |
+| [x] | **Task 4.2**: End-to-end manual verification | `specs/pre-phase4-bug-fixes.md:L477-483` | All 3 bugs confirmed fixed v0.3.71 |
+| [x] | **Task 4.3**: Update ROADMAP.md Phase 4.0 checkboxes | `docs/ROADMAP.md:L92-97` | BLOCKER and UX items marked complete v0.3.71 |
 
 ---
 
