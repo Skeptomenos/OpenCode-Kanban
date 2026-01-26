@@ -98,13 +98,22 @@ A local-first Project Management tool where:
 
 ### Phase 4: The Hierarchical Board
 *Goal: Visualize the complex structure and manage board views.*
-- [ ] **Board Management**: UI to Create/Rename/Delete boards within a project.
+- [x] **Board Management**: UI to Create/Rename/Delete boards within a project. ✅ COMPLETE (v0.3.84)
 - [ ] **Filter Builder**: UI to configure board filters (e.g., "Status=In Progress", "Type=Task").
 - [ ] **Hierarchical Display**: Visualize parent/child relationships on cards.
 - [ ] **Link Session UI**: Modal to search and link OpenCode sessions to issues.
 
-**Phase 4 Deliverables Checklist:**
-- [ ] `src/features/boards/components/create-board-dialog.tsx`
+**Phase 4.1-4.4 Board Management Deliverables (completed 2026-01-26):**
+- [x] Backend: `GET /api/boards?parentId=X` filtering by project
+- [x] Frontend: `useBoards(projectId)` hook with React Query
+- [x] `src/features/boards/components/create-board-dialog.tsx`
+- [x] `src/features/boards/components/rename-board-dialog.tsx`
+- [x] `src/features/boards/components/delete-board-dialog.tsx`
+- [x] `src/features/boards/components/board-actions-menu.tsx`
+- [x] Sidebar "Project Boards" group with CRUD operations
+- [x] 130 tests passing, build clean
+
+**Remaining Phase 4 Deliverables:**
 - [ ] `src/features/boards/components/board-filter-controls.tsx`
 - [ ] `src/features/kanban/components/issue-card.tsx` updated with hierarchy indicators
 - [ ] `src/features/sessions/components/link-session-dialog.tsx`
@@ -120,7 +129,7 @@ A local-first Project Management tool where:
 
 **Last Updated:** 2026-01-26
 
-**State:** Phase 4.0 COMPLETE. Ready for Phase 4 (Hierarchical Board).
+**State:** Phase 4 Board Management COMPLETE. Ready for Phase 4 Filter Builder.
 
 | Component | Status | Notes |
 |-----------|--------|-------|
@@ -140,7 +149,7 @@ A local-first Project Management tool where:
 | TanStack Query | ✅ Done | Replaces Zustand async actions |
 | Type Safety | ✅ Done | Zod strict schemas, FormData guards |
 
-**Next Action:** Start Phase 4 (Hierarchical Board).
+**Next Action:** Start Phase 4 Filter Builder (board filter controls UI).
 
 **Documentation:**
 - `docs/ROADMAP.md` - This file (master roadmap)
