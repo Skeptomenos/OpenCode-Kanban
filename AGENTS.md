@@ -17,7 +17,7 @@
 *You must strictly apply the following rules based on the task:*
 
 - **General:** `coding_principles/architecture.md`, `coding_principles/workflow.md`, `coding_principles/documentation.md`
-- **TypeScript/React:** `coding_principles/rules_ts.md`, `coding_principles/rules_react.md`, `coding_principles/logging.md`
+- **TypeScript/React:** `coding_principles/rules_ts.md`, `coding_principles/rules_react.md`, `coding_principles/logging.md`, `coding_principles/ui_ux.md`
 - **Database/SQL:** `coding_principles/rules_sql.md`
 - **API/Security:** `coding_principles/api_design.md`, `coding_principles/security.md`
 - **Testing:** `coding_principles/testing.md`
@@ -42,9 +42,9 @@
 
 ## 5. The Build
 **Work Dir:** `cd OpenKanban`
-- `npm run dev` (Port 37291)
-- `npm run build` (**MUST PASS**)
-- `npm run lint`
+- `pnpm run dev` (Port 37291)
+- `pnpm run build` (**MUST PASS**)
+- `pnpm run lint`
 
 ## 6. Project Documentation
 - **[QUALITY](./docs/QUALITY.md)**: The "Always Works" protocol. **Read first.**

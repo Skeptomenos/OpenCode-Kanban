@@ -5,11 +5,12 @@ import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { cva } from 'class-variance-authority';
 import { IconGripVertical } from '@tabler/icons-react';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ColumnActions } from './column-action';
+import { DropIndicator } from './drop-indicator';
 import { TaskCard } from './task-card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
@@ -26,6 +27,8 @@ export function BoardColumn({ column, tasks: tasksProp, isOverlay }: BoardColumn
     useShallow((state) => state.tasks.filter((t) => t.columnId === column.id))
   );
   const tasks = tasksProp ?? tasksFromStore;
+  const dropTarget = useTaskStore((state) => state.dropTarget);
+  const isDropTargetColumn = dropTarget?.columnId === column.id.toString();
   
   const tasksIds = useMemo(() => {
     return tasks.map((task) => task.id);
@@ -90,9 +93,17 @@ export function BoardColumn({ column, tasks: tasksProp, isOverlay }: BoardColumn
       <CardContent className='flex grow flex-col gap-4 overflow-x-hidden p-2'>
         <ScrollArea className='h-full'>
           <SortableContext items={tasksIds}>
-            {tasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+            {tasks.map((task, index) => (
+              <Fragment key={task.id}>
+                <DropIndicator 
+                  isActive={isDropTargetColumn && dropTarget?.index === index} 
+                />
+                <TaskCard task={task} />
+              </Fragment>
             ))}
+            <DropIndicator 
+              isActive={isDropTargetColumn && dropTarget?.index === tasks.length} 
+            />
           </SortableContext>
         </ScrollArea>
       </CardContent>

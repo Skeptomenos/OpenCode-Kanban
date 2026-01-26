@@ -1,11 +1,15 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { useInfobar, type InfobarContent } from '@/components/ui/infobar';
 import type { Task, TaskDragData } from '../types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { cva } from 'class-variance-authority';
 import { IconGripVertical } from '@tabler/icons-react';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
   task: Task;
@@ -13,6 +17,7 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, isOverlay }: TaskCardProps) {
+  const { setContent, setOpen } = useInfobar();
   const {
     setNodeRef,
     attributes,
@@ -45,13 +50,36 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
     }
   });
 
+  const handleCardClick = () => {
+    // Don't trigger during drag operations
+    if (isOverlay || isDragging) return;
+
+    const content: InfobarContent = {
+      title: task.title,
+      sections: [
+        {
+          title: 'Description',
+          description: task.description || 'No description provided.',
+          links: []
+        }
+      ]
+    };
+
+    setContent(content);
+    setOpen(true);
+  };
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
-      className={variants({
-        dragging: isOverlay ? 'overlay' : isDragging ? 'over' : undefined
-      })}
+      className={cn(
+        variants({
+          dragging: isOverlay ? 'overlay' : isDragging ? 'over' : undefined
+        }),
+        'cursor-pointer'
+      )}
+      onClick={handleCardClick}
     >
       <CardHeader className='space-between border-secondary relative flex flex-row border-b-2 px-3 py-3'>
         <Button

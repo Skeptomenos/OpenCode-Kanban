@@ -1,52 +1,108 @@
-# Implementation Plan: Phase 3.6 - Critical Fixes & Code Organization
+# Implementation Plan: Phase 4 - Board Management
 
-> **Status:** Ready for Implementation  
-> **Specs:** 
-> - `ralph-wiggum/specs/360-critical-fixes.md` (Critical)
-> - `ralph-wiggum/specs/361-code-organization.md` (Barrels)
-> **Reference:** `OpenKanban/docs/ROADMAP.md`  
-> **Created:** 2026-01-26  
-> **Estimated Effort:** ~2 hours
+> **Phase**: 4 - Board Management  
+> **Last Updated**: 2026-01-26  
+> **Total Estimated Time**: ~6 hours  
+> **Total Tasks**: 18 atomic tasks
+
+## Overview
+
+Phase 4 adds full board management capabilities to OpenKanban:
+- **Backend**: Filter boards by `parentId` to show only project-specific boards
+- **Frontend**: React Query hooks and API updates for boards CRUD
+- **UI**: Dialogs for create/rename/delete board operations
+- **Integration**: Sidebar shows project-specific boards with actions
+
+All specs are in `ralph-wiggum/specs/4.*.md`.
 
 ---
 
-## Executive Summary
+## Summary
 
-This plan addresses **architectural issues** from Phase 3.5 audit that must be fixed before proceeding to Phase 4. It consolidates Specs 360 (critical fixes) and 361 (code organization) into a cohesive set of 15 tasks.
-
-**Deferred to Phase 3.6b:**
-- Spec 362 (Error Handling refinements)
-- Spec 363 (Type Safety & Component Tests)
-- Spec 364 (Documentation & Hygiene)
-
-**Priority Order:**
-1. Circular dependency fix (types extraction)
-2. Query side effect removal
-3. Silent catch block logging
-4. Route integration tests
-5. Barrel file standardization
+| Phase               | Priority | Est. Time | Tasks | Files Modified  |
+| ------------------- | -------- | --------- | ----- | --------------- |
+| 4.1: Backend Core   | HIGH     | 75 min    | 1-4   | 4 files (1 new) |
+| 4.2: Frontend State | HIGH     | 60 min    | 5-9   | 4 files (2 new) |
+| 4.3: UI Components  | MEDIUM   | 75 min    | 10-14 | 5 files (5 new) |
+| 4.4: Integration    | MEDIUM   | 45 min    | 15-17 | 1 file          |
+| Final Verification  | -        | 15 min    | 18    | 1 file          |
 
 ---
 
 ## Tasks
 
+### Phase 4.1: Backend Core & Filtering
+
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 1.1**: Create `src/features/kanban/types.ts` - extract `Column` interface from `board-column.tsx:15` and `Task` type from `store.ts:4` | `360:L13-15` | Done v0.3.57: Extracted all 6 types to types.ts |
-| [x] | **Task 1.2**: Update imports in `store.ts`, `board-column.tsx`, `task-card.tsx`, `kanban-board.tsx` to use new `types.ts` | `360:L18-20` | Done v0.3.57: Also updated utils/index.ts, hooks/use-column-mutations.ts |
-| [x] | **Task 1.3**: Verify circular dependency resolved with `npm run build` | `360:L88` | Done v0.3.57: Build + lint + tests all pass |
-| [x] | **Task 2.1**: Refactor `resolveBoardId()` in `kanban-board.tsx` - remove `createBoard()` call, return null or throw if no board found | `360:L27-46` | Done v0.3.58: Removed createBoard call, throws if no board |
-| [x] | **Task 2.2**: Handle "no board" state in parent route/component - show 404 or redirect | `360:L44-46` | Done v0.3.58: Verified parent route + error boundary handle this |
-| [x] | **Task 3.1**: Add `logger.warn` to all 5 silent JSON.parse catch blocks in `repository.ts` | `360:L55-64` | Done v0.3.59: Added logger.warn to lines 332, 390, 609, 642, 649 |
-| [x] | **Task 4.1**: Create `src/lib/db/test-utils.ts` - centralize `createTestDb` helper | `360:L120-138` | Done v0.3.60: Extracted createTestDb, updated issue-service.test.ts imports |
-| [x] | **Task 4.2**: Create `src/app/api/issues/__tests__/route.test.ts` with GET, POST, filter tests | `360:L70-77` | Done v0.3.61: 11 tests (GET/POST/filters/errors) using mock pattern |
-| [x] | **Task 4.3**: Create `src/app/api/boards/__tests__/route.test.ts` with GET, POST tests | `360:L78-84` | Done v0.3.62: 9 tests (GET/POST/filters/errors) using mock pattern |
-| [x] | **Task 5.1**: Add `WelcomeScreen` export to `src/features/projects/index.ts` | `361:L13-15` | Done v0.3.63: Added export, updated app imports |
-| [x] | **Task 5.2**: Create `src/features/kanban/index.ts` barrel file | `361:L25-30` | Done v0.3.64: Exports KanbanBoard, KanbanViewPage, useTaskStore, useColumnMutations, API functions, types |
-| [x] | **Task 5.3**: Refactor `src/features/kanban/utils/index.ts` - move `hasDraggableData` logic to `helpers.ts`, make index.ts pure re-export | `361:L33-34`, `364:L33-34` | Done v0.3.65: Created helpers.ts, made index.ts pure re-export |
-| [x] | **Task 5.4**: Update app layer imports to use barrel exports | `361:L41` | Done v0.3.66: Updated board/[boardId]/page.tsx to use @/features/kanban barrel |
-| [x] | **Task 6.1**: Run full verification suite | `360:L87-90` | Done v0.3.66: Build + lint + tests all pass |
-| [x] | **Task 6.2**: Commit changes with message: "fix: resolve Phase 3.6a critical issues" | - | Done v0.3.66 |
+| [ ] | **Task 1**: Create `repository-boards.test.ts` with parentId filtering tests | `specs/4.1-backend-core.md:L32-37` | TDD: Create test file with 4 test cases for board filtering by parentId |
+| [ ] | **Task 2**: Update `IPMRepository.listBoards` and `SqlitePMRepository.listBoards` to accept filter | `specs/4.1-backend-core.md:L10-19` | Update interface signature (L219), implement in-memory filtering using `parseBoardFields` |
+| [ ] | **Task 3**: Update `BoardService.listBoards` to pass filter parameter | `specs/4.1-backend-core.md:L22-23` | Pass filter through from service to repo |
+| [ ] | **Task 4**: Update `GET /api/boards` to parse `parentId` from query params | `specs/4.1-backend-core.md:L26-29` | Parse searchParams, call service with filter |
+
+**Verification:**
+```bash
+pnpm test -- repository-boards
+pnpm run build && pnpm run lint
+# Manual: curl "http://localhost:37291/api/boards?parentId=test-123"
+```
+
+---
+
+### Phase 4.2: Frontend State & API
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [ ] | **Task 5**: Update `fetchBoards` to accept optional `parentId` filter | `specs/4.2-frontend-state.md:L10-12` | Add filter param, append to URL search params |
+| [ ] | **Task 6**: Update `CreateBoardInput` type to include `filters` field | `specs/4.2-frontend-state.md:L13-14` | Add `filters?: { parentId?: string }` to type |
+| [ ] | **Task 7**: Add `deleteBoard` API function | `specs/4.2-frontend-state.md:L15-18` | Send DELETE to `/api/boards/[id]`, handle errors, return `{ id }` |
+| [ ] | **Task 8**: Add `boards` query key to `query-keys.ts` | `specs/4.2-frontend-state.md:L22-24` | Add factory: `boards: (parentId?) => parentId ? ['boards', { parentId }] : ['boards']` |
+| [ ] | **Task 9**: Create `use-boards.ts` and `use-board-mutations.ts` hooks | `specs/4.2-frontend-state.md:L28-35` | Create `features/boards/hooks/` directory, `useBoards(projectId)`, `useCreateBoard`, `useUpdateBoard`, `useDeleteBoard` |
+
+**Verification:**
+```bash
+pnpm run build && pnpm run lint
+```
+
+---
+
+### Phase 4.3: UI Components
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [ ] | **Task 10**: Create `CreateBoardDialog` component | `specs/4.3-ui-components.md:L9-16` | Props: `parentId`, `children`. Form: board name. Default columns: Backlog, In Progress, Done. Use `CreateProjectDialog` as reference. |
+| [ ] | **Task 11**: Create `DeleteBoardDialog` component | `specs/4.3-ui-components.md:L28-37` | Props: `boardId`, `projectId`, `open`, `onOpenChange`. Warning message, redirect if deleting active board. |
+| [ ] | **Task 12**: Create `RenameBoardDialog` component | `specs/4.3-ui-components.md:L40-44` | Props: `boardId`, `currentName`, `open`, `onOpenChange`. Input with current name, calls `useUpdateBoard`. |
+| [ ] | **Task 13**: Create `BoardActionsMenu` component | `specs/4.3-ui-components.md:L19-25` | Props: `boardId`, `boardName`. DropdownMenu with Rename/Delete items, orchestrates dialogs. |
+| [ ] | **Task 14**: Create barrel export `features/boards/index.ts` | - | Export all components and hooks for clean imports |
+
+**Verification:**
+```bash
+pnpm run build && pnpm run lint
+```
+
+---
+
+### Phase 4.4: Sidebar Integration
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [ ] | **Task 15**: Add "Project Boards" SidebarGroup with `useBoards` integration | `specs/4.4-integration.md:L10-20` | Extract `projectId` from `useParams`, conditionally render boards group when inside project |
+| [ ] | **Task 16**: Add loading, error, and empty states for boards list | `specs/4.4-integration.md:L23-25` | Skeleton items, error message, "No boards" placeholder |
+| [ ] | **Task 17**: Wire up `CreateBoardDialog` and `BoardActionsMenu` in sidebar | `specs/4.4-integration.md:L17-19` | Create button in group action, actions menu on each board item, active highlighting |
+
+**Verification:**
+```bash
+pnpm run build && pnpm run lint
+```
+
+---
+
+### Final Verification
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [ ] | **Task 18**: Full verification and ROADMAP update | `specs/4.4-integration.md:L27-33` | Run test suite, manual E2E verification, update ROADMAP.md |
 
 ---
 
@@ -58,178 +114,80 @@ This plan addresses **architectural issues** from Phase 3.5 audit that must be f
 
 ---
 
-## Task Details
+## Task Dependency Graph
 
-### Task Group 1: Circular Dependency Fix (A.1)
-
-**Problem:** `store.ts` → `board-column.tsx` → `store.ts` creates a cycle.
-
-**Solution:** Extract shared types to a central `types.ts`:
 ```
-store.ts → types.ts ← board-column.tsx
-     ↓                      ↓
-  (uses Column)        (uses Task)
+Phase 4.1 (Backend):
+  1 (tests) → 2 (repo) → 3 (service) → 4 (api)
+
+Phase 4.2 (Frontend):
+  5 (fetchBoards) ─┐
+  6 (types)        ├─→ 9 (hooks)
+  7 (deleteBoard)  │
+  8 (queryKeys)   ─┘
+
+Phase 4.3 (UI):
+  10 (create) ─┐
+  11 (delete)  ├─→ 13 (menu) → 14 (barrel)
+  12 (rename) ─┘
+
+Phase 4.4 (Integration):
+  15 (boards group) → 16 (states) → 17 (dialogs)
+
+Final: 18
 ```
-
-**Files to create:**
-- `src/features/kanban/types.ts`
-
-**Files to modify:**
-- `src/features/kanban/utils/store.ts`
-- `src/features/kanban/components/board-column.tsx`
-- `src/features/kanban/components/task-card.tsx`
-- `src/features/kanban/components/kanban-board.tsx`
-
-**Types to extract:**
-- `Task` (from store.ts:4)
-- `Column` (from board-column.tsx:15)
-- `ColumnDragData` (from board-column.tsx)
-- `TaskDragData` (from task-card.tsx)
-- `ColumnType`, `TaskType` constants
 
 ---
 
-### Task Group 2: Query Side Effect Fix (A.5)
+## Files Summary
 
-**Problem:** `resolveBoardId()` in `kanban-board.tsx:49-60` calls `createBoard()` when no boards exist. This is a mutation inside a query function, violating React Query principles.
+| File | Action | Phase |
+|------|--------|-------|
+| `src/lib/db/__tests__/repository-boards.test.ts` | CREATE | 4.1 |
+| `src/lib/db/repository.ts` | MODIFY | 4.1 |
+| `src/services/board-service.ts` | MODIFY | 4.1 |
+| `src/app/api/boards/route.ts` | MODIFY | 4.1 |
+| `src/features/kanban/api.ts` | MODIFY | 4.2 |
+| `src/lib/query-keys.ts` | MODIFY | 4.2 |
+| `src/features/boards/hooks/use-boards.ts` | CREATE | 4.2 |
+| `src/features/boards/hooks/use-board-mutations.ts` | CREATE | 4.2 |
+| `src/features/boards/components/create-board-dialog.tsx` | CREATE | 4.3 |
+| `src/features/boards/components/delete-board-dialog.tsx` | CREATE | 4.3 |
+| `src/features/boards/components/rename-board-dialog.tsx` | CREATE | 4.3 |
+| `src/features/boards/components/board-actions-menu.tsx` | CREATE | 4.3 |
+| `src/features/boards/index.ts` | CREATE | 4.3 |
+| `src/components/layout/app-sidebar.tsx` | MODIFY | 4.4 |
+| `docs/ROADMAP.md` | MODIFY | Final |
 
-**Current flow:**
-```
-useQuery → fetchKanbanData → resolveBoardId → createBoard (MUTATION!)
-```
-
-**Target flow:**
-```
-Route/Parent → ensures board exists (or shows create UI)
-useQuery → fetchKanbanData → resolveBoardId → returns boardId or throws
-```
-
-**Decision:** If `KanbanBoard` receives a `boardId` that doesn't exist, the error boundary should catch and show 404. Board creation is a user action, not auto-magic.
-
-**Files to modify:**
-- `src/features/kanban/components/kanban-board.tsx`
-- `src/app/project/[projectId]/board/[boardId]/page.tsx` (verify handling)
-
----
-
-### Task Group 3: Repository Logging (B.1)
-
-**Problem:** Silent catch blocks hide data corruption issues.
-
-**Pattern to apply:**
-```typescript
-try {
-  return JSON.parse(result.value);
-} catch (error) {
-  logger.warn('Failed to parse [field]', { context, error: String(error) });
-  return fallbackValue;
-}
-```
-
-**File:** `src/lib/db/repository.ts`
-
-**Locations (5 total):**
-| Line | Function | Field |
-|------|----------|-------|
-| 331 | `getIssueWithRelations` | `metadata` |
-| 388 | `getIssuesWithRelations` | `metadata` |
-| 606 | `getConfig` | config value |
-| 638 | `parseBoardFields` | `filters` |
-| 644 | `parseBoardFields` | `columnConfig` |
+**Totals**: 15 files (8 new, 7 modified)
 
 ---
 
-### Task Group 4: Route Integration Tests (E.1)
+## Success Criteria
 
-**Pre-work:** Extract `createTestDb` to `src/lib/db/test-utils.ts` to avoid duplication.
-
-**Pattern:** Follow `src/app/api/sessions/__tests__/route.test.ts`
-
-**Test scaffold:**
-```typescript
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createTestDb } from '@/lib/db/test-utils';
-
-describe('/api/issues', () => {
-  beforeEach(() => {
-    // Mock database connection
-  });
-
-  it('GET returns list of issues', async () => { ... });
-  it('POST creates an issue', async () => { ... });
-  it('GET with parentId filters correctly', async () => { ... });
-});
+```bash
+cd OpenKanban
+pnpm run build    # Build successful
+pnpm run lint     # No errors
+pnpm test         # All tests pass (including new repository-boards.test.ts)
 ```
 
-**Files to create:**
-- `src/lib/db/test-utils.ts`
-- `src/app/api/issues/__tests__/route.test.ts`
-- `src/app/api/boards/__tests__/route.test.ts`
-
----
-
-### Task Group 5: Barrel File Standardization (A.2, A.3, A.4)
-
-**Goal:** All feature imports should go through barrel files.
-
-**Current state:**
-- `src/features/projects/index.ts` exists but missing `WelcomeScreen`
-- `src/features/kanban/index.ts` does NOT exist
-- App layer uses direct imports: `@/features/kanban/components/kanban-view-page`
-
-**Target state:**
-- All features have complete barrel files
-- App layer imports: `@/features/kanban`
-
-**Files to create:**
-- `src/features/kanban/index.ts`
-- `src/features/kanban/utils/helpers.ts` (move logic from utils/index.ts)
-
-**Files to modify:**
-- `src/features/projects/index.ts` (add WelcomeScreen)
-- `src/features/kanban/utils/index.ts` (make pure re-export)
-- `src/app/page.tsx` (use barrel import)
-- `src/app/project/[projectId]/board/[boardId]/page.tsx` (use barrel import)
-
----
-
-## Verification Checklist
-
-| Check | Command | Expected |
-|-------|---------|----------|
-| Build passes | `npm run build` | Exit 0, no circular dep warnings |
-| Tests pass | `npm run test` | All tests green (including new route tests) |
-| Lint passes | `npm run lint` | No errors |
-| Circular fixed | `grep "import.*Column.*board-column" store.ts` | No matches |
-| Types centralized | `ls src/features/kanban/types.ts` | File exists |
-| Logging added | `grep "logger.warn" repository.ts \| wc -l` | ≥5 matches |
-| Barrel complete | `grep "export.*KanbanBoard" src/features/kanban/index.ts` | Match found |
-
----
-
-## Dependencies
-
-- None external. All work is within existing codebase.
-- Follows existing patterns in `src/services/__tests__/` for testing.
+**Manual Verification Checklist:**
+- [ ] `GET /api/boards?parentId=XYZ` returns only boards with that parentId in filters
+- [ ] Navigate to project → Sidebar shows "Project Boards" group
+- [ ] "Create Board" dialog opens, creates board linked to current project
+- [ ] Board appears in sidebar immediately after creation
+- [ ] Board actions menu shows Rename/Delete options
+- [ ] Rename dialog updates board name
+- [ ] Delete dialog removes board and redirects if on deleted board
+- [ ] Empty project shows "No boards" placeholder
+- [ ] Loading skeleton appears while fetching boards
 
 ---
 
 ## Notes
 
-1. **Pre-Phase 4 (pnpm migration)** in ROADMAP should come AFTER this Phase 3.6a.
-
-2. **Phase 3.6b (Polish)** deferred:
-   - Spec 362: Error handling refinements
-   - Spec 363: Type safety (form.tsx, chart.tsx) + component test setup
-   - Spec 364: Documentation consolidation, npmrc cleanup
-
-3. **BOLA enforcement** (`@todo Phase 4`) in services is explicitly deferred - not part of this plan.
-
----
-
-## Change Log
-
-| Date | Change |
-|------|--------|
-| 2026-01-26 | Initial plan created (Spec 360 only) |
-| 2026-01-26 | Extended to include Spec 361 (barrels), consolidated tasks 18→15 |
+- **No new dependencies required** - all features use existing packages
+- **TDD**: Task 1 writes tests before implementation (Tasks 2-4)
+- **Reference Components**: `CreateProjectDialog` pattern for dialogs, `useProjects` pattern for hooks
+- **Existing infrastructure**: `parseBoardFields` helper handles JSON parsing, `BoardFilters` type already has `parentId`

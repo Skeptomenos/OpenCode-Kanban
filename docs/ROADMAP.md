@@ -83,18 +83,18 @@ A local-first Project Management tool where:
 
 ### Pre-Phase 4: Tooling Migration
 *Goal: Standardize on pnpm before feature work.*
-- [ ] Delete `node_modules/` and `package-lock.json`
-- [ ] Run `pnpm install`
-- [ ] Remove `shamefully-hoist=true` from `.npmrc` (start strict)
-- [ ] Verify build passes (`pnpm run build`)
-- [ ] Update team docs to reference `pnpm` commands
+- [x] Delete `node_modules/` and `package-lock.json`
+- [x] Run `pnpm install`
+- [x] Remove `shamefully-hoist=true` from `.npmrc` (start strict)
+- [x] Verify build passes (`pnpm run build`)
+- [x] Update team docs to reference `pnpm` commands
 
-### Phase 4.0: Stability & Prerequisites
+### Phase 4.0: Stability & Prerequisites ✅ COMPLETE
 *Goal: Fix critical bugs and UX blockers before adding hierarchy.*
-- [ ] **CRITICAL BUG**: Fix duplicate column creation (Double entries in DB on "+ Add Section").
-- [ ] **BLOCKER**: Fix Task Details Panel (currently "No content available").
-- [ ] **UX**: Replace UUIDs in breadcrumbs with Project/Board names.
-- [ ] **UX**: Add visual feedback for drag-and-drop operations.
+- [x] **CRITICAL BUG**: Fix duplicate column creation (Double entries in DB on "+ Add Section"). ✅ Fixed 2026-01-26
+- [x] **BLOCKER**: Fix Task Details Panel (click handler opens info sidebar). ✅ Fixed 2026-01-26
+- [x] **UX**: Replace UUIDs in breadcrumbs with Project/Board names. ✅ Fixed 2026-01-26
+- [x] **UX**: Add visual feedback for drag-and-drop operations (drop indicators). ✅ Fixed 2026-01-26
 
 ### Phase 4: The Hierarchical Board
 *Goal: Visualize the complex structure and manage board views.*
@@ -120,10 +120,11 @@ A local-first Project Management tool where:
 
 **Last Updated:** 2026-01-26
 
-**State:** Phase 3.5 COMPLETE. Ready for Pre-Phase 4 (pnpm migration).
+**State:** Phase 4.0 COMPLETE. Ready for Phase 4 (Hierarchical Board).
 
 | Component | Status | Notes |
 |-----------|--------|-------|
+| Tooling | ✅ Done | Migrated to pnpm, strict mode enabled |
 | Template cleanup | ✅ Done | 7 phases, ~47 files deleted (archived in `docs/_archive/`) |
 | Session loader | ✅ Done | Async I/O, reads from `~/.local/share/opencode/storage` |
 | API endpoint | ✅ Done | `GET /api/sessions`, full CRUD for issues/boards |
@@ -139,7 +140,7 @@ A local-first Project Management tool where:
 | TanStack Query | ✅ Done | Replaces Zustand async actions |
 | Type Safety | ✅ Done | Zod strict schemas, FormData guards |
 
-**Next Action:** Start Pre-Phase 4 (pnpm migration).
+**Next Action:** Start Phase 4 (Hierarchical Board).
 
 **Documentation:**
 - `docs/ROADMAP.md` - This file (master roadmap)

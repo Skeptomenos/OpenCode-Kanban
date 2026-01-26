@@ -334,7 +334,14 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
     }
   }
 
+  function onDragCancel() {
+    useTaskStore.getState().setDropTarget(null);
+    setActiveColumn(null);
+    setActiveTask(null);
+  }
+
   function onDragEnd(event: DragEndEvent) {
+    useTaskStore.getState().setDropTarget(null);
     setActiveColumn(null);
     setActiveTask(null);
 
@@ -371,7 +378,35 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
 
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event;
-    if (!over) return;
+    
+    if (!over) {
+      useTaskStore.getState().setDropTarget(null);
+      return;
+    }
+
+    const overData = over.data.current;
+    
+    if (overData && hasDraggableData(over) && active.data.current?.type === 'Task') {
+      if (overData.type === 'Column') {
+        const columnId = over.id.toString();
+        const storeTasks = useTaskStore.getState().tasks;
+        const tasksInColumn = storeTasks.filter(t => t.columnId === columnId);
+        useTaskStore.getState().setDropTarget({
+          columnId,
+          index: tasksInColumn.length,
+        });
+      } else if (overData.type === 'Task') {
+        const overTask = overData.task as Task;
+        const columnId = overTask.columnId;
+        const storeTasks = useTaskStore.getState().tasks;
+        const tasksInColumn = storeTasks.filter(t => t.columnId === columnId);
+        const overIndex = tasksInColumn.findIndex(t => t.id === overTask.id);
+        useTaskStore.getState().setDropTarget({
+          columnId,
+          index: overIndex >= 0 ? overIndex : 0,
+        });
+      }
+    }
 
     const activeId = active.id;
     const overId = over.id;
@@ -381,7 +416,6 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
     if (!hasDraggableData(active) || !hasDraggableData(over)) return;
 
     const activeData = active.data.current;
-    const overData = over.data.current;
 
     const isActiveATask = activeData?.type === 'Task';
     const isOverATask = overData?.type === 'Task';
@@ -430,6 +464,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
+        onDragCancel={onDragCancel}
       >
         <BoardContainer>
           <SortableContext items={columnsId}>

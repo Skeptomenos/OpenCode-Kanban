@@ -29,8 +29,8 @@ OpenKanban is a hierarchical project management system that integrates seamlessl
 
 ```bash
 cd OpenKanban
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to start managing your projects.
@@ -45,7 +45,7 @@ Open [http://localhost:3000](http://localhost:3000) to start managing your proje
 ## Development
 
 ```bash
-npm run dev      # Start development server
-npm run build    # Production build
-npm run lint     # Run ESLint
+pnpm run dev      # Start development server
+pnpm run build    # Production build
+pnpm run lint     # Run ESLint
 ```

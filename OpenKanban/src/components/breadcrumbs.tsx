@@ -1,4 +1,5 @@
 'use client';
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
 import { IconSlash } from '@tabler/icons-react';
 import { Fragment } from 'react';
@@ -19,10 +21,14 @@ export function Breadcrumbs() {
     <Breadcrumb>
       <BreadcrumbList>
         {items.map((item, index) => (
-          <Fragment key={item.title}>
+          <Fragment key={item.link}>
             {index !== items.length - 1 && (
               <BreadcrumbItem className='hidden md:block'>
-                <BreadcrumbLink href={item.link}>{item.title}</BreadcrumbLink>
+                {item.isLoading ? (
+                  <Skeleton className='h-4 w-20' />
+                ) : (
+                  <BreadcrumbLink href={item.link}>{item.title}</BreadcrumbLink>
+                )}
               </BreadcrumbItem>
             )}
             {index < items.length - 1 && (
@@ -31,7 +37,13 @@ export function Breadcrumbs() {
               </BreadcrumbSeparator>
             )}
             {index === items.length - 1 && (
-              <BreadcrumbPage>{item.title}</BreadcrumbPage>
+              <BreadcrumbItem>
+                {item.isLoading ? (
+                  <Skeleton className='h-4 w-24' />
+                ) : (
+                  <BreadcrumbPage>{item.title}</BreadcrumbPage>
+                )}
+              </BreadcrumbItem>
             )}
           </Fragment>
         ))}
