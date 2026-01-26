@@ -113,7 +113,7 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 | [x] | **Task 16**: Extend Task type with ParentInfo | `specs/4.9-hierarchical-display.md:L84-131` | Done v0.3.94 - Added ParentInfo interface and parent field to Task |
 | [x] | **Task 17**: Update repository with parent metadata | `specs/4.9-hierarchical-display.md:L134-190` | Done v0.3.95 - Added IssueWithParent type, listIssues returns parent info via batch query |
 | [x] | **Task 18**: Update frontend API mapping | `specs/4.9-hierarchical-display.md:L193-252` | Done v0.3.96 - Updated fetchIssues return type to IssueWithParent[], updated IssueService |
-| [ ] | **Task 19**: Map parent in fetchKanbanData | `specs/4.9-hierarchical-display.md:L255-302` | Preserve parent data in Task objects |
+| [x] | **Task 19**: Map parent in fetchKanbanData | `specs/4.9-hierarchical-display.md:L255-302` | Done v0.3.97 - Added parent field to Task mapping in both projectId and board paths |
 | [ ] | **Task 20**: Add parent badge to TaskCard | `specs/4.9-hierarchical-display.md:L305-406` | Type-specific icons, truncation |
 
 **Files**:
