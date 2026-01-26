@@ -1,52 +1,101 @@
-# Implementation Plan: Phase 3.6 - Critical Fixes & Code Organization
+# Implementation Plan
 
-> **Status:** Ready for Implementation  
-> **Specs:** 
-> - `ralph-wiggum/specs/360-critical-fixes.md` (Critical)
-> - `ralph-wiggum/specs/361-code-organization.md` (Barrels)
-> **Reference:** `OpenKanban/docs/ROADMAP.md`  
-> **Created:** 2026-01-26  
-> **Estimated Effort:** ~2 hours
+> **Phase**: 4.0 - Stability & Prerequisites  
+> **Last Updated**: 2026-01-26  
+> **Total Estimated Time**: ~2.5 hours  
+> **Total Tasks**: 17 atomic tasks
+
+## Overview
+
+Three Phase 4.0 blockers remain after the duplicate column fix:
+1. **Task Details Panel** - Shows "No content available" when clicking task cards
+2. **Breadcrumbs Names** - Display UUIDs instead of project/board names
+3. **DnD Drop Indicators** - No visual feedback during drag operations
+
+All specs are fully authored in `ralph-wiggum/specs/`. Implementation is plan-only.
 
 ---
 
-## Executive Summary
+## Summary
 
-This plan addresses **architectural issues** from Phase 3.5 audit that must be fixed before proceeding to Phase 4. It consolidates Specs 360 (critical fixes) and 361 (code organization) into a cohesive set of 15 tasks.
-
-**Deferred to Phase 3.6b:**
-- Spec 362 (Error Handling refinements)
-- Spec 363 (Type Safety & Component Tests)
-- Spec 364 (Documentation & Hygiene)
-
-**Priority Order:**
-1. Circular dependency fix (types extraction)
-2. Query side effect removal
-3. Silent catch block logging
-4. Route integration tests
-5. Barrel file standardization
+| Bug | Priority | Est. Time | Tasks | Files Modified |
+|-----|----------|-----------|-------|----------------|
+| Bug 1: Task Details Panel | HIGH | 30 min | 1.1-1.2 | 1 file |
+| Bug 2: Breadcrumbs Names | MEDIUM | 50 min | 2.1-2.4 | 4 files (1 new) |
+| Bug 3: DnD Drop Indicators | LOW | 65 min | 3.1-3.6 | 4 files (1 new) |
+| Final Verification | - | 15 min | 4.1-4.3 | 1 file |
 
 ---
 
 ## Tasks
 
+### Bug 1: Task Details Panel Shows "No Content Available"
+
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 1.1**: Create `src/features/kanban/types.ts` - extract `Column` interface from `board-column.tsx:15` and `Task` type from `store.ts:4` | `360:L13-15` | Done v0.3.57: Extracted all 6 types to types.ts |
-| [x] | **Task 1.2**: Update imports in `store.ts`, `board-column.tsx`, `task-card.tsx`, `kanban-board.tsx` to use new `types.ts` | `360:L18-20` | Done v0.3.57: Also updated utils/index.ts, hooks/use-column-mutations.ts |
-| [x] | **Task 1.3**: Verify circular dependency resolved with `npm run build` | `360:L88` | Done v0.3.57: Build + lint + tests all pass |
-| [x] | **Task 2.1**: Refactor `resolveBoardId()` in `kanban-board.tsx` - remove `createBoard()` call, return null or throw if no board found | `360:L27-46` | Done v0.3.58: Removed createBoard call, throws if no board |
-| [x] | **Task 2.2**: Handle "no board" state in parent route/component - show 404 or redirect | `360:L44-46` | Done v0.3.58: Verified parent route + error boundary handle this |
-| [x] | **Task 3.1**: Add `logger.warn` to all 5 silent JSON.parse catch blocks in `repository.ts` | `360:L55-64` | Done v0.3.59: Added logger.warn to lines 332, 390, 609, 642, 649 |
-| [x] | **Task 4.1**: Create `src/lib/db/test-utils.ts` - centralize `createTestDb` helper | `360:L120-138` | Done v0.3.60: Extracted createTestDb, updated issue-service.test.ts imports |
-| [x] | **Task 4.2**: Create `src/app/api/issues/__tests__/route.test.ts` with GET, POST, filter tests | `360:L70-77` | Done v0.3.61: 11 tests (GET/POST/filters/errors) using mock pattern |
-| [x] | **Task 4.3**: Create `src/app/api/boards/__tests__/route.test.ts` with GET, POST tests | `360:L78-84` | Done v0.3.62: 9 tests (GET/POST/filters/errors) using mock pattern |
-| [x] | **Task 5.1**: Add `WelcomeScreen` export to `src/features/projects/index.ts` | `361:L13-15` | Done v0.3.63: Added export, updated app imports |
-| [x] | **Task 5.2**: Create `src/features/kanban/index.ts` barrel file | `361:L25-30` | Done v0.3.64: Exports KanbanBoard, KanbanViewPage, useTaskStore, useColumnMutations, API functions, types |
-| [x] | **Task 5.3**: Refactor `src/features/kanban/utils/index.ts` - move `hasDraggableData` logic to `helpers.ts`, make index.ts pure re-export | `361:L33-34`, `364:L33-34` | Done v0.3.65: Created helpers.ts, made index.ts pure re-export |
-| [x] | **Task 5.4**: Update app layer imports to use barrel exports | `361:L41` | Done v0.3.66: Updated board/[boardId]/page.tsx to use @/features/kanban barrel |
-| [x] | **Task 6.1**: Run full verification suite | `360:L87-90` | Done v0.3.66: Build + lint + tests all pass |
-| [x] | **Task 6.2**: Commit changes with message: "fix: resolve Phase 3.6a critical issues" | - | Done v0.3.66 |
+| [x] | **Task 1.1**: Add click handler to TaskCard with useInfobar integration | `specs/001-task-details-panel.md:L89-135` | Done in v0.3.67 |
+| [x] | **Task 1.2**: Verify Bug 1 fix and commit | `specs/001-task-details-panel.md:L256-308` | Build, lint, tests pass. Committed. |
+
+**Commit after 1.2:**
+```
+fix(kanban): add click handler to TaskCard for info sidebar
+Files: src/features/kanban/components/task-card.tsx
+```
+
+---
+
+### Bug 2: Breadcrumbs Show UUIDs Instead of Names
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [x] | **Task 2.1**: Add breadcrumb query keys and create useBreadcrumbData hook | `specs/002-breadcrumbs-names.md:L88-143` | Done in v0.3.68 |
+| [x] | **Task 2.2**: Add parsePathIds utility and update useBreadcrumbs hook | `specs/002-breadcrumbs-names.md:L145-216` | Done in v0.3.68 |
+| [x] | **Task 2.3**: Add Skeleton loading state to Breadcrumbs component | `specs/002-breadcrumbs-names.md:L219-276` | Done in v0.3.68 |
+| [x] | **Task 2.4**: Verify Bug 2 fix and commit | `specs/002-breadcrumbs-names.md:L294-371` | Build, lint, 126 tests pass. Committed v0.3.68 |
+
+**Parallelizable**: 2.1 can start independently
+
+**Commit after 2.4:**
+```
+fix(ui): show project/board names in breadcrumbs instead of UUIDs
+Files: src/lib/query-keys.ts, src/hooks/use-breadcrumb-data.tsx (NEW), 
+       src/hooks/use-breadcrumbs.tsx, src/components/breadcrumbs.tsx
+```
+
+---
+
+### Bug 3: No Visual Feedback for Drag-and-Drop
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [x] | **Task 3.1**: Add dropTarget state and setDropTarget action to Zustand store | `specs/003-dnd-drop-indicator-store.md:L52-100` | Done in v0.3.69 |
+| [ ] | **Task 3.2**: Create DropIndicator component | `specs/003-dnd-drop-indicator-store.md:L102-131` | New file, isActive prop, CSS transitions |
+| [ ] | **Task 3.3**: Update onDragOver to track drop position | `specs/003b-dnd-drop-indicator-integration.md:L67-126` | Calculate columnId/index, call setDropTarget |
+| [ ] | **Task 3.4**: Clear dropTarget on drag end/cancel | `specs/003b-dnd-drop-indicator-integration.md:L133-179` | Add to onDragEnd, add onDragCancel handler |
+| [ ] | **Task 3.5**: Render DropIndicator in BoardColumn | `specs/003b-dnd-drop-indicator-integration.md:L184-232` | Before each task + at end, check isActive |
+| [ ] | **Task 3.6**: Verify Bug 3 fix and commit | `specs/003b-dnd-drop-indicator-integration.md:L317-416` | Build, lint, test, manual DnD test, commit |
+
+**Parallelizable**: 3.1 and 3.2 can run in parallel (store vs component)  
+**Sequential**: 3.3-3.5 depend on 3.1; 3.5 depends on 3.2
+
+**Commit after 3.6:**
+```
+feat(kanban): add visual drop indicators for drag-and-drop
+Files: src/features/kanban/utils/store.ts, 
+       src/features/kanban/components/drop-indicator.tsx (NEW),
+       src/features/kanban/components/kanban-board.tsx, 
+       src/features/kanban/components/board-column.tsx
+```
+
+---
+
+### Final Verification
+
+| Status | Task | Spec Reference | Notes |
+|--------|------|----------------|-------|
+| [ ] | **Task 4.1**: Run full test suite | `specs/pre-phase4-bug-fixes.md:L469-476` | `pnpm test` → 126 tests pass |
+| [ ] | **Task 4.2**: End-to-end manual verification | `specs/pre-phase4-bug-fixes.md:L477-483` | All 3 bugs confirmed fixed |
+| [ ] | **Task 4.3**: Update ROADMAP.md Phase 4.0 checkboxes | `docs/ROADMAP.md:L92-97` | Mark BLOCKER and UX items complete |
 
 ---
 
@@ -58,178 +107,61 @@ This plan addresses **architectural issues** from Phase 3.5 audit that must be f
 
 ---
 
-## Task Details
+## Task Dependency Graph
 
-### Task Group 1: Circular Dependency Fix (A.1)
-
-**Problem:** `store.ts` → `board-column.tsx` → `store.ts` creates a cycle.
-
-**Solution:** Extract shared types to a central `types.ts`:
 ```
-store.ts → types.ts ← board-column.tsx
-     ↓                      ↓
-  (uses Column)        (uses Task)
+Bug 1: 1.1 → 1.2 [COMMIT]
+
+Bug 2: 2.1 → 2.2 → 2.3 → 2.4 [COMMIT]
+
+Bug 3: 3.1 ─┬─→ 3.3 → 3.4 ─┬─→ 3.6 [COMMIT]
+             │              │
+        3.2 ─┴────────→ 3.5 ─┘
+
+Final: 4.1 → 4.2 → 4.3
 ```
-
-**Files to create:**
-- `src/features/kanban/types.ts`
-
-**Files to modify:**
-- `src/features/kanban/utils/store.ts`
-- `src/features/kanban/components/board-column.tsx`
-- `src/features/kanban/components/task-card.tsx`
-- `src/features/kanban/components/kanban-board.tsx`
-
-**Types to extract:**
-- `Task` (from store.ts:4)
-- `Column` (from board-column.tsx:15)
-- `ColumnDragData` (from board-column.tsx)
-- `TaskDragData` (from task-card.tsx)
-- `ColumnType`, `TaskType` constants
 
 ---
 
-### Task Group 2: Query Side Effect Fix (A.5)
+## Files Summary
 
-**Problem:** `resolveBoardId()` in `kanban-board.tsx:49-60` calls `createBoard()` when no boards exist. This is a mutation inside a query function, violating React Query principles.
-
-**Current flow:**
-```
-useQuery → fetchKanbanData → resolveBoardId → createBoard (MUTATION!)
-```
-
-**Target flow:**
-```
-Route/Parent → ensures board exists (or shows create UI)
-useQuery → fetchKanbanData → resolveBoardId → returns boardId or throws
-```
-
-**Decision:** If `KanbanBoard` receives a `boardId` that doesn't exist, the error boundary should catch and show 404. Board creation is a user action, not auto-magic.
-
-**Files to modify:**
-- `src/features/kanban/components/kanban-board.tsx`
-- `src/app/project/[projectId]/board/[boardId]/page.tsx` (verify handling)
+| File | Action | Bug |
+|------|--------|-----|
+| `src/features/kanban/components/task-card.tsx` | MODIFY | 1 |
+| `src/lib/query-keys.ts` | MODIFY | 2 |
+| `src/hooks/use-breadcrumb-data.tsx` | CREATE | 2 |
+| `src/hooks/use-breadcrumbs.tsx` | MODIFY | 2 |
+| `src/components/breadcrumbs.tsx` | MODIFY | 2 |
+| `src/features/kanban/utils/store.ts` | MODIFY | 3 |
+| `src/features/kanban/components/drop-indicator.tsx` | CREATE | 3 |
+| `src/features/kanban/components/kanban-board.tsx` | MODIFY | 3 |
+| `src/features/kanban/components/board-column.tsx` | MODIFY | 3 |
+| `docs/ROADMAP.md` | MODIFY | Final |
 
 ---
 
-### Task Group 3: Repository Logging (B.1)
+## Success Criteria
 
-**Problem:** Silent catch blocks hide data corruption issues.
-
-**Pattern to apply:**
-```typescript
-try {
-  return JSON.parse(result.value);
-} catch (error) {
-  logger.warn('Failed to parse [field]', { context, error: String(error) });
-  return fallbackValue;
-}
+```bash
+cd OpenKanban
+pnpm run build    # Build successful
+pnpm run lint     # No errors
+pnpm test         # 126 tests pass
 ```
 
-**File:** `src/lib/db/repository.ts`
-
-**Locations (5 total):**
-| Line | Function | Field |
-|------|----------|-------|
-| 331 | `getIssueWithRelations` | `metadata` |
-| 388 | `getIssuesWithRelations` | `metadata` |
-| 606 | `getConfig` | config value |
-| 638 | `parseBoardFields` | `filters` |
-| 644 | `parseBoardFields` | `columnConfig` |
-
----
-
-### Task Group 4: Route Integration Tests (E.1)
-
-**Pre-work:** Extract `createTestDb` to `src/lib/db/test-utils.ts` to avoid duplication.
-
-**Pattern:** Follow `src/app/api/sessions/__tests__/route.test.ts`
-
-**Test scaffold:**
-```typescript
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createTestDb } from '@/lib/db/test-utils';
-
-describe('/api/issues', () => {
-  beforeEach(() => {
-    // Mock database connection
-  });
-
-  it('GET returns list of issues', async () => { ... });
-  it('POST creates an issue', async () => { ... });
-  it('GET with parentId filters correctly', async () => { ... });
-});
-```
-
-**Files to create:**
-- `src/lib/db/test-utils.ts`
-- `src/app/api/issues/__tests__/route.test.ts`
-- `src/app/api/boards/__tests__/route.test.ts`
-
----
-
-### Task Group 5: Barrel File Standardization (A.2, A.3, A.4)
-
-**Goal:** All feature imports should go through barrel files.
-
-**Current state:**
-- `src/features/projects/index.ts` exists but missing `WelcomeScreen`
-- `src/features/kanban/index.ts` does NOT exist
-- App layer uses direct imports: `@/features/kanban/components/kanban-view-page`
-
-**Target state:**
-- All features have complete barrel files
-- App layer imports: `@/features/kanban`
-
-**Files to create:**
-- `src/features/kanban/index.ts`
-- `src/features/kanban/utils/helpers.ts` (move logic from utils/index.ts)
-
-**Files to modify:**
-- `src/features/projects/index.ts` (add WelcomeScreen)
-- `src/features/kanban/utils/index.ts` (make pure re-export)
-- `src/app/page.tsx` (use barrel import)
-- `src/app/project/[projectId]/board/[boardId]/page.tsx` (use barrel import)
-
----
-
-## Verification Checklist
-
-| Check | Command | Expected |
-|-------|---------|----------|
-| Build passes | `npm run build` | Exit 0, no circular dep warnings |
-| Tests pass | `npm run test` | All tests green (including new route tests) |
-| Lint passes | `npm run lint` | No errors |
-| Circular fixed | `grep "import.*Column.*board-column" store.ts` | No matches |
-| Types centralized | `ls src/features/kanban/types.ts` | File exists |
-| Logging added | `grep "logger.warn" repository.ts \| wc -l` | ≥5 matches |
-| Barrel complete | `grep "export.*KanbanBoard" src/features/kanban/index.ts` | Match found |
-
----
-
-## Dependencies
-
-- None external. All work is within existing codebase.
-- Follows existing patterns in `src/services/__tests__/` for testing.
+**Manual Verification Checklist:**
+- [ ] Click task card → Info sidebar opens with task title and description
+- [ ] Breadcrumbs show "My Project / Sprint Board" not "abc-123 / def-456"
+- [ ] Loading skeleton appears briefly during navigation
+- [ ] Drag task → Blue line indicator appears at drop position
+- [ ] Indicator follows cursor between tasks
+- [ ] Drop or press Escape → Indicator disappears immediately
+- [ ] Existing drag-and-drop functionality unchanged
 
 ---
 
 ## Notes
 
-1. **Pre-Phase 4 (pnpm migration)** in ROADMAP should come AFTER this Phase 3.6a.
-
-2. **Phase 3.6b (Polish)** deferred:
-   - Spec 362: Error handling refinements
-   - Spec 363: Type safety (form.tsx, chart.tsx) + component test setup
-   - Spec 364: Documentation consolidation, npmrc cleanup
-
-3. **BOLA enforcement** (`@todo Phase 4`) in services is explicitly deferred - not part of this plan.
-
----
-
-## Change Log
-
-| Date | Change |
-|------|--------|
-| 2026-01-26 | Initial plan created (Spec 360 only) |
-| 2026-01-26 | Extended to include Spec 361 (barrels), consolidated tasks 18→15 |
+- **No new dependencies required** - all features use existing packages
+- **Tests**: No new tests specified (manual verification for UI/UX fixes)
+- **ROADMAP update**: Mark Phase 4.0 items complete after all verifications pass

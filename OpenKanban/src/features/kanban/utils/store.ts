@@ -9,6 +9,10 @@ export type State = {
   draggedTask: string | null;
   currentBoardId: string | null;
   currentProjectId: string | null;
+  dropTarget: {
+    columnId: string;
+    index: number;
+  } | null;
 };
 
 export type Actions = {
@@ -17,6 +21,7 @@ export type Actions = {
   dragTask: (id: string | null) => void;
   setBoardId: (boardId: string | null) => void;
   setProjectId: (projectId: string | null) => void;
+  setDropTarget: (target: { columnId: string; index: number } | null) => void;
 };
 
 export const useTaskStore = create<State & Actions>((set) => ({
@@ -25,10 +30,12 @@ export const useTaskStore = create<State & Actions>((set) => ({
   draggedTask: null,
   currentBoardId: null,
   currentProjectId: null,
+  dropTarget: null,
 
   setTasks: (tasks: Task[]) => set({ tasks }),
   setCols: (columns: Column[]) => set({ columns }),
   dragTask: (draggedTask: string | null) => set({ draggedTask }),
   setBoardId: (currentBoardId: string | null) => set({ currentBoardId }),
   setProjectId: (currentProjectId: string | null) => set({ currentProjectId }),
+  setDropTarget: (dropTarget) => set({ dropTarget }),
 }));
