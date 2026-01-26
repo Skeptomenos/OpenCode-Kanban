@@ -1,151 +1,62 @@
-# Implementation Plan: Phase 4 Completion
+# Implementation Plan: Phase 5 - UI/UX Polish & Workflow
 
-> **Last Updated**: 2026-01-26
-> **Total Tasks**: 25 atomic tasks (15-25 target achieved)
-> **Estimated Effort**: ~14-16 hours
+> **Goal:** Transform the UI into a polished, production-ready experience and implement critical workflow persistence.
+> **Previous Phase:** Phase 4 Board Management COMPLETE (v0.3.84)
+> **Created:** 2026-01-26
 
-## Overview
+## Execution Order
 
-This plan addresses:
-1. **Critical Blocker**: Fix build error in query-keys.ts (introduced by spec work)
-2. **Phase 4.7**: Filter Builder - UI controls to filter Kanban tasks by status
-3. **Phase 4.9**: Hierarchical Display - Show parent/child relationships on cards
-4. **Phase 4.10**: Link Session UI - Modal to search and link OpenCode sessions
-
-All specs are in `ralph-wiggum/specs/4.*.md`.
-
----
-
-## Current Status
-
-| Phase | Priority | Est. Time | Tasks | Status |
-|-------|----------|-----------|-------|--------|
-| 4.5: Status Constants | HIGH | 2-3 hr | 1-4 | COMPLETE (v0.3.85) |
-| 4.6: Error Boundaries | MEDIUM | 1-2 hr | 5-7 | COMPLETE (v0.3.88) |
-| 4.8: Menu Positioning | LOW | 30-60 min | 8-9 | COMPLETE (v0.3.89) |
-| Tech Debt (Quick) | LOW | 30 min | 10-12 | COMPLETE |
-| **BUILD FIX** | **CRITICAL** | 15 min | 13.5 | **COMPLETE (v0.3.92)** |
-| Phase 4.7 Filter Builder | HIGH | 2-3 hr | 13-15 | COMPLETE (v0.3.93) |
-| Phase 4.9 Hierarchical Display | MEDIUM | 3-4 hr | 16-20 | COMPLETE (v0.3.98) |
-| Phase 4.10 Link Session UI | MEDIUM | 3-4 hr | 21-25 | **COMPLETE (v0.4.3)** |
+1. **Drag Persistence (5.3)** - Schema migration is foundation for all ordering
+2. **Search & Cleanup (5.4)** - Independent, quick wins
+3. **Sidebar Overhaul (5.1)** - Hierarchical navigation
+4. **Task Card Redesign (5.2)** - UI polish
+5. **Deferred Features (5.5)** - Integration convenience
 
 ---
 
 ## Tasks
 
-### Phase 4.5: Status Constants Standardization ✅ COMPLETE
-
-**Spec**: `specs/4.5-status-constants.md`
+### Sprint 1: Data Foundation (Est: 1.5 days)
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 1**: Create `src/lib/constants/statuses.ts` | `specs/4.5-status-constants.md:L17-29` | Done in v0.3.85 |
-| [x] | **Task 2**: Update 3 production files | `specs/4.5-status-constants.md:L34-37` | Done in v0.3.85 |
-| [x] | **Task 3**: Update 6 test files | `specs/4.5-status-constants.md:L39-45` | Done in v0.3.85 |
-| [x] | **Task 4**: Create validation test | `specs/4.5-status-constants.md:L65-85` | Done in v0.3.85 |
+| [x] | **Task 1.1**: Add `sortOrder` column to `issues` table | `specs/5.3-drag-persistence.md:L7-15` | DONE: Schema updated, test DBs updated, manual ALTER TABLE applied. |
+| [ ] | **Task 1.2**: Update repository with `updateIssueOrder` method | `specs/5.3-drag-persistence.md:L17-30` | Add to `repository.ts`. Service layer method in `issue-service.ts`. |
+| [ ] | **Task 1.3**: Create `PUT /api/issues/[id]/move` endpoint | `specs/5.3-drag-persistence.md:L17-30` | Input: `{ status, prevIssueId, nextIssueId }`. Calculate sortOrder using midpoint algorithm. |
+| [ ] | **Task 1.4**: Wire drag-end to move API with optimistic updates | `specs/5.3-drag-persistence.md:L32-48` | Update `kanban-board.tsx` onDragEnd. Snapshot for rollback. Calculate local sortOrder. |
+| [ ] | **Task 1.5**: Add `?q=` search param to `GET /api/sessions` | `specs/5.4-search-cleanup.md:L6-11` | Update `session-loader` to filter by filename/metadata. Substring match on title/id. |
+| [ ] | **Task 1.6**: Remove Status dropdown from `BoardFilterControls` | `specs/5.4-search-cleanup.md:L20-23` | Delete the Status Select component. Kanban columns already show status. |
 
----
-
-### Phase 4.6: Dialog Error Boundaries ✅ COMPLETE
-
-**Spec**: `specs/4.6-dialog-error-boundaries.md`
+### Sprint 2: Sidebar Hierarchy (Est: 2 days)
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 5**: Create `dialog-error-boundary.tsx` | `specs/4.6-dialog-error-boundaries.md:L19-56` | Done v0.3.86 |
-| [x] | **Task 6**: Wrap `BoardActionsMenu` with boundary | `specs/4.6-dialog-error-boundaries.md:L59-70` | Done v0.3.87 |
-| [x] | **Task 7**: Create unit test suite | `specs/4.6-dialog-error-boundaries.md:L76-82` | Done v0.3.88 (6 tests) |
+| [ ] | **Task 2.1**: Create `ProjectActionsMenu` component | `specs/5.1-sidebar-overhaul.md:L25-31` | File: `src/features/projects/components/project-actions-menu.tsx`. Copy pattern from `BoardActionsMenu`. |
+| [ ] | **Task 2.2**: Create `RenameProjectDialog` component | `specs/5.1-sidebar-overhaul.md:L25-31` | File: `src/features/projects/components/rename-project-dialog.tsx`. Similar to `RenameBoardDialog`. |
+| [ ] | **Task 2.3**: Create `DeleteProjectDialog` component | `specs/5.1-sidebar-overhaul.md:L25-31` | File: `src/features/projects/components/delete-project-dialog.tsx`. Include cascade warning. |
+| [ ] | **Task 2.4**: Refactor sidebar - nest boards under projects | `specs/5.1-sidebar-overhaul.md:L7-15` | Use `Collapsible` + `SidebarMenuSub`. Remove separate "Project Boards" group. Active project auto-expands. |
+| [ ] | **Task 2.5**: Wire `ProjectActionsMenu` to sidebar project items | `specs/5.1-sidebar-overhaul.md:L25-43` | Add `...` menu to each project in sidebar. Hook up rename/delete dialogs. |
+| [ ] | **Task 2.6**: Add optimistic updates to project mutations | `specs/5.1-sidebar-overhaul.md:L33-43` | Update `use-project-mutations.ts` with `onMutate` for rename/delete. Rollback on error. |
+| [ ] | **Task 2.7**: Implement "Push Mode" layout for InfoSidebar | `specs/5.1-sidebar-overhaul.md:L17-22` | Change `infobar.tsx`: remove `absolute` on md:, use `relative`. Update parent layout.tsx to `flex-row`. |
 
----
-
-### Phase 4.8: Board Actions Menu Positioning ✅ COMPLETE
-
-**Spec**: `specs/4.8-board-actions-menu-positioning.md`
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **Task 8**: Execute UX testing checklist | `specs/4.8-board-actions-menu-positioning.md:L101-124` | Done v0.3.89 - All PASS |
-| [-] | **Task 9**: (CONDITIONAL) Refactor to slot pattern | - | CANCELLED - Task 8 passed |
-
----
-
-### Technical Debt (Quick Fixes) ✅ COMPLETE
+### Sprint 3: Task Card Redesign (Est: 0.5 days)
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 10**: Update BOLA TODO comment | `docs/phase4-board-management-issues.md:L227-258` | Done v0.3.90 |
-| [x] | **Task 11**: JSDoc header for boards barrel | `docs/phase4-board-management-issues.md:L262-300` | Already present |
-| [x] | **Task 12**: Clarifying comment for useBoards pattern | `docs/phase4-board-management-issues.md:L34-63` | Done |
+| [ ] | **Task 3.1**: Remove "Task" badge from TaskCard | `specs/5.2-task-card-editor.md:L10` | Delete `<Badge variant="outline">Task</Badge>` from `task-card.tsx`. |
+| [ ] | **Task 3.2**: Restructure TaskCard layout (header/body/footer) | `specs/5.2-task-card-editor.md:L7-12` | Title + drag handle in header. Description preview in body (line-clamp-3). Parent in footer with border-t. |
+| [ ] | **Task 3.3**: Create `TaskDescriptionEditor` component | `specs/5.2-task-card-editor.md:L15-25` | File: `src/features/kanban/components/task-description-editor.tsx`. Auto-saving textarea. Save on blur/Cmd+Enter. |
+| [ ] | **Task 3.4**: Integrate editor into InfobarContent | `specs/5.2-task-card-editor.md:L27-30` | Replace static description text with `<TaskDescriptionEditor>` in `handleCardClick`. |
+| [ ] | **Task 3.5**: Fix new task optimistic update (show parent) | `specs/5.2-task-card-editor.md:L32-37` | In `NewTaskDialog` onSuccess, inject parent object into optimistic update. |
+| [ ] | **Task 3.6**: Update LinkSessionDialog to use debounced server search | `specs/5.4-search-cleanup.md:L13-17` | Add `useDebounce(300)` for search input. Pass query to `useSessions(query)`. |
 
----
-
-### Phase 4.7: Filter Builder
-
-**Spec**: `specs/4.7-filter-builder.md`
-**Current State**: COMPLETE - Filter dropdown implemented and integrated.
+### Sprint 4: Deferred Features (Est: 0.5 days)
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 13**: Author spec `4.7-filter-builder.md` | - | Done v0.3.91 |
-| [x] | **Task 13.5**: Fix query-keys.ts build error | `src/lib/query-keys.ts:L42` | Done v0.3.92 - Removed `.filter()` from kanban key |
-| [x] | **Task 14**: Create `BoardFilterControls` component | `specs/4.7-filter-builder.md:L126-210` | Done v0.3.93 - shadcn Select with ISSUE_STATUSES |
-| [x] | **Task 15**: Integrate filter controls with KanbanBoard | `specs/4.7-filter-builder.md:L224-330` | Done v0.3.93 - Wire filters to useQuery, local state |
-
-**Build Error Details**:
-- Line 42: `['kanban', projectId, boardId, filters].filter((x) => x !== undefined) as const`
-- Problem: `as const` cannot be applied to result of `.filter()` (returns mutable array)
-- Fix: Remove `.filter()` entirely - TanStack Query handles `undefined` in keys correctly
-
-**Files**:
-- `src/lib/query-keys.ts` (FIX - Task 13.5)
-- `src/features/boards/components/board-filter-controls.tsx` (CREATE - Task 14)
-- `src/features/kanban/components/kanban-board.tsx` (MODIFY - Task 15)
-
----
-
-### Phase 4.9: Hierarchical Display
-
-**Spec**: `specs/4.9-hierarchical-display.md`
-**Current State**: Backend has `parentId` on issues, but frontend strips it in mapping.
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **Task 16**: Extend Task type with ParentInfo | `specs/4.9-hierarchical-display.md:L84-131` | Done v0.3.94 - Added ParentInfo interface and parent field to Task |
-| [x] | **Task 17**: Update repository with parent metadata | `specs/4.9-hierarchical-display.md:L134-190` | Done v0.3.95 - Added IssueWithParent type, listIssues returns parent info via batch query |
-| [x] | **Task 18**: Update frontend API mapping | `specs/4.9-hierarchical-display.md:L193-252` | Done v0.3.96 - Updated fetchIssues return type to IssueWithParent[], updated IssueService |
-| [x] | **Task 19**: Map parent in fetchKanbanData | `specs/4.9-hierarchical-display.md:L255-302` | Done v0.3.97 - Added parent field to Task mapping in both projectId and board paths |
-| [x] | **Task 20**: Add parent badge to TaskCard | `specs/4.9-hierarchical-display.md:L305-406` | Done v0.3.98 - Added PARENT_TYPE_ICONS mapping, parent badge UI with type icon + truncated title |
-
-**Files**:
-- `src/features/kanban/types.ts` (MODIFY - Task 16)
-- `src/lib/db/repository.ts` (MODIFY - Task 17)
-- `src/features/kanban/api.ts` (MODIFY - Task 18)
-- `src/features/kanban/components/kanban-board.tsx` (MODIFY - Task 19)
-- `src/features/kanban/components/task-card.tsx` (MODIFY - Task 20)
-
----
-
-### Phase 4.10: Link Session UI
-
-**Spec**: `specs/4.10-link-session-ui.md`
-**Current State**: Backend fully implemented. Frontend missing entirely.
-
-| Status | Task | Spec Reference | Notes |
-|--------|------|----------------|-------|
-| [x] | **Task 21**: Create session types and query keys | `specs/4.10-link-session-ui.md:L88-192` | Done v0.3.99 - Session, SessionLink, SessionsResponse types + query keys |
-| [x] | **Task 22**: Create session query and mutation hooks | `specs/4.10-link-session-ui.md:L195-369` | Done v0.4.0 - useSessions, useLinkSession, useUnlinkSession, useSessionLinks |
-| [x] | **Task 23**: Create LinkSessionDialog component | `specs/4.10-link-session-ui.md:L372-537` | Done v0.4.1 - Search/filter sessions, link button, loading/empty states |
-| [x] | **Task 24**: Create feature barrel export | `specs/4.10-link-session-ui.md:L553-590` | Done v0.4.2 - Export components, hooks, types |
-| [x] | **Task 25**: Integrate with task details | `specs/4.10-link-session-ui.md:L593-671` | Done v0.4.3 - TaskInfobarActions component with session list + link/unlink |
-
-**Files**:
-- `src/features/sessions/types.ts` (CREATE - Task 21)
-- `src/lib/query-keys.ts` (MODIFY - Task 21)
-- `src/features/sessions/hooks/use-sessions.ts` (CREATE - Task 22)
-- `src/features/sessions/hooks/use-session-mutations.ts` (CREATE - Task 22)
-- `src/features/sessions/components/link-session-dialog.tsx` (CREATE - Task 23)
-- `src/features/sessions/index.ts` (CREATE - Task 24)
-- `src/features/kanban/components/task-card.tsx` (MODIFY - Task 25)
+| [ ] | **Task 4.1**: Create `SessionViewer` component | `specs/5.5-deferred-features.md:L7-13` | File: `src/features/sessions/components/session-viewer.tsx`. Render transcript read-only. Breadcrumb nav. |
+| [ ] | **Task 4.2**: Wire "View Session" button to linked sessions | `specs/5.5-deferred-features.md:L8-13` | Add "View" button in TaskInfobarActions. Opens SessionViewer in InfoSidebar. |
+| [ ] | **Task 4.3**: Add "Create Branch" button to task actions | `specs/5.5-deferred-features.md:L16-26` | Button in TaskInfobarActions. Generates `git checkout -b task/{id}-{slug}`. Copy to clipboard. |
 
 ---
 
@@ -154,125 +65,85 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 - `[ ]` Pending
 - `[x]` Complete
 - `[!]` Blocked
-- `[-]` Cancelled
 
 ---
 
-## Task Dependency Graph
+## Verification Checklist
 
-```
-BUILD FIX (Critical Path):
-  13.5 (query-keys fix) → 14 → 15
+### Sprint 1 Completion Criteria
+- [ ] `sqlite3 data/kanban.db ".schema issues"` shows `sort_order` column
+- [ ] Drag task to new position -> Refresh -> Position persists
+- [ ] Move task between columns -> Refresh -> Column persists
+- [ ] Session search `/api/sessions?q=login` returns filtered results
+- [ ] Board header no longer shows Status dropdown
 
-Filter Builder:
-  13 (spec) ✓ → 13.5 (BLOCKER) → 14 (component) → 15 (integration)
+### Sprint 2 Completion Criteria
+- [ ] Clicking project chevron expands boards list
+- [ ] Project `...` menu shows Rename/Delete options
+- [ ] UI updates instantly on rename/delete (check with Network throttling)
+- [ ] Opening Task Details pushes board content (doesn't overlay)
 
-Hierarchical Display:
-  16 (types) → 17 (repository) → 18 (API) → 19 (mapping) → 20 (UI)
+### Sprint 3 Completion Criteria
+- [ ] Task card has title in header, description preview in body
+- [ ] No "Task" badge visible
+- [ ] Parent project shown in footer with icon
+- [ ] Description auto-saves on blur
+- [ ] New tasks show parent project footer immediately
 
-Link Session:
-  21 (types) → 22 (hooks) → 23 (dialog) → 24 (barrel) → 25 (integration)
-```
-
----
-
-## Recommended Execution Order
-
-| Priority | Phase | Tasks | Reason |
-|----------|-------|-------|--------|
-| **P0** | Fix Build | 13.5 | **CRITICAL BLOCKER** - nothing else can proceed |
-| **P1** | Filter Builder | 14-15 | Already started, simplest remaining feature |
-| **P2** | Link Session UI | 21-25 | Backend complete, high user value for OpenCode integration |
-| **P3** | Hierarchical Display | 16-20 | Requires backend changes (repository JOIN) |
-
-**Rationale**:
-- Link Session before Hierarchical because backend is fully implemented
-- Link Session is the "killer feature" for OpenCode integration
-- Hierarchical requires careful Drizzle ORM self-join handling
+### Sprint 4 Completion Criteria
+- [ ] "View" button on linked sessions opens transcript
+- [ ] "Create Branch" button copies git command to clipboard
 
 ---
 
-## Files Summary
+## Technical Notes
 
-| File | Action | Phase |
-|------|--------|-------|
-| `src/lib/query-keys.ts` | FIX | 4.7 (blocker) |
-| `src/features/boards/components/board-filter-controls.tsx` | CREATE | 4.7 |
-| `src/features/kanban/components/kanban-board.tsx` | MODIFY | 4.7, 4.9 |
-| `src/features/kanban/types.ts` | MODIFY | 4.9 |
-| `src/lib/db/repository.ts` | MODIFY | 4.9 |
-| `src/features/kanban/api.ts` | MODIFY | 4.9 |
-| `src/features/kanban/components/task-card.tsx` | MODIFY | 4.9, 4.10 |
-| `src/features/sessions/types.ts` | CREATE | 4.10 |
-| `src/features/sessions/hooks/use-sessions.ts` | CREATE | 4.10 |
-| `src/features/sessions/hooks/use-session-mutations.ts` | CREATE | 4.10 |
-| `src/features/sessions/components/link-session-dialog.tsx` | CREATE | 4.10 |
-| `src/features/sessions/index.ts` | CREATE | 4.10 |
-
-**Totals**: ~12 files (6 new, 6 modified)
-
----
-
-## Success Criteria
-
-```bash
-pnpm run build    # Build successful (0 errors)
-pnpm run lint     # No errors
-pnpm test         # All tests pass (140+ expected)
+### Sort Order Algorithm (Task 1.3)
+```typescript
+// Calculate new sortOrder based on neighbors
+if (prevIssue && nextIssue) {
+  return (prevIssue.sortOrder + nextIssue.sortOrder) / 2;
+} else if (prevIssue) {
+  return prevIssue.sortOrder + 1000;
+} else if (nextIssue) {
+  return nextIssue.sortOrder - 1000;
+} else {
+  return 0; // Empty column
+}
 ```
 
-**Manual Verification Checklist**:
-- [x] Build passes (Fixed in Task 13.5)
-- [x] Filter dropdown filters tasks on board (Done v0.3.93)
-- [x] Cards show parent indicator when applicable (Done v0.3.98)
-- [x] Session linking modal searches and links correctly (Done v0.4.3)
-- [x] Linked sessions visible in task details (Done v0.4.3)
+### Push Mode CSS (Task 2.7)
+```tsx
+// layout.tsx
+<div className="flex flex-row h-full">
+  <main className="flex-1 overflow-auto">{children}</main>
+  <InfoSidebar /> {/* No absolute positioning */}
+</div>
+
+// infobar.tsx - remove on md:
+// OLD: "absolute inset-y-0 z-10 md:relative"
+// NEW: "relative h-full border-l"
+```
 
 ---
 
-## Completed Work (Phase 4.1-4.4) ✅
+## Dependencies
 
-All 18 tasks from Phase 4 Board Management are complete (v0.3.84):
-
-### Phase 4.1: Backend Core & Filtering ✅
-| Status | Task | Notes |
-|--------|------|-------|
-| [x] | **Task 1**: Create `repository-boards.test.ts` | TDD: 4 test cases |
-| [x] | **Task 2**: Update `listBoards` with filter | In-memory filtering |
-| [x] | **Task 3**: Update `BoardService.listBoards` | Pass filter param |
-| [x] | **Task 4**: Update `GET /api/boards` | Parse parentId query |
-
-### Phase 4.2: Frontend State & API ✅
-| Status | Task | Notes |
-|--------|------|-------|
-| [x] | **Task 5**: Update `fetchBoards` | Accept parentId filter |
-| [x] | **Task 6**: Update `CreateBoardInput` type | Add filters field |
-| [x] | **Task 7**: Add `deleteBoard` API | DELETE method |
-| [x] | **Task 8**: Add `boards` query key | Factory pattern |
-| [x] | **Task 9**: Create board hooks | use-boards.ts, use-board-mutations.ts |
-
-### Phase 4.3: UI Components ✅
-| Status | Task | Notes |
-|--------|------|-------|
-| [x] | **Task 10**: CreateBoardDialog | v0.3.78 |
-| [x] | **Task 11**: DeleteBoardDialog | v0.3.79 |
-| [x] | **Task 12**: RenameBoardDialog | v0.3.80 |
-| [x] | **Task 13**: BoardActionsMenu | v0.3.81 |
-| [x] | **Task 14**: Barrel export | v0.3.81 |
-
-### Phase 4.4: Integration ✅
-| Status | Task | Notes |
-|--------|------|-------|
-| [x] | **Task 15**: Project Boards sidebar group | v0.3.82 |
-| [x] | **Task 16**: Loading/error/empty states | v0.3.83 |
-| [x] | **Task 17**: Wire dialogs in sidebar | v0.3.84 |
-| [x] | **Task 18**: Full verification | 130 tests pass |
+```
+Task 1.1 (schema) -> Task 1.2 (repo) -> Task 1.3 (API) -> Task 1.4 (frontend)
+Task 1.5 (search API) -> Task 3.6 (debounced UI)
+Task 2.1-2.3 (dialogs) -> Task 2.5 (wire to sidebar)
+Task 3.3 (editor) -> Task 3.4 (integration)
+```
 
 ---
 
-## Notes
+## Effort Summary
 
-- **Fixed**: Task 13.5 (build fix) completed in v0.3.92
-- **Backend exists for 4.10**: All session linking API endpoints are implemented
-- **Backend changes for 4.9**: Repository needs self-join for parent metadata
-- **Test count**: 140 tests currently passing (build broken doesn't affect tests)
+| Sprint | Tasks | Estimated |
+|--------|-------|-----------|
+| Sprint 1: Data Foundation | 6 | 1.5 days |
+| Sprint 2: Sidebar Hierarchy | 7 | 2 days |
+| Sprint 3: Task Card Redesign | 6 | 0.5 days |
+| Sprint 4: Deferred Features | 3 | 0.5 days |
+| **Total** | **22** | **4-5 days** |

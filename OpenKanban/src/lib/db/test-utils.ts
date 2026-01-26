@@ -57,6 +57,7 @@ export function createTestDb(): TestDbResult {
       title TEXT NOT NULL,
       description TEXT,
       status TEXT NOT NULL DEFAULT 'backlog',
+      sort_order REAL NOT NULL DEFAULT 0,
       metadata TEXT,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL

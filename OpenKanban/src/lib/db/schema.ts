@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, primaryKey, real } from 'drizzle-orm/sqlite-core';
 
 export const issues = sqliteTable('issues', {
   id: text('id').primaryKey(),
@@ -9,6 +9,7 @@ export const issues = sqliteTable('issues', {
   title: text('title').notNull(),
   description: text('description'),
   status: text('status').notNull().default('backlog'),
+  sortOrder: real('sort_order').notNull().default(0),
   metadata: text('metadata'),
   createdAt: integer('created_at').notNull(),
   updatedAt: integer('updated_at').notNull(),
