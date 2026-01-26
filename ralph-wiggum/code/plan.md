@@ -24,8 +24,8 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 | 4.5: Status Constants | HIGH | 2-3 hr | 1-4 | COMPLETE (v0.3.85) |
 | 4.6: Error Boundaries | MEDIUM | 1-2 hr | 5-7 | COMPLETE (v0.3.88) |
 | 4.8: Menu Positioning | LOW | 30-60 min | 8-9 | COMPLETE (v0.3.89) - All UX tests pass, Task 9 cancelled |
-| Tech Debt (Quick) | LOW | 30 min | 10-12 | NOT STARTED |
-| Phase 4 Filter Builder | HIGH | 3-4 hr | 13-17 | NOT STARTED |
+| Tech Debt (Quick) | LOW | 30 min | 10-12 | COMPLETE - All tasks done |
+| Phase 4 Filter Builder | HIGH | 3-4 hr | 13-17 | IN PROGRESS (Task 13 done) |
 | Phase 4 Hierarchical Display | MEDIUM | 2-3 hr | 18-20 | NOT STARTED |
 | Phase 4 Link Session UI | MEDIUM | 2-3 hr | 21-23 | NOT STARTED |
 
@@ -125,8 +125,8 @@ pnpm run build && pnpm run lint
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 10**: Update BOLA TODO comment from "Phase 4" to "Future" | `docs/phase4-board-management-issues.md:L227-258` | Done v0.3.90 - issue-service.ts (board-service.ts already fixed) |
-| [ ] | **Task 11**: Add JSDoc header to `src/features/boards/index.ts` barrel | `docs/phase4-board-management-issues.md:L262-300` | Module-level documentation |
-| [ ] | **Task 12**: Add clarifying comment for `useBoards(projectId ?? '')` pattern | `docs/phase4-board-management-issues.md:L34-63` | Explain `enabled` guard in app-sidebar.tsx |
+| [x] | **Task 11**: Add JSDoc header to `src/features/boards/index.ts` barrel | `docs/phase4-board-management-issues.md:L262-300` | Done - JSDoc header already present (lines 1-18) |
+| [x] | **Task 12**: Add clarifying comment for `useBoards(projectId ?? '')` pattern | `docs/phase4-board-management-issues.md:L34-63` | Done - Comment on lines 33-34 of app-sidebar.tsx |
 
 **Files**:
 - `src/services/board-service.ts`
@@ -148,7 +148,7 @@ pnpm run lint
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 13**: Author spec `ralph-wiggum/specs/4.7-filter-builder.md` | - | Define filter UI requirements, available filters (status, type, assignee) |
+| [x] | **Task 13**: Author spec `ralph-wiggum/specs/4.7-filter-builder.md` | - | Done v0.3.91 - Status filter spec with dropdown UI |
 | [ ] | **Task 14**: Create `src/features/boards/components/board-filter-controls.tsx` skeleton | - | Filter bar component with status dropdown |
 | [ ] | **Task 15**: Implement status filter dropdown with `ISSUE_STATUSES` | - | Use shadcn Select component |
 | [ ] | **Task 16**: Wire filter controls to `KanbanBoard` query parameters | - | Update `useIssues` to accept filter params |
