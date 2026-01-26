@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
-import { WelcomeScreen } from '@/features/projects/components/welcome-screen';
+import { WelcomeScreen } from '@/features/projects';
 
 /**
  * Root page: Smart redirect to first project or show empty state.
