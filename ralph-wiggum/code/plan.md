@@ -88,7 +88,7 @@ pnpm run build && pnpm run lint
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 15**: Add "Project Boards" SidebarGroup with `useBoards` integration | `specs/4.4-integration.md:L10-20` | Done in v0.3.82 |
-| [ ] | **Task 16**: Add loading, error, and empty states for boards list | `specs/4.4-integration.md:L23-25` | Skeleton items, error message, "No boards" placeholder |
+| [x] | **Task 16**: Add loading, error, and empty states for boards list | `specs/4.4-integration.md:L23-25` | Already implemented in Task 15: Skeleton loading (2 items), error message, "No boards yet" placeholder. Done in v0.3.83 |
 | [ ] | **Task 17**: Wire up `CreateBoardDialog` and `BoardActionsMenu` in sidebar | `specs/4.4-integration.md:L17-19` | Create button in group action, actions menu on each board item, active highlighting |
 
 **Verification:**
