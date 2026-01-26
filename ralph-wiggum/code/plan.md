@@ -70,7 +70,7 @@ pnpm run build && pnpm run lint
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 10**: Create `CreateBoardDialog` component | `specs/4.3-ui-components.md:L9-16` | Props: `parentId`, `children`. Form: board name. Default columns: Backlog, In Progress, Done. Use `CreateProjectDialog` as reference. |
+| [x] | **Task 10**: Create `CreateBoardDialog` component | `specs/4.3-ui-components.md:L9-16` | Props: `parentId`, `children`. Form: board name. Default columns: Backlog, In Progress, Done. Use `CreateProjectDialog` as reference. Done in v0.3.78 |
 | [ ] | **Task 11**: Create `DeleteBoardDialog` component | `specs/4.3-ui-components.md:L28-37` | Props: `boardId`, `projectId`, `open`, `onOpenChange`. Warning message, redirect if deleting active board. |
 | [ ] | **Task 12**: Create `RenameBoardDialog` component | `specs/4.3-ui-components.md:L40-44` | Props: `boardId`, `currentName`, `open`, `onOpenChange`. Input with current name, calls `useUpdateBoard`. |
 | [ ] | **Task 13**: Create `BoardActionsMenu` component | `specs/4.3-ui-components.md:L19-25` | Props: `boardId`, `boardName`. DropdownMenu with Rename/Delete items, orchestrates dialogs. |
