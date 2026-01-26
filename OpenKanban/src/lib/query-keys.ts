@@ -32,6 +32,24 @@ export const queryKeys = {
    */
   kanban: (projectId?: string, boardId?: string) =>
     ['kanban', projectId, boardId] as const,
+
+  /**
+   * Breadcrumb project name query key factory.
+   * Used by: useBreadcrumbData hook
+   *
+   * @param projectId - Project ID to fetch name for
+   */
+  breadcrumbProject: (projectId: string) =>
+    ['breadcrumb-project', projectId] as const,
+
+  /**
+   * Breadcrumb board name query key factory.
+   * Used by: useBreadcrumbData hook
+   *
+   * @param boardId - Board ID to fetch name for
+   */
+  breadcrumbBoard: (boardId: string) =>
+    ['breadcrumb-board', boardId] as const,
 } as const;
 
 /**
