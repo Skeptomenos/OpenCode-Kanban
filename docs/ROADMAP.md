@@ -89,6 +89,13 @@ A local-first Project Management tool where:
 - [ ] Verify build passes (`pnpm run build`)
 - [ ] Update team docs to reference `pnpm` commands
 
+### Phase 4.0: Stability & Prerequisites
+*Goal: Fix critical bugs and UX blockers before adding hierarchy.*
+- [ ] **CRITICAL BUG**: Fix duplicate column creation (Double entries in DB on "+ Add Section").
+- [ ] **BLOCKER**: Fix Task Details Panel (currently "No content available").
+- [ ] **UX**: Replace UUIDs in breadcrumbs with Project/Board names.
+- [ ] **UX**: Add visual feedback for drag-and-drop operations.
+
 ### Phase 4: The Hierarchical Board
 *Goal: Visualize the complex structure and manage board views.*
 - [ ] **Board Management**: UI to Create/Rename/Delete boards within a project.

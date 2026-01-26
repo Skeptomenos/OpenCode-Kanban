@@ -42,7 +42,7 @@
 
 ## 5. The Build
 **Work Dir:** `cd OpenKanban`
-- `npm run dev` (Port 3000)
+- `npm run dev` (Port 37291)
 - `npm run build` (**MUST PASS**)
 - `npm run lint`
 
