@@ -57,7 +57,7 @@ pnpm run build && pnpm run lint
 | [x] | **Task 6**: Update `CreateBoardInput` type to include `filters` field | `specs/4.2-frontend-state.md:L13-14` | Added full `BoardFilters` type to match backend schema |
 | [x] | **Task 7**: Add `deleteBoard` API function | `specs/4.2-frontend-state.md:L15-18` | Follows `deleteIssue` pattern in api.ts |
 | [x] | **Task 8**: Add `boards` query key to `query-keys.ts` | `specs/4.2-frontend-state.md:L22-24` | Added factory with parentId filtering + BoardsQueryKey type |
-| [ ] | **Task 9**: Create `use-boards.ts` and `use-board-mutations.ts` hooks | `specs/4.2-frontend-state.md:L28-35` | Create `features/boards/hooks/` directory, `useBoards(projectId)`, `useCreateBoard`, `useUpdateBoard`, `useDeleteBoard` |
+| [x] | **Task 9**: Create `use-boards.ts` and `use-board-mutations.ts` hooks | `specs/4.2-frontend-state.md:L28-35` | Created `features/boards/hooks/` directory with `useBoards(projectId)`, `useCreateBoard`, `useUpdateBoard`, `useDeleteBoard` |
 
 **Verification:**
 ```bash
