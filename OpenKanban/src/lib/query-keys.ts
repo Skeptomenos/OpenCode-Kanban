@@ -50,6 +50,16 @@ export const queryKeys = {
    */
   breadcrumbBoard: (boardId: string) =>
     ['breadcrumb-board', boardId] as const,
+
+  /**
+   * Boards list query key factory.
+   * Supports optional parentId filtering for project-scoped boards.
+   * Used by: useBoards hook, useBoardMutations
+   *
+   * @param parentId - Optional project ID to filter boards by
+   */
+  boards: (parentId?: string) =>
+    parentId ? (['boards', { parentId }] as const) : (['boards'] as const),
 } as const;
 
 /**
@@ -57,3 +67,4 @@ export const queryKeys = {
  */
 export type ProjectsQueryKey = typeof queryKeys.projects;
 export type KanbanQueryKey = ReturnType<typeof queryKeys.kanban>;
+export type BoardsQueryKey = ReturnType<typeof queryKeys.boards>;
