@@ -51,6 +51,10 @@
 - **[CONTRACT](./docs/CONTRACT.md)**: OpenCode Data Contract. **Strict adherence.**
 - **[TECH](./docs/TECH.md)**: Stack decisions.
 - **[ROADMAP](./docs/ROADMAP.md)**: Project phases.
+- Source Code in OpenKanban/
+- Documentation in root .
 
 ## 999. No Workarounds
 **Every hack is a future wall.** Fix root causes or document in `docs/ISSUES.md`.
+
+

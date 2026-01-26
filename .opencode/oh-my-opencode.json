@@ -19,7 +19,7 @@
       "disable": false
     },
     "prometheus": {
-      "model": "genaipilot-vertex-anthropic/claude-opus-4-5@20251101",
+      "model": "its-vertex/gemini-3-pro-preview",
       "disable": false
     },
     "oracle": {
@@ -51,7 +51,7 @@
       "disable": false
     },
     "atlas": {
-      "model": "genaipilot-vertex-anthropic/claude-opus-4-5@20251101",
+      "model": "its-vertex/gemini-3-pro-preview",
       "disable": false
     }
   },

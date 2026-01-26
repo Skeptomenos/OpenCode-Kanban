@@ -123,6 +123,7 @@ A local-first Project Management tool where:
 - [ ] Session details view (within the board).
 - [ ] "Create Branch" from Task (Deep integration).
 - [ ] Optimistic updates for board mutations (improve UX responsiveness).
+- [ ] **Scale**: Implement server-side session search/pagination (currently hardcoded to top 100).
 
 ---
 
