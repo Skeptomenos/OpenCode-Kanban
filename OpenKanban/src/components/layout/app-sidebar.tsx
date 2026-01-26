@@ -13,13 +13,28 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { CreateProjectDialog } from '@/features/projects/components/create-project-dialog';
 import { useProjects } from '@/features/projects/hooks/use-projects';
-import { IconFolder, IconPlus } from '@tabler/icons-react';
+import {
+  CreateBoardDialog,
+  BoardActionsMenu,
+  useBoards,
+} from '@/features/boards';
+import { IconFolder, IconPlus, IconLayoutKanban } from '@tabler/icons-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useParams } from 'next/navigation';
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const params = useParams<{ projectId?: string }>();
+  const projectId = params.projectId;
+
   const { projects, isLoading, error, refresh } = useProjects();
+  
+  // Fetch boards only when inside a project
+  const {
+    boards,
+    isLoading: boardsLoading,
+    error: boardsError,
+  } = useBoards(projectId ?? '');
 
   return (
     <Sidebar collapsible='icon'>
@@ -88,6 +103,72 @@ export function AppSidebar() {
             )}
           </SidebarMenu>
         </SidebarGroup>
+
+        {projectId && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Project Boards</SidebarGroupLabel>
+            <CreateBoardDialog parentId={projectId}>
+              <SidebarGroupAction title='Create Board' aria-label='Create Board'>
+                <IconPlus className='h-4 w-4' />
+                <span className='sr-only'>Create Board</span>
+              </SidebarGroupAction>
+            </CreateBoardDialog>
+            <SidebarMenu>
+              {boardsLoading ? (
+                <>
+                  <SidebarMenuItem>
+                    <div className='flex items-center gap-2 px-2 py-1.5'>
+                      <Skeleton className='h-4 w-4' />
+                      <Skeleton className='h-4 w-24' />
+                    </div>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <div className='flex items-center gap-2 px-2 py-1.5'>
+                      <Skeleton className='h-4 w-4' />
+                      <Skeleton className='h-4 w-20' />
+                    </div>
+                  </SidebarMenuItem>
+                </>
+              ) : boardsError ? (
+                <SidebarMenuItem>
+                  <div className='px-2 py-1.5 text-sm text-muted-foreground'>
+                    Failed to load boards
+                  </div>
+                </SidebarMenuItem>
+              ) : boards.length === 0 ? (
+                <SidebarMenuItem>
+                  <div className='px-2 py-1.5 text-sm text-muted-foreground'>
+                    No boards yet
+                  </div>
+                </SidebarMenuItem>
+              ) : (
+                boards.map((board) => {
+                  const isBoardActive = pathname.includes(`/board/${board.id}`);
+
+                  return (
+                    <SidebarMenuItem key={board.id} className='group/board'>
+                      <SidebarMenuButton
+                        asChild
+                        tooltip={board.name}
+                        isActive={isBoardActive}
+                      >
+                        <Link href={`/project/${projectId}/board/${board.id}`}>
+                          <IconLayoutKanban className='h-4 w-4' />
+                          <span>{board.name}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                      <BoardActionsMenu
+                        boardId={board.id}
+                        boardName={board.name}
+                        projectId={projectId}
+                      />
+                    </SidebarMenuItem>
+                  );
+                })
+              )}
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
