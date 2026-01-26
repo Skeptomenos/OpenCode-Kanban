@@ -40,7 +40,7 @@ This plan addresses **architectural issues** from Phase 3.5 audit that must be f
 | [x] | **Task 3.1**: Add `logger.warn` to all 5 silent JSON.parse catch blocks in `repository.ts` | `360:L55-64` | Done v0.3.59: Added logger.warn to lines 332, 390, 609, 642, 649 |
 | [x] | **Task 4.1**: Create `src/lib/db/test-utils.ts` - centralize `createTestDb` helper | `360:L120-138` | Done v0.3.60: Extracted createTestDb, updated issue-service.test.ts imports |
 | [x] | **Task 4.2**: Create `src/app/api/issues/__tests__/route.test.ts` with GET, POST, filter tests | `360:L70-77` | Done v0.3.61: 11 tests (GET/POST/filters/errors) using mock pattern |
-| [ ] | **Task 4.3**: Create `src/app/api/boards/__tests__/route.test.ts` with GET, POST tests | `360:L78-84` | 2 test cases using createTestDb integration pattern |
+| [x] | **Task 4.3**: Create `src/app/api/boards/__tests__/route.test.ts` with GET, POST tests | `360:L78-84` | Done v0.3.62: 9 tests (GET/POST/filters/errors) using mock pattern |
 | [ ] | **Task 5.1**: Add `WelcomeScreen` export to `src/features/projects/index.ts` | `361:L13-15` | Currently missing from barrel |
 | [ ] | **Task 5.2**: Create `src/features/kanban/index.ts` barrel file | `361:L25-30` | Export: KanbanBoard, KanbanViewPage, useTaskStore, Column mutations hook, API functions, types |
 | [ ] | **Task 5.3**: Refactor `src/features/kanban/utils/index.ts` - move `hasDraggableData` logic to `helpers.ts`, make index.ts pure re-export | `361:L33-34`, `364:L33-34` | Pseudo-barrel fix |
