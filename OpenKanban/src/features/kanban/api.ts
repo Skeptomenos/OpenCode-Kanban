@@ -507,3 +507,38 @@ export async function updateBoard(
 
   return result.data;
 }
+
+/**
+ * Delete a board by ID.
+ * @see specs/4.2-frontend-state.md:L15-18
+ * @param id Board ID to delete
+ * @returns Object with deleted board id
+ * @throws ApiError if the request fails
+ */
+export async function deleteBoard(id: string): Promise<{ id: string }> {
+  let response: Response;
+  try {
+    response = await fetch(`/api/boards/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    });
+  } catch {
+    throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
+  }
+
+  let result: ApiResponse<{ deleted: boolean }>;
+  try {
+    result = await response.json();
+  } catch {
+    throw new ApiError('Invalid response from server', 'PARSE_ERROR', response.status);
+  }
+
+  if (!result.success) {
+    throw new ApiError(
+      result.error.message,
+      result.error.code,
+      response.status
+    );
+  }
+
+  return { id };
+}

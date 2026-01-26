@@ -55,7 +55,7 @@ pnpm run build && pnpm run lint
 |--------|------|----------------|-------|
 | [x] | **Task 5**: Update `fetchBoards` to accept optional `parentId` filter | `specs/4.2-frontend-state.md:L10-12` | Add filter param, append to URL search params |
 | [x] | **Task 6**: Update `CreateBoardInput` type to include `filters` field | `specs/4.2-frontend-state.md:L13-14` | Added full `BoardFilters` type to match backend schema |
-| [ ] | **Task 7**: Add `deleteBoard` API function | `specs/4.2-frontend-state.md:L15-18` | Send DELETE to `/api/boards/[id]`, handle errors, return `{ id }` |
+| [x] | **Task 7**: Add `deleteBoard` API function | `specs/4.2-frontend-state.md:L15-18` | Follows `deleteIssue` pattern in api.ts |
 | [ ] | **Task 8**: Add `boards` query key to `query-keys.ts` | `specs/4.2-frontend-state.md:L22-24` | Add factory: `boards: (parentId?) => parentId ? ['boards', { parentId }] : ['boards']` |
 | [ ] | **Task 9**: Create `use-boards.ts` and `use-board-mutations.ts` hooks | `specs/4.2-frontend-state.md:L28-35` | Create `features/boards/hooks/` directory, `useBoards(projectId)`, `useCreateBoard`, `useUpdateBoard`, `useDeleteBoard` |
 
