@@ -22,8 +22,8 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 | Phase | Priority | Est. Time | Tasks | Status |
 |-------|----------|-----------|-------|--------|
 | 4.5: Status Constants | HIGH | 2-3 hr | 1-4 | COMPLETE (v0.3.85) |
-| 4.6: Error Boundaries | MEDIUM | 1-2 hr | 5-7 | NOT STARTED |
-| 4.8: Menu Positioning | LOW | 30-60 min | 8-9 | UX TEST REQUIRED |
+| 4.6: Error Boundaries | MEDIUM | 1-2 hr | 5-7 | COMPLETE (v0.3.88) |
+| 4.8: Menu Positioning | LOW | 30-60 min | 8-9 | COMPLETE (v0.3.89) - All UX tests pass, Task 9 cancelled |
 | Tech Debt (Quick) | LOW | 30 min | 10-12 | NOT STARTED |
 | Phase 4 Filter Builder | HIGH | 3-4 hr | 13-17 | NOT STARTED |
 | Phase 4 Hierarchical Display | MEDIUM | 2-3 hr | 18-20 | NOT STARTED |
@@ -69,7 +69,7 @@ pnpm run build && pnpm run lint
 ### Phase 4.6: Dialog Error Boundaries
 
 **Spec**: `specs/4.6-dialog-error-boundaries.md`  
-**Current State**: No error boundary exists. `BoardActionsMenu` is not wrapped.
+**Current State**: ✅ COMPLETE - `DialogErrorBoundary` created and wrapping `BoardActionsMenu` in sidebar.
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
@@ -92,14 +92,22 @@ pnpm run build && pnpm run lint
 ### Phase 4.8: Board Actions Menu Positioning
 
 **Spec**: `specs/4.8-board-actions-menu-positioning.md`  
-**Current State**: Using sibling pattern with `group/board` class. UX testing required before any code changes.
+**Current State**: ✅ COMPLETE - Sibling pattern with `group/board` class works correctly. No changes needed.
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 8**: Execute UX testing checklist for collapsed sidebar mode | `specs/4.8-board-actions-menu-positioning.md:L101-124` | If all pass, document as intentional and skip Task 9 |
-| [ ] | **Task 9**: (CONDITIONAL) Refactor to `SidebarMenuAction` slot pattern | `specs/4.8-board-actions-menu-positioning.md:L58-75` | Only if Task 8 reveals issues |
+| [x] | **Task 8**: Execute UX testing checklist for collapsed sidebar mode | `specs/4.8-board-actions-menu-positioning.md:L101-124` | Done v0.3.89 - All tests PASS. See UX Testing Results below. |
+| [-] | **Task 9**: (CONDITIONAL) Refactor to `SidebarMenuAction` slot pattern | `specs/4.8-board-actions-menu-positioning.md:L58-75` | CANCELLED - Task 8 passed all checks |
 
-**Decision Gate**: If Task 8 passes all checks, mark Task 9 as CANCELLED and document findings.
+**Decision Gate**: ✅ Task 8 passed all checks. Task 9 cancelled.
+
+**UX Testing Results (v0.3.89)**:
+- ✅ **Collapsed Sidebar**: Sidebar collapses to icon-only (48px), icons visible, tooltips work on hover
+- ✅ **Actions Menu**: Three-dot button visible, dropdown opens correctly in collapsed mode
+- ✅ **Positioning**: Dropdown doesn't overflow viewport, positions correctly to the right
+- ✅ **Keyboard**: Focus, Enter, ArrowUp/Down, Escape all work correctly
+- ✅ **Dialogs**: Rename/Delete dialogs open correctly from collapsed sidebar
+- **Conclusion**: Current `group/board` sibling pattern works correctly. No refactoring needed.
 
 **Verification**:
 ```bash
