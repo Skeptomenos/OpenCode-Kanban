@@ -25,7 +25,7 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 | 4.8: Menu Positioning | LOW | 30-60 min | 8-9 | COMPLETE (v0.3.89) |
 | Tech Debt (Quick) | LOW | 30 min | 10-12 | COMPLETE |
 | **BUILD FIX** | **CRITICAL** | 15 min | 13.5 | **COMPLETE (v0.3.92)** |
-| Phase 4.7 Filter Builder | HIGH | 2-3 hr | 13-15 | IN PROGRESS |
+| Phase 4.7 Filter Builder | HIGH | 2-3 hr | 13-15 | COMPLETE (v0.3.93) |
 | Phase 4.9 Hierarchical Display | MEDIUM | 3-4 hr | 16-20 | NOT STARTED |
 | Phase 4.10 Link Session UI | MEDIUM | 3-4 hr | 21-25 | NOT STARTED |
 
@@ -82,14 +82,14 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 ### Phase 4.7: Filter Builder
 
 **Spec**: `specs/4.7-filter-builder.md`
-**Current State**: Spec authored, but introduced build error in query-keys.ts.
+**Current State**: COMPLETE - Filter dropdown implemented and integrated.
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 13**: Author spec `4.7-filter-builder.md` | - | Done v0.3.91 |
 | [x] | **Task 13.5**: Fix query-keys.ts build error | `src/lib/query-keys.ts:L42` | Done v0.3.92 - Removed `.filter()` from kanban key |
-| [ ] | **Task 14**: Create `BoardFilterControls` component | `specs/4.7-filter-builder.md:L126-210` | shadcn Select with ISSUE_STATUSES |
-| [ ] | **Task 15**: Integrate filter controls with KanbanBoard | `specs/4.7-filter-builder.md:L224-330` | Wire filters to useQuery, local state |
+| [x] | **Task 14**: Create `BoardFilterControls` component | `specs/4.7-filter-builder.md:L126-210` | Done v0.3.93 - shadcn Select with ISSUE_STATUSES |
+| [x] | **Task 15**: Integrate filter controls with KanbanBoard | `specs/4.7-filter-builder.md:L224-330` | Done v0.3.93 - Wire filters to useQuery, local state |
 
 **Build Error Details**:
 - Line 42: `['kanban', projectId, boardId, filters].filter((x) => x !== undefined) as const`
@@ -223,7 +223,7 @@ pnpm test         # All tests pass (140+ expected)
 
 **Manual Verification Checklist**:
 - [x] Build passes (Fixed in Task 13.5)
-- [ ] Filter dropdown filters tasks on board
+- [x] Filter dropdown filters tasks on board (Done v0.3.93)
 - [ ] Cards show parent indicator when applicable
 - [ ] Session linking modal searches and links correctly
 - [ ] Linked sessions visible in task details

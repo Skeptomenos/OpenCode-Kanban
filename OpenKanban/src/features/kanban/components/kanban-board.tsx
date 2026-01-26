@@ -15,7 +15,8 @@ import { useTaskStore } from '../utils/store';
 import type { Task, Column } from '../types';
 import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
-import { queryKeys } from '@/lib/query-keys';
+import { queryKeys, type BoardFilters } from '@/lib/query-keys';
+import { BoardFilterControls } from '@/features/boards/components/board-filter-controls';
 import { fetchIssues, fetchBoards, fetchBoard, updateIssue } from '../api';
 import { ColumnMutationsProvider } from '../hooks/column-mutations-context';
 import {
@@ -66,7 +67,8 @@ async function resolveBoardId(boardId?: string): Promise<string> {
  */
 async function fetchKanbanData(
   projectId?: string,
-  boardId?: string
+  boardId?: string,
+  filters?: BoardFilters
 ): Promise<{ boardId: string; columns: Column[]; tasks: Task[] }> {
   const resolvedBoardId = await resolveBoardId(boardId);
   const boardData = await fetchBoard(resolvedBoardId);
@@ -77,7 +79,10 @@ async function fetchKanbanData(
 
   let tasks: Task[];
   if (projectId) {
-    const issues = await fetchIssues({ parentId: projectId });
+    const issues = await fetchIssues({ 
+      parentId: projectId,
+      status: filters?.status ?? undefined,
+    });
     tasks = issues.map((issue) => ({
       id: issue.id,
       title: issue.title,
@@ -153,6 +158,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
 
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [filters, setFilters] = useState<BoardFilters>({});
 
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
@@ -162,8 +168,8 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
    * @see specs/352-frontend-modernization.md:L44-54
    */
   const { data, isLoading, error } = useQuery({
-    queryKey: queryKeys.kanban(projectId, boardId),
-    queryFn: () => fetchKanbanData(projectId, boardId),
+    queryKey: queryKeys.kanban(projectId, boardId, filters),
+    queryFn: () => fetchKanbanData(projectId, boardId, filters),
   });
 
   /**
@@ -181,7 +187,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       setTasks(previousTasksRef.current);
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.kanban(projectId, boardId) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.kanban(projectId, boardId, filters) });
     },
   });
 
@@ -456,6 +462,7 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
 
   return (
     <ColumnMutationsProvider projectId={projectId} boardId={boardId}>
+      <BoardFilterControls filters={filters} onFiltersChange={setFilters} />
       <DndContext
         accessibility={{
           announcements
