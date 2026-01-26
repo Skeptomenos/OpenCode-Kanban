@@ -34,8 +34,12 @@ export function useColumnMutations(projectId?: string, boardId?: string) {
         throw new Error('No board selected');
       }
 
-      const newColumn: Column = { title, id: newColumnId };
-      const newColumns = [...state.columns, newColumn];
+      // FIX: Check if column already exists to prevent duplication from race condition
+      // onMutate runs first and adds the column optimistically, so mutationFn may see it already
+      const exists = state.columns.some((col) => col.id === newColumnId);
+      const newColumns = exists
+        ? state.columns
+        : [...state.columns, { title, id: newColumnId } as Column];
 
       return updateBoard(effectiveBoardId, {
         columnConfig: columnsToColumnConfig(newColumns),

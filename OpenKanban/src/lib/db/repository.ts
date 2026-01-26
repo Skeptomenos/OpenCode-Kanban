@@ -644,7 +644,18 @@ export class SqlitePMRepository implements IPMRepository {
     }
 
     try {
-      columnConfig = JSON.parse(board.columnConfig);
+      const parsed: ColumnConfig[] = JSON.parse(board.columnConfig);
+      // Deduplicate by ID to prevent UI errors if DB data is corrupted
+      // @see specs/pre-phase4-bug-fixes.md (Duplicate columns issue)
+      const seenIds = new Set<string>();
+      columnConfig = parsed.filter((col) => {
+        if (seenIds.has(col.id)) {
+          logger.warn('Duplicate column ID found in DB, ignoring', { boardId: board.id, columnId: col.id });
+          return false;
+        }
+        seenIds.add(col.id);
+        return true;
+      });
     } catch (error) {
       logger.warn('Failed to parse board columnConfig', { boardId: board.id, error: String(error) });
       columnConfig = [];
