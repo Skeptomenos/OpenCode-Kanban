@@ -35,10 +35,10 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 1**: Create `repository-boards.test.ts` with parentId filtering tests | `specs/4.1-backend-core.md:L32-37` | TDD: 4 test cases for board filtering by parentId |
-| [x] | **Task 2**: Update `IPMRepository.listBoards` and `SqlitePMRepository.listBoards` to accept filter | `specs/4.1-backend-core.md:L10-19` | In-memory filtering using `parseBoardFields` |
-| [x] | **Task 3**: Update `BoardService.listBoards` to pass filter parameter | `specs/4.1-backend-core.md:L22-23` | Pass filter through from service to repo |
-| [x] | **Task 4**: Update `GET /api/boards` to parse `parentId` from query params | `specs/4.1-backend-core.md:L26-29` | Parse searchParams, call service with filter |
+| [ ] | **Task 1**: Create `repository-boards.test.ts` with parentId filtering tests | `specs/4.1-backend-core.md:L32-37` | TDD: Create test file with 4 test cases for board filtering by parentId |
+| [ ] | **Task 2**: Update `IPMRepository.listBoards` and `SqlitePMRepository.listBoards` to accept filter | `specs/4.1-backend-core.md:L10-19` | Update interface signature (L219), implement in-memory filtering using `parseBoardFields` |
+| [ ] | **Task 3**: Update `BoardService.listBoards` to pass filter parameter | `specs/4.1-backend-core.md:L22-23` | Pass filter through from service to repo |
+| [ ] | **Task 4**: Update `GET /api/boards` to parse `parentId` from query params | `specs/4.1-backend-core.md:L26-29` | Parse searchParams, call service with filter |
 
 **Verification:**
 ```bash
@@ -53,7 +53,7 @@ pnpm run build && pnpm run lint
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [x] | **Task 5**: Update `fetchBoards` to accept optional `parentId` filter | `specs/4.2-frontend-state.md:L10-12` | Add filter param, append to URL search params |
+| [ ] | **Task 5**: Update `fetchBoards` to accept optional `parentId` filter | `specs/4.2-frontend-state.md:L10-12` | Add filter param, append to URL search params |
 | [ ] | **Task 6**: Update `CreateBoardInput` type to include `filters` field | `specs/4.2-frontend-state.md:L13-14` | Add `filters?: { parentId?: string }` to type |
 | [ ] | **Task 7**: Add `deleteBoard` API function | `specs/4.2-frontend-state.md:L15-18` | Send DELETE to `/api/boards/[id]`, handle errors, return `{ id }` |
 | [ ] | **Task 8**: Add `boards` query key to `query-keys.ts` | `specs/4.2-frontend-state.md:L22-24` | Add factory: `boards: (parentId?) => parentId ? ['boards', { parentId }] : ['boards']` |

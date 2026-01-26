@@ -299,14 +299,26 @@ export type BoardWithIssues = {
 };
 
 /**
- * Fetch all boards (list view).
+ * Fetch boards with optional filtering.
+ * @param filters Optional filter parameters
  * @returns Array of BoardListItem
  * @throws ApiError if the request fails
  */
-export async function fetchBoards(): Promise<BoardListItem[]> {
+export async function fetchBoards(filters?: {
+  parentId?: string;
+}): Promise<BoardListItem[]> {
+  const params = new URLSearchParams();
+
+  if (filters?.parentId) {
+    params.set('parentId', filters.parentId);
+  }
+
+  const queryString = params.toString();
+  const url = queryString ? `/api/boards?${queryString}` : '/api/boards';
+
   let response: Response;
   try {
-    response = await fetch('/api/boards');
+    response = await fetch(url);
   } catch {
     throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
   }
