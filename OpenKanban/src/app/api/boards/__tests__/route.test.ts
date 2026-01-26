@@ -101,7 +101,8 @@ describe('/api/boards', () => {
       mockListBoards.mockReturnValue(mockBoards);
 
       const { GET } = await import('../route');
-      const response = await GET();
+      const request = createMockRequest();
+      const response = await GET(request);
       const body = await response.json();
 
       expect(response.status).toBe(200);
@@ -117,7 +118,8 @@ describe('/api/boards', () => {
       mockListBoards.mockReturnValue([]);
 
       const { GET } = await import('../route');
-      const response = await GET();
+      const request = createMockRequest();
+      const response = await GET(request);
       const body = await response.json();
 
       expect(response.status).toBe(200);
@@ -132,7 +134,8 @@ describe('/api/boards', () => {
       });
 
       const { GET } = await import('../route');
-      const response = await GET();
+      const request = createMockRequest();
+      const response = await GET(request);
       const body = await response.json();
 
       expect(response.status).toBe(500);

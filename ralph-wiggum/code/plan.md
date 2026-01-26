@@ -35,10 +35,10 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 1**: Create `repository-boards.test.ts` with parentId filtering tests | `specs/4.1-backend-core.md:L32-37` | TDD: Create test file with 4 test cases for board filtering by parentId |
-| [ ] | **Task 2**: Update `IPMRepository.listBoards` and `SqlitePMRepository.listBoards` to accept filter | `specs/4.1-backend-core.md:L10-19` | Update interface signature (L219), implement in-memory filtering using `parseBoardFields` |
-| [ ] | **Task 3**: Update `BoardService.listBoards` to pass filter parameter | `specs/4.1-backend-core.md:L22-23` | Pass filter through from service to repo |
-| [ ] | **Task 4**: Update `GET /api/boards` to parse `parentId` from query params | `specs/4.1-backend-core.md:L26-29` | Parse searchParams, call service with filter |
+| [x] | **Task 1**: Create `repository-boards.test.ts` with parentId filtering tests | `specs/4.1-backend-core.md:L32-37` | TDD: 4 test cases for board filtering by parentId |
+| [x] | **Task 2**: Update `IPMRepository.listBoards` and `SqlitePMRepository.listBoards` to accept filter | `specs/4.1-backend-core.md:L10-19` | In-memory filtering using `parseBoardFields` |
+| [x] | **Task 3**: Update `BoardService.listBoards` to pass filter parameter | `specs/4.1-backend-core.md:L22-23` | Pass filter through from service to repo |
+| [x] | **Task 4**: Update `GET /api/boards` to parse `parentId` from query params | `specs/4.1-backend-core.md:L26-29` | Parse searchParams, call service with filter |
 
 **Verification:**
 ```bash

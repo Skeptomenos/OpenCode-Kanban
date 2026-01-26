@@ -214,9 +214,10 @@ export interface IPMRepository {
   getBoard(id: string): BoardWithParsedFields | null;
 
   /**
-   * List all Boards.
+   * List all Boards, optionally filtered by parentId.
+   * @param filter - Optional filter criteria
    */
-  listBoards(): BoardWithParsedFields[];
+  listBoards(filter?: { parentId?: string }): BoardWithParsedFields[];
 
   /**
    * Update an existing Board.
@@ -539,9 +540,15 @@ export class SqlitePMRepository implements IPMRepository {
     return this.parseBoardFields(result);
   }
 
-  listBoards(): BoardWithParsedFields[] {
+  listBoards(filter?: { parentId?: string }): BoardWithParsedFields[] {
     const results = this.db.select().from(schema.boards).all();
-    return results.map((b) => this.parseBoardFields(b));
+    const parsed = results.map((b) => this.parseBoardFields(b));
+
+    if (filter?.parentId !== undefined) {
+      return parsed.filter((b) => b.filters.parentId === filter.parentId);
+    }
+
+    return parsed;
   }
 
   updateBoard(id: string, data: UpdateBoardInput): BoardWithParsedFields {

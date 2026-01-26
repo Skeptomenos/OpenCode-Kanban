@@ -29,8 +29,8 @@ export class BoardService {
     private readonly ownerId: string = DEFAULT_OWNER_ID
   ) {}
 
-  listBoards(): BoardWithParsedFields[] {
-    return this.repo.listBoards();
+  listBoards(filter?: { parentId?: string }): BoardWithParsedFields[] {
+    return this.repo.listBoards(filter);
   }
 
   createBoard(data: CreateBoardInput): BoardWithParsedFields {

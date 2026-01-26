@@ -22,13 +22,16 @@ import { logger } from '@/lib/logger';
  *
  * Response: { success: true, data: Board[] }
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const db = getDb();
     const repo = new SqlitePMRepository(db);
     const service = new BoardService(repo);
 
-    const boards = service.listBoards();
+    const searchParams = request.nextUrl.searchParams;
+    const parentId = searchParams.get('parentId') ?? undefined;
+
+    const boards = service.listBoards(parentId ? { parentId } : undefined);
 
     return NextResponse.json({
       success: true,
