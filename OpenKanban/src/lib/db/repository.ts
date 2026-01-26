@@ -109,6 +109,28 @@ export type BoardWithParsedFields = Omit<Board, 'filters' | 'columnConfig'> & {
   columnConfig: ColumnConfig[];
 };
 
+/**
+ * Lightweight parent metadata returned by listIssues for hierarchical display.
+ * Used to show parent context on task cards without N+1 queries.
+ *
+ * @see ralph-wiggum/specs/4.9-hierarchical-display.md:L134-190
+ */
+export type ParentInfo = {
+  id: string;
+  title: string;
+  type: string;
+};
+
+/**
+ * Issue with optional parent metadata for hierarchical display.
+ * Returned by listIssues to support parent badges on task cards.
+ *
+ * @see ralph-wiggum/specs/4.9-hierarchical-display.md
+ */
+export type IssueWithParent = Issue & {
+  parent?: ParentInfo | null;
+};
+
 // =============================================================================
 // Repository Interface
 // =============================================================================
@@ -158,9 +180,12 @@ export interface IPMRepository {
 
   /**
    * List all Issues matching the optional filter.
-   * Returns issues without relations for performance.
+   * Returns issues with parent metadata for hierarchical display.
+   * Uses LEFT JOIN to avoid N+1 queries.
+   *
+   * @see ralph-wiggum/specs/4.9-hierarchical-display.md
    */
-  listIssues(filter?: IssueFilter): Issue[];
+  listIssues(filter?: IssueFilter): IssueWithParent[];
 
   /**
    * Update an existing Issue.
@@ -402,7 +427,7 @@ export class SqlitePMRepository implements IPMRepository {
     });
   }
 
-  listIssues(filter?: IssueFilter): Issue[] {
+  listIssues(filter?: IssueFilter): IssueWithParent[] {
     let query = this.db.select().from(schema.issues);
 
     if (filter) {
@@ -429,7 +454,40 @@ export class SqlitePMRepository implements IPMRepository {
       }
     }
 
-    return query.all();
+    const issues = query.all();
+
+    if (issues.length === 0) {
+      return [];
+    }
+
+    const parentIds = Array.from(new Set(
+      issues
+        .map((i) => i.parentId)
+        .filter((id): id is string => id !== null)
+    ));
+
+    const parentMap = new Map<string, ParentInfo>();
+
+    if (parentIds.length > 0) {
+      const parents = this.db
+        .select({
+          id: schema.issues.id,
+          title: schema.issues.title,
+          type: schema.issues.type,
+        })
+        .from(schema.issues)
+        .where(inArray(schema.issues.id, parentIds))
+        .all();
+
+      for (const parent of parents) {
+        parentMap.set(parent.id, parent);
+      }
+    }
+
+    return issues.map((issue) => ({
+      ...issue,
+      parent: issue.parentId ? parentMap.get(issue.parentId) ?? null : null,
+    }));
   }
 
   updateIssue(id: string, data: UpdateIssueInput): Issue {
