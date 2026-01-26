@@ -68,6 +68,23 @@ export const queryKeys = {
    */
   boards: (parentId?: string) =>
     parentId ? (['boards', { parentId }] as const) : (['boards'] as const),
+
+  /**
+   * Sessions list query key.
+   * Used by: useSessions hook
+   *
+   * @see ralph-wiggum/specs/4.10-link-session-ui.md
+   */
+  sessions: ['sessions'] as const,
+
+  /**
+   * Issue session links query key factory.
+   * Used by: useSessionLinks hook
+   *
+   * @param issueId - Issue ID to get linked sessions for
+   */
+  issueSessionLinks: (issueId: string) =>
+    ['issue-session-links', issueId] as const,
 } as const;
 
 /**
