@@ -12,6 +12,13 @@
  */
 
 /**
+ * Filter criteria for the board view.
+ */
+export interface BoardFilters {
+  status?: string | null;
+}
+
+/**
  * Query keys for all data fetching operations.
  * Use these instead of ad-hoc string arrays throughout the codebase.
  */
@@ -29,9 +36,10 @@ export const queryKeys = {
    *
    * @param projectId - Optional project ID filter
    * @param boardId - Optional board ID filter
+   * @param filters - Optional board filters (status, etc.)
    */
-  kanban: (projectId?: string, boardId?: string) =>
-    ['kanban', projectId, boardId] as const,
+  kanban: (projectId?: string, boardId?: string, filters?: BoardFilters) =>
+    ['kanban', projectId, boardId, filters] as const,
 
   /**
    * Breadcrumb project name query key factory.
