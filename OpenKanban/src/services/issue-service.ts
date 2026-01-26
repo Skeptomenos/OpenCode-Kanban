@@ -9,6 +9,7 @@ import type {
   UpdateIssueInput,
   IssueFilter,
   IssueWithRelations,
+  IssueWithParent,
 } from '../lib/db/repository';
 import type { Issue, IssueSession } from '../lib/db/schema';
 
@@ -31,7 +32,13 @@ export class IssueService {
     private readonly ownerId: string = DEFAULT_OWNER_ID
   ) {}
 
-  listIssues(filter?: IssueFilter): Issue[] {
+  /**
+   * List issues with optional filtering.
+   * Returns issues with parent metadata for hierarchical display.
+   *
+   * @see ralph-wiggum/specs/4.9-hierarchical-display.md
+   */
+  listIssues(filter?: IssueFilter): IssueWithParent[] {
     return this.repo.listIssues(filter);
   }
 

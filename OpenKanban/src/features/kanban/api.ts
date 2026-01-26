@@ -14,7 +14,17 @@ import {
   UpdateBoardSchema,
 } from '@/contract/pm/schemas';
 import type { Issue } from '@/lib/db/schema';
-import type { CreateIssueInput, UpdateIssueInput } from '@/lib/db/repository';
+import type { CreateIssueInput, UpdateIssueInput, ParentInfo } from '@/lib/db/repository';
+
+/**
+ * Issue with optional parent metadata for hierarchical display.
+ * Extends the base Issue type with parent information from the backend.
+ *
+ * @see ralph-wiggum/specs/4.9-hierarchical-display.md
+ */
+export type IssueWithParent = Issue & {
+  parent?: ParentInfo | null;
+};
 
 // Re-export for consumers that import from this module
 export type { CreateIssueInput, UpdateIssueInput };
@@ -67,15 +77,16 @@ export class ApiError extends Error {
 
 /**
  * Fetch issues with optional filters.
+ * Returns issues with parent metadata for hierarchical display.
  * @param filters Optional filter parameters
- * @returns Array of Issue objects
+ * @returns Array of Issue objects with optional parent info
  * @throws ApiError if the request fails
  */
 export async function fetchIssues(filters?: {
   parentId?: string | null;
   type?: string;
   status?: string;
-}): Promise<Issue[]> {
+}): Promise<IssueWithParent[]> {
   const params = new URLSearchParams();
 
   if (filters?.parentId !== undefined) {
@@ -98,7 +109,7 @@ export async function fetchIssues(filters?: {
     throw new ApiError('Network error: Failed to connect to server', 'NETWORK_ERROR');
   }
 
-  let result: ApiResponse<Issue[]>;
+  let result: ApiResponse<IssueWithParent[]>;
   try {
     result = await response.json();
   } catch {
@@ -295,7 +306,7 @@ export type BoardWithIssues = {
     title: string;
     statusMappings: string[];
   }>;
-  issues: Issue[];
+  issues: IssueWithParent[];
 };
 
 /**
