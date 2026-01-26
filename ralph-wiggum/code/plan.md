@@ -31,9 +31,9 @@
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 2.1**: Create `ProjectActionsMenu` component | `specs/5.1-sidebar-overhaul.md:L25-31` | File: `src/features/projects/components/project-actions-menu.tsx`. Copy pattern from `BoardActionsMenu`. |
-| [ ] | **Task 2.2**: Create `RenameProjectDialog` component | `specs/5.1-sidebar-overhaul.md:L25-31` | File: `src/features/projects/components/rename-project-dialog.tsx`. Similar to `RenameBoardDialog`. |
-| [ ] | **Task 2.3**: Create `DeleteProjectDialog` component | `specs/5.1-sidebar-overhaul.md:L25-31` | File: `src/features/projects/components/delete-project-dialog.tsx`. Include cascade warning. |
+| [x] | **Task 2.1**: Create `ProjectActionsMenu` component | `specs/5.1-sidebar-overhaul.md:L25-31` | DONE: Created `project-actions-menu.tsx` following BoardActionsMenu pattern. |
+| [x] | **Task 2.2**: Create `RenameProjectDialog` component | `specs/5.1-sidebar-overhaul.md:L25-31` | DONE: Created `rename-project-dialog.tsx` with duplicate name validation. |
+| [x] | **Task 2.3**: Create `DeleteProjectDialog` component | `specs/5.1-sidebar-overhaul.md:L25-31` | DONE: Created `delete-project-dialog.tsx` with cascade warning. Also created `use-project-mutations.ts` hook. |
 | [ ] | **Task 2.4**: Refactor sidebar - nest boards under projects | `specs/5.1-sidebar-overhaul.md:L7-15` | Use `Collapsible` + `SidebarMenuSub`. Remove separate "Project Boards" group. Active project auto-expands. |
 | [ ] | **Task 2.5**: Wire `ProjectActionsMenu` to sidebar project items | `specs/5.1-sidebar-overhaul.md:L25-43` | Add `...` menu to each project in sidebar. Hook up rename/delete dialogs. |
 | [ ] | **Task 2.6**: Add optimistic updates to project mutations | `specs/5.1-sidebar-overhaul.md:L33-43` | Update `use-project-mutations.ts` with `onMutate` for rename/delete. Rollback on error. |

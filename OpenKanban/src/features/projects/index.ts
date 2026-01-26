@@ -1,6 +1,10 @@
 export { CreateProjectDialog } from './components/create-project-dialog';
 export { WelcomeScreen } from './components/welcome-screen';
+export { ProjectActionsMenu } from './components/project-actions-menu';
+export { RenameProjectDialog } from './components/rename-project-dialog';
+export { DeleteProjectDialog } from './components/delete-project-dialog';
 export { useProjects } from './hooks/use-projects';
+export { useUpdateProject, useDeleteProject } from './hooks/use-project-mutations';
 export { fetchProjects, createProject, ProjectApiError } from './api';
 export type { CreateProjectInput } from './api';
 export type { Project } from '@/contract/pm/types';
