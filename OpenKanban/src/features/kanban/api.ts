@@ -375,9 +375,16 @@ export async function fetchBoard(id: string): Promise<BoardWithIssues> {
 
 /**
  * Input for creating a new board via the API.
+ * @see specs/4.2-frontend-state.md:L13-14
  */
 export type CreateBoardInput = {
   name: string;
+  filters?: {
+    types?: string[];
+    statuses?: string[];
+    parentId?: string | null;
+    labelIds?: string[];
+  };
   columnConfig?: Array<{
     id: string;
     title: string;
