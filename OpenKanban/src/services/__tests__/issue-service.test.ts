@@ -5,6 +5,7 @@ import { createTestDb, schema } from '../../lib/db/test-utils';
 import { SqlitePMRepository } from '../../lib/db/repository';
 import type { IPMRepository, CreateIssueInput } from '../../lib/db/repository';
 import { IssueService } from '../issue-service';
+import { ISSUE_STATUSES } from '@/lib/constants/statuses';
 
 describe('IssueService', () => {
   let db: BetterSQLite3Database<typeof schema>;
@@ -45,14 +46,14 @@ describe('IssueService', () => {
         type: 'epic',
         title: 'Full Epic',
         description: 'Epic description',
-        status: 'in_progress',
+        status: ISSUE_STATUSES.IN_PROGRESS,
         metadata: { priority: 'high' },
       };
 
       const issue = service.createIssue(input);
 
       expect(issue.description).toBe('Epic description');
-      expect(issue.status).toBe('in_progress');
+      expect(issue.status).toBe(ISSUE_STATUSES.IN_PROGRESS);
       expect(issue.metadata).toBe(JSON.stringify({ priority: 'high' }));
     });
   });
@@ -80,10 +81,10 @@ describe('IssueService', () => {
     });
 
     it('filters issues by status', () => {
-      service.createIssue({ type: 'task', title: 'Task 1', status: 'backlog' });
-      service.createIssue({ type: 'task', title: 'Task 2', status: 'in_progress' });
+      service.createIssue({ type: 'task', title: 'Task 1', status: ISSUE_STATUSES.BACKLOG });
+      service.createIssue({ type: 'task', title: 'Task 2', status: ISSUE_STATUSES.IN_PROGRESS });
 
-      const inProgress = service.listIssues({ statuses: ['in_progress'] });
+      const inProgress = service.listIssues({ statuses: [ISSUE_STATUSES.IN_PROGRESS] });
 
       expect(inProgress).toHaveLength(1);
       expect(inProgress[0].title).toBe('Task 2');

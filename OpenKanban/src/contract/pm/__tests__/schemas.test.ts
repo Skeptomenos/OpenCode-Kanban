@@ -13,6 +13,7 @@ import {
   CreateBoardSchema,
   UpdateBoardSchema,
 } from '../schemas';
+import { ISSUE_STATUSES } from '@/lib/constants/statuses';
 
 describe('PM Schemas - Strict Mode', () => {
   describe('CreateIssueSchema', () => {
@@ -53,12 +54,12 @@ describe('PM Schemas - Strict Mode', () => {
     it('accepts valid input', () => {
       const input = {
         title: 'Updated Title',
-        status: 'in-progress',
+        status: ISSUE_STATUSES.IN_PROGRESS,
       };
 
       const result = UpdateIssueSchema.parse(input);
       expect(result.title).toBe('Updated Title');
-      expect(result.status).toBe('in-progress');
+      expect(result.status).toBe(ISSUE_STATUSES.IN_PROGRESS);
     });
 
     it('rejects unknown fields', () => {

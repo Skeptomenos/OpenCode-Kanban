@@ -2,6 +2,7 @@ import { redirect, notFound } from 'next/navigation';
 import { getDb } from '@/lib/db/connection';
 import { SqlitePMRepository } from '@/lib/db/repository';
 import type { BoardFilters } from '@/lib/db/repository';
+import { ISSUE_STATUSES } from '@/lib/constants/statuses';
 
 /**
  * Project root redirect: verifies project, finds/creates board, redirects.
@@ -40,9 +41,9 @@ export default async function ProjectPage({
     name: 'Main Board',
     filters: defaultFilters,
     columnConfig: [
-      { id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] },
-      { id: 'in-progress', title: 'In Progress', statusMappings: ['in-progress'] },
-      { id: 'done', title: 'Done', statusMappings: ['done'] }
+      { id: ISSUE_STATUSES.BACKLOG, title: 'Backlog', statusMappings: [ISSUE_STATUSES.BACKLOG] },
+      { id: ISSUE_STATUSES.IN_PROGRESS, title: 'In Progress', statusMappings: [ISSUE_STATUSES.IN_PROGRESS] },
+      { id: ISSUE_STATUSES.DONE, title: 'Done', statusMappings: [ISSUE_STATUSES.DONE] }
     ]
   });
 

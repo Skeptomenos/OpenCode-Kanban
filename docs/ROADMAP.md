@@ -122,6 +122,7 @@ A local-first Project Management tool where:
 - [ ] Drag & Drop persistence.
 - [ ] Session details view (within the board).
 - [ ] "Create Branch" from Task (Deep integration).
+- [ ] Optimistic updates for board mutations (improve UX responsiveness).
 
 ---
 

@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 
 import { useCreateBoard } from '../hooks/use-board-mutations';
 import { logger } from '@/lib/logger';
+import { ISSUE_STATUSES } from '@/lib/constants/statuses';
 
 /**
  * Props for CreateBoardDialog component.
@@ -37,9 +38,9 @@ interface CreateBoardDialogProps {
  * @see specs/4.3-ui-components.md:L16
  */
 const DEFAULT_COLUMN_CONFIG = [
-  { id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] },
-  { id: 'in-progress', title: 'In Progress', statusMappings: ['in-progress'] },
-  { id: 'done', title: 'Done', statusMappings: ['done'] },
+  { id: ISSUE_STATUSES.BACKLOG, title: 'Backlog', statusMappings: [ISSUE_STATUSES.BACKLOG] },
+  { id: ISSUE_STATUSES.IN_PROGRESS, title: 'In Progress', statusMappings: [ISSUE_STATUSES.IN_PROGRESS] },
+  { id: ISSUE_STATUSES.DONE, title: 'Done', statusMappings: [ISSUE_STATUSES.DONE] },
 ];
 
 /**

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import type { BoardFilters, ColumnConfig } from '@/contract/pm/types';
+import { ISSUE_STATUSES } from '@/lib/constants/statuses';
 
 /**
  * /api/boards Route Tests
@@ -60,9 +61,9 @@ function createMockBoard(overrides: Partial<BoardWithParsedFields> = {}): BoardW
     name: 'Test Board',
     filters: {},
     columnConfig: [
-      { id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] },
-      { id: 'in-progress', title: 'In Progress', statusMappings: ['in-progress'] },
-      { id: 'done', title: 'Done', statusMappings: ['done'] },
+      { id: ISSUE_STATUSES.BACKLOG, title: 'Backlog', statusMappings: [ISSUE_STATUSES.BACKLOG] },
+      { id: ISSUE_STATUSES.IN_PROGRESS, title: 'In Progress', statusMappings: [ISSUE_STATUSES.IN_PROGRESS] },
+      { id: ISSUE_STATUSES.DONE, title: 'Done', statusMappings: [ISSUE_STATUSES.DONE] },
     ],
     createdAt: timestamp - 3600000,
     updatedAt: timestamp,
@@ -171,14 +172,14 @@ describe('/api/boards', () => {
     it('creates a board with custom filters and columnConfig', async () => {
       const customFilters: BoardFilters = {
         types: ['task'],
-        statuses: ['backlog', 'in-progress'],
+        statuses: [ISSUE_STATUSES.BACKLOG, ISSUE_STATUSES.IN_PROGRESS],
         parentId: 'project_001',
       };
 
       const customColumns: ColumnConfig[] = [
-        { id: 'todo', title: 'To Do', statusMappings: ['backlog'] },
-        { id: 'wip', title: 'Work In Progress', statusMappings: ['in-progress'] },
-        { id: 'complete', title: 'Complete', statusMappings: ['done', 'closed'] },
+        { id: 'todo', title: 'To Do', statusMappings: [ISSUE_STATUSES.BACKLOG] },
+        { id: 'wip', title: 'Work In Progress', statusMappings: [ISSUE_STATUSES.IN_PROGRESS] },
+        { id: 'complete', title: 'Complete', statusMappings: [ISSUE_STATUSES.DONE, 'closed'] },
       ];
 
       const newBoard = createMockBoard({

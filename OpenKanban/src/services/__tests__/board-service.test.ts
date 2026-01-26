@@ -5,6 +5,7 @@ import * as schema from '../../lib/db/schema';
 import { SqlitePMRepository } from '../../lib/db/repository';
 import type { IPMRepository, CreateBoardInput } from '../../lib/db/repository';
 import { BoardService } from '../board-service';
+import { ISSUE_STATUSES } from '@/lib/constants/statuses';
 
 function createTestDb(): {
   db: BetterSQLite3Database<typeof schema>;
@@ -105,17 +106,17 @@ describe('BoardService', () => {
     it('creates a board with filters and columns', () => {
       const input: CreateBoardInput = {
         name: 'Full Board',
-        filters: { types: ['task'], statuses: ['backlog', 'in_progress'] },
+        filters: { types: ['task'], statuses: [ISSUE_STATUSES.BACKLOG, ISSUE_STATUSES.IN_PROGRESS] },
         columnConfig: [
-          { id: 'col-1', title: 'Backlog', statusMappings: ['backlog'] },
-          { id: 'col-2', title: 'In Progress', statusMappings: ['in_progress'] },
+          { id: 'col-1', title: 'Backlog', statusMappings: [ISSUE_STATUSES.BACKLOG] },
+          { id: 'col-2', title: 'In Progress', statusMappings: [ISSUE_STATUSES.IN_PROGRESS] },
         ],
       };
 
       const board = service.createBoard(input);
 
       expect(board.name).toBe('Full Board');
-      expect(board.filters).toEqual({ types: ['task'], statuses: ['backlog', 'in_progress'] });
+      expect(board.filters).toEqual({ types: ['task'], statuses: [ISSUE_STATUSES.BACKLOG, ISSUE_STATUSES.IN_PROGRESS] });
       expect(board.columnConfig).toHaveLength(2);
       expect(board.columnConfig[0].title).toBe('Backlog');
     });

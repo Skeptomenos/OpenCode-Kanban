@@ -30,6 +30,7 @@ export function AppSidebar() {
   const { projects, isLoading, error, refresh } = useProjects();
   
   // Fetch boards only when inside a project
+  // Note: Hook is safe to call with empty string - `enabled` guard prevents fetch
   const {
     boards,
     isLoading: boardsLoading,

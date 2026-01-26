@@ -13,6 +13,7 @@ import { z } from 'zod';
 import * as schema from '../schema';
 import { SqlitePMRepository } from '../repository';
 import type { IPMRepository, CreateIssueInput } from '../repository';
+import { ISSUE_STATUSES } from '@/lib/constants/statuses';
 
 /**
  * Creates an in-memory SQLite database with schema for testing.
@@ -126,7 +127,7 @@ describe('SqlitePMRepository', () => {
         type: 'epic',
         title: 'Test Epic',
         description: 'Epic description',
-        status: 'in_progress',
+        status: ISSUE_STATUSES.IN_PROGRESS,
         metadata: { priority: 'high', assignee: 'user123' },
       };
 
@@ -135,7 +136,7 @@ describe('SqlitePMRepository', () => {
       expect(issue.type).toBe('epic');
       expect(issue.title).toBe('Test Epic');
       expect(issue.description).toBe('Epic description');
-      expect(issue.status).toBe('in_progress');
+      expect(issue.status).toBe(ISSUE_STATUSES.IN_PROGRESS);
       expect(issue.metadata).toBe(JSON.stringify({ priority: 'high', assignee: 'user123' }));
     });
 
@@ -189,11 +190,11 @@ describe('SqlitePMRepository', () => {
     });
 
     it('filters by status', () => {
-      repo.createIssue({ type: 'task', title: 'Task 1', status: 'backlog' });
-      repo.createIssue({ type: 'task', title: 'Task 2', status: 'in_progress' });
-      repo.createIssue({ type: 'task', title: 'Task 3', status: 'done' });
+      repo.createIssue({ type: 'task', title: 'Task 1', status: ISSUE_STATUSES.BACKLOG });
+      repo.createIssue({ type: 'task', title: 'Task 2', status: ISSUE_STATUSES.IN_PROGRESS });
+      repo.createIssue({ type: 'task', title: 'Task 3', status: ISSUE_STATUSES.DONE });
 
-      const inProgress = repo.listIssues({ statuses: ['in_progress'] });
+      const inProgress = repo.listIssues({ statuses: [ISSUE_STATUSES.IN_PROGRESS] });
       expect(inProgress).toHaveLength(1);
       expect(inProgress[0].title).toBe('Task 2');
     });
@@ -230,12 +231,12 @@ describe('SqlitePMRepository', () => {
       const updated = repo.updateIssue(created.id, {
         title: 'Updated Title',
         description: 'New description',
-        status: 'in_progress',
+        status: ISSUE_STATUSES.IN_PROGRESS,
       });
 
       expect(updated.title).toBe('Updated Title');
       expect(updated.description).toBe('New description');
-      expect(updated.status).toBe('in_progress');
+      expect(updated.status).toBe(ISSUE_STATUSES.IN_PROGRESS);
       expect(updated.updatedAt).toBeGreaterThan(created.updatedAt);
     });
 
@@ -497,14 +498,14 @@ describe('SqlitePMRepository', () => {
     it('creates a board with filters and columns', () => {
       const board = repo.createBoard({
         name: 'Task Board',
-        filters: { types: ['task'], statuses: ['backlog', 'in_progress'] },
+        filters: { types: ['task'], statuses: [ISSUE_STATUSES.BACKLOG, ISSUE_STATUSES.IN_PROGRESS] },
         columnConfig: [
-          { id: 'col-1', title: 'To Do', statusMappings: ['backlog'] },
-          { id: 'col-2', title: 'Doing', statusMappings: ['in_progress'] },
+          { id: 'col-1', title: 'To Do', statusMappings: [ISSUE_STATUSES.BACKLOG] },
+          { id: 'col-2', title: 'Doing', statusMappings: [ISSUE_STATUSES.IN_PROGRESS] },
         ],
       });
 
-      expect(board.filters).toEqual({ types: ['task'], statuses: ['backlog', 'in_progress'] });
+      expect(board.filters).toEqual({ types: ['task'], statuses: [ISSUE_STATUSES.BACKLOG, ISSUE_STATUSES.IN_PROGRESS] });
       expect(board.columnConfig).toHaveLength(2);
     });
 

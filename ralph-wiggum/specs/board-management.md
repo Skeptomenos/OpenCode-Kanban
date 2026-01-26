@@ -116,7 +116,8 @@ OpenKanban/src/features/boards/
 ├── components/
 │   ├── board-actions-menu.tsx
 │   ├── create-board-dialog.tsx
-│   └── delete-board-dialog.tsx
+│   ├── delete-board-dialog.tsx
+│   └── rename-board-dialog.tsx
 ├── hooks/
 │   ├── use-board-mutations.ts
 │   └── use-boards.ts

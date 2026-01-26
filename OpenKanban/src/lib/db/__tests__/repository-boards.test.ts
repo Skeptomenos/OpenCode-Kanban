@@ -7,6 +7,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createTestDb, type TestDbResult } from '../test-utils';
 import { SqlitePMRepository } from '../repository';
 import type { IPMRepository } from '../repository';
+import { ISSUE_STATUSES } from '@/lib/constants/statuses';
 
 describe('SqlitePMRepository - Board Filtering', () => {
   let testDb: TestDbResult;
@@ -27,9 +28,9 @@ describe('SqlitePMRepository - Board Filtering', () => {
         name: 'Project Board',
         filters: { parentId: 'project-123' },
         columnConfig: [
-          { id: 'col-1', title: 'Backlog', statusMappings: ['backlog'] },
-          { id: 'col-2', title: 'In Progress', statusMappings: ['in_progress'] },
-          { id: 'col-3', title: 'Done', statusMappings: ['done'] },
+          { id: 'col-1', title: 'Backlog', statusMappings: [ISSUE_STATUSES.BACKLOG] },
+          { id: 'col-2', title: 'In Progress', statusMappings: [ISSUE_STATUSES.IN_PROGRESS] },
+          { id: 'col-3', title: 'Done', statusMappings: [ISSUE_STATUSES.DONE] },
         ],
       });
 
