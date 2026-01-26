@@ -35,7 +35,7 @@
 | [x] | **Task 2.2**: Create `RenameProjectDialog` component | `specs/5.1-sidebar-overhaul.md:L25-31` | DONE: Created `rename-project-dialog.tsx` with duplicate name validation. |
 | [x] | **Task 2.3**: Create `DeleteProjectDialog` component | `specs/5.1-sidebar-overhaul.md:L25-31` | DONE: Created `delete-project-dialog.tsx` with cascade warning. Also created `use-project-mutations.ts` hook. |
 | [x] | **Task 2.4**: Refactor sidebar - nest boards under projects | `specs/5.1-sidebar-overhaul.md:L7-15` | DONE: Created `ProjectTreeItem` component with `Collapsible` + `SidebarMenuSub`. Boards lazy-loaded when expanded. Removed separate "Project Boards" group. |
-| [ ] | **Task 2.5**: Wire `ProjectActionsMenu` to sidebar project items | `specs/5.1-sidebar-overhaul.md:L25-43` | Add `...` menu to each project in sidebar. Hook up rename/delete dialogs. |
+| [x] | **Task 2.5**: Wire `ProjectActionsMenu` to sidebar project items | `specs/5.1-sidebar-overhaul.md:L25-43` | DONE: ProjectActionsMenu integrated in ProjectTreeItem. Shows Rename/Delete on hover. |
 | [ ] | **Task 2.6**: Add optimistic updates to project mutations | `specs/5.1-sidebar-overhaul.md:L33-43` | Update `use-project-mutations.ts` with `onMutate` for rename/delete. Rollback on error. |
 | [ ] | **Task 2.7**: Implement "Push Mode" layout for InfoSidebar | `specs/5.1-sidebar-overhaul.md:L17-22` | Change `infobar.tsx`: remove `absolute` on md:, use `relative`. Update parent layout.tsx to `flex-row`. |
 
