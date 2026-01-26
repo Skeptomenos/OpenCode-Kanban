@@ -46,6 +46,13 @@ export type DescriptiveSection = {
 export type InfobarContent = {
   title: string;
   sections: DescriptiveSection[];
+  /**
+   * Optional custom React node for actions (e.g., buttons).
+   * Rendered at the bottom of the infobar content.
+   *
+   * @see ralph-wiggum/specs/4.10-link-session-ui.md:L593-671
+   */
+  actions?: React.ReactNode;
 };
 
 type InfobarContextProps = {

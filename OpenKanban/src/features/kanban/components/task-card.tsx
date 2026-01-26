@@ -17,6 +17,7 @@ import {
   IconBook,
   IconSquareCheck
 } from '@tabler/icons-react';
+import { TaskInfobarActions } from './task-infobar-actions';
 
 /**
  * Icon mapping for parent type display in hierarchy badge.
@@ -86,7 +87,8 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
           description: task.description || 'No description provided.',
           links: []
         }
-      ]
+      ],
+      actions: <TaskInfobarActions taskId={task.id} taskTitle={task.title} />
     };
 
     setContent(content);

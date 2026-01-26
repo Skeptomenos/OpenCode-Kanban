@@ -11,10 +11,11 @@ import {
   InfobarHeader,
   InfobarRail,
   InfobarTrigger,
-  useInfobar
+  useInfobar,
+  type InfobarContent as InfobarContentType
 } from '@/components/ui/infobar';
 
-const defaultData = {
+const defaultData: InfobarContentType = {
   title: 'Details',
   sections: []
 };
@@ -80,6 +81,11 @@ export function InfoSidebar({
               ) : (
                 <div className='text-muted-foreground px-2 py-4 text-center text-sm'>
                   No content available
+                </div>
+              )}
+              {data.actions && (
+                <div className='mt-4 border-t pt-4'>
+                  {data.actions}
                 </div>
               )}
             </div>

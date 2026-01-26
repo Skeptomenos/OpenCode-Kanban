@@ -27,7 +27,7 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 | **BUILD FIX** | **CRITICAL** | 15 min | 13.5 | **COMPLETE (v0.3.92)** |
 | Phase 4.7 Filter Builder | HIGH | 2-3 hr | 13-15 | COMPLETE (v0.3.93) |
 | Phase 4.9 Hierarchical Display | MEDIUM | 3-4 hr | 16-20 | COMPLETE (v0.3.98) |
-| Phase 4.10 Link Session UI | MEDIUM | 3-4 hr | 21-25 | NOT STARTED |
+| Phase 4.10 Link Session UI | MEDIUM | 3-4 hr | 21-25 | **COMPLETE (v0.4.3)** |
 
 ---
 
@@ -136,7 +136,7 @@ All specs are in `ralph-wiggum/specs/4.*.md`.
 | [x] | **Task 22**: Create session query and mutation hooks | `specs/4.10-link-session-ui.md:L195-369` | Done v0.4.0 - useSessions, useLinkSession, useUnlinkSession, useSessionLinks |
 | [x] | **Task 23**: Create LinkSessionDialog component | `specs/4.10-link-session-ui.md:L372-537` | Done v0.4.1 - Search/filter sessions, link button, loading/empty states |
 | [x] | **Task 24**: Create feature barrel export | `specs/4.10-link-session-ui.md:L553-590` | Done v0.4.2 - Export components, hooks, types |
-| [ ] | **Task 25**: Integrate with task details | `specs/4.10-link-session-ui.md:L593-671` | Add to infobar/card actions |
+| [x] | **Task 25**: Integrate with task details | `specs/4.10-link-session-ui.md:L593-671` | Done v0.4.3 - TaskInfobarActions component with session list + link/unlink |
 
 **Files**:
 - `src/features/sessions/types.ts` (CREATE - Task 21)
@@ -225,8 +225,8 @@ pnpm test         # All tests pass (140+ expected)
 - [x] Build passes (Fixed in Task 13.5)
 - [x] Filter dropdown filters tasks on board (Done v0.3.93)
 - [x] Cards show parent indicator when applicable (Done v0.3.98)
-- [ ] Session linking modal searches and links correctly
-- [ ] Linked sessions visible in task details
+- [x] Session linking modal searches and links correctly (Done v0.4.3)
+- [x] Linked sessions visible in task details (Done v0.4.3)
 
 ---
 
