@@ -200,6 +200,19 @@ export interface IPMRepository {
    */
   deleteIssue(id: string): void;
 
+  /**
+   * Update an Issue's status and sort order for drag-and-drop reordering.
+   * Used by the move API to persist drag-drop changes.
+   *
+   * @param id - The Issue ID to update
+   * @param status - The target column/status
+   * @param sortOrder - The calculated sort order based on neighbors
+   * @throws Error if Issue not found
+   *
+   * @see ralph-wiggum/specs/5.3-drag-persistence.md:L17-30
+   */
+  updateIssueOrder(id: string, status: string, sortOrder: number): Issue;
+
   // ---------------------------------------------------------------------------
   // Issue-Session Links
   // ---------------------------------------------------------------------------
@@ -525,6 +538,23 @@ export class SqlitePMRepository implements IPMRepository {
     }
 
     this.db.delete(schema.issues).where(eq(schema.issues.id, id)).run();
+  }
+
+  updateIssueOrder(id: string, status: string, sortOrder: number): Issue {
+    const existing = this.getIssue(id);
+    if (!existing) {
+      throw new Error(`Issue with id "${id}" not found`);
+    }
+
+    const timestamp = Math.max(now(), existing.updatedAt + 1);
+
+    this.db
+      .update(schema.issues)
+      .set({ status, sortOrder, updatedAt: timestamp })
+      .where(eq(schema.issues.id, id))
+      .run();
+
+    return this.getIssue(id)!;
   }
 
   // ---------------------------------------------------------------------------

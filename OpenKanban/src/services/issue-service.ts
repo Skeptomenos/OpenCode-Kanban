@@ -77,4 +77,27 @@ export class IssueService {
   unlinkSession(issueId: string, sessionId: string): void {
     this.repo.unlinkSession(issueId, sessionId);
   }
+
+  moveIssue(
+    id: string,
+    status: string,
+    prevIssueId: string | null,
+    nextIssueId: string | null
+  ): Issue {
+    const prevIssue = prevIssueId ? this.repo.getIssue(prevIssueId) : null;
+    const nextIssue = nextIssueId ? this.repo.getIssue(nextIssueId) : null;
+
+    let sortOrder: number;
+    if (prevIssue && nextIssue) {
+      sortOrder = (prevIssue.sortOrder + nextIssue.sortOrder) / 2;
+    } else if (prevIssue) {
+      sortOrder = prevIssue.sortOrder + 1000;
+    } else if (nextIssue) {
+      sortOrder = nextIssue.sortOrder - 1000;
+    } else {
+      sortOrder = 0;
+    }
+
+    return this.repo.updateIssueOrder(id, status, sortOrder);
+  }
 }

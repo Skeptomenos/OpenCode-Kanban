@@ -21,7 +21,7 @@
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 1.1**: Add `sortOrder` column to `issues` table | `specs/5.3-drag-persistence.md:L7-15` | DONE: Schema updated, test DBs updated, manual ALTER TABLE applied. |
-| [ ] | **Task 1.2**: Update repository with `updateIssueOrder` method | `specs/5.3-drag-persistence.md:L17-30` | Add to `repository.ts`. Service layer method in `issue-service.ts`. |
+| [x] | **Task 1.2**: Update repository with `updateIssueOrder` method | `specs/5.3-drag-persistence.md:L17-30` | DONE: Added `updateIssueOrder` to repository interface + implementation. Added `moveIssue` to IssueService with midpoint algorithm. Tests pass. |
 | [ ] | **Task 1.3**: Create `PUT /api/issues/[id]/move` endpoint | `specs/5.3-drag-persistence.md:L17-30` | Input: `{ status, prevIssueId, nextIssueId }`. Calculate sortOrder using midpoint algorithm. |
 | [ ] | **Task 1.4**: Wire drag-end to move API with optimistic updates | `specs/5.3-drag-persistence.md:L32-48` | Update `kanban-board.tsx` onDragEnd. Snapshot for rollback. Calculate local sortOrder. |
 | [ ] | **Task 1.5**: Add `?q=` search param to `GET /api/sessions` | `specs/5.4-search-cleanup.md:L6-11` | Update `session-loader` to filter by filename/metadata. Substring match on title/id. |

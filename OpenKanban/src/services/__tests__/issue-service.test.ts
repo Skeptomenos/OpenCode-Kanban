@@ -242,4 +242,55 @@ describe('IssueService', () => {
       expect(links).toHaveLength(1);
     });
   });
+
+  describe('moveIssue', () => {
+    it('places issue at sortOrder 0 when column is empty', () => {
+      const issue = service.createIssue({ type: 'task', title: 'Task' });
+
+      const moved = service.moveIssue(issue.id, 'in-progress', null, null);
+
+      expect(moved.status).toBe('in-progress');
+      expect(moved.sortOrder).toBe(0);
+    });
+
+    it('places issue after prev when only prev is provided', () => {
+      const prev = service.createIssue({ type: 'task', title: 'Prev' });
+      repo.updateIssueOrder(prev.id, 'in-progress', 500);
+
+      const issue = service.createIssue({ type: 'task', title: 'New' });
+      const moved = service.moveIssue(issue.id, 'in-progress', prev.id, null);
+
+      expect(moved.sortOrder).toBe(1500);
+    });
+
+    it('places issue before next when only next is provided', () => {
+      const next = service.createIssue({ type: 'task', title: 'Next' });
+      repo.updateIssueOrder(next.id, 'in-progress', 500);
+
+      const issue = service.createIssue({ type: 'task', title: 'New' });
+      const moved = service.moveIssue(issue.id, 'in-progress', null, next.id);
+
+      expect(moved.sortOrder).toBe(-500);
+    });
+
+    it('places issue between prev and next', () => {
+      const prev = service.createIssue({ type: 'task', title: 'Prev' });
+      const next = service.createIssue({ type: 'task', title: 'Next' });
+      repo.updateIssueOrder(prev.id, 'in-progress', 1000);
+      repo.updateIssueOrder(next.id, 'in-progress', 2000);
+
+      const issue = service.createIssue({ type: 'task', title: 'Middle' });
+      const moved = service.moveIssue(issue.id, 'in-progress', prev.id, next.id);
+
+      expect(moved.sortOrder).toBe(1500);
+    });
+
+    it('updates status when moving between columns', () => {
+      const issue = service.createIssue({ type: 'task', title: 'Task', status: 'backlog' });
+
+      const moved = service.moveIssue(issue.id, 'done', null, null);
+
+      expect(moved.status).toBe('done');
+    });
+  });
 });

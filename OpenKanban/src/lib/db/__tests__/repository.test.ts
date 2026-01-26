@@ -269,6 +269,33 @@ describe('SqlitePMRepository', () => {
     });
   });
 
+  describe('updateIssueOrder', () => {
+    it('throws when issue does not exist', () => {
+      expect(() => repo.updateIssueOrder('non-existent', 'in-progress', 1000)).toThrow();
+    });
+
+    it('updates status and sortOrder', () => {
+      const created = repo.createIssue({ type: 'task', title: 'Task' });
+      expect(created.sortOrder).toBe(0);
+      expect(created.status).toBe('backlog');
+
+      const updated = repo.updateIssueOrder(created.id, 'in-progress', 500);
+
+      expect(updated.status).toBe('in-progress');
+      expect(updated.sortOrder).toBe(500);
+      expect(updated.updatedAt).toBeGreaterThan(created.updatedAt);
+    });
+
+    it('persists sortOrder across reads', () => {
+      const created = repo.createIssue({ type: 'task', title: 'Task' });
+      repo.updateIssueOrder(created.id, 'done', 1234.5);
+
+      const fetched = repo.getIssue(created.id);
+      expect(fetched?.sortOrder).toBe(1234.5);
+      expect(fetched?.status).toBe('done');
+    });
+  });
+
   // ===========================================================================
   // Hierarchy Tests
   // ===========================================================================
