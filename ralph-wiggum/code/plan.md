@@ -35,8 +35,8 @@ This plan addresses **architectural issues** from Phase 3.5 audit that must be f
 | [x] | **Task 1.1**: Create `src/features/kanban/types.ts` - extract `Column` interface from `board-column.tsx:15` and `Task` type from `store.ts:4` | `360:L13-15` | Done v0.3.57: Extracted all 6 types to types.ts |
 | [x] | **Task 1.2**: Update imports in `store.ts`, `board-column.tsx`, `task-card.tsx`, `kanban-board.tsx` to use new `types.ts` | `360:L18-20` | Done v0.3.57: Also updated utils/index.ts, hooks/use-column-mutations.ts |
 | [x] | **Task 1.3**: Verify circular dependency resolved with `npm run build` | `360:L88` | Done v0.3.57: Build + lint + tests all pass |
-| [ ] | **Task 2.1**: Refactor `resolveBoardId()` in `kanban-board.tsx` - remove `createBoard()` call, return null or throw if no board found | `360:L27-46` | Query functions must be pure - no mutations |
-| [ ] | **Task 2.2**: Handle "no board" state in parent route/component - show 404 or redirect | `360:L44-46` | Parent ensures board exists before rendering KanbanBoard |
+| [x] | **Task 2.1**: Refactor `resolveBoardId()` in `kanban-board.tsx` - remove `createBoard()` call, return null or throw if no board found | `360:L27-46` | Done v0.3.58: Removed createBoard call, throws if no board |
+| [x] | **Task 2.2**: Handle "no board" state in parent route/component - show 404 or redirect | `360:L44-46` | Done v0.3.58: Verified parent route + error boundary handle this |
 | [ ] | **Task 3.1**: Add `logger.warn` to all 5 silent JSON.parse catch blocks in `repository.ts` | `360:L55-64` | Lines: 331, 388, 606, 638, 644 - log context + error |
 | [ ] | **Task 4.1**: Create `src/lib/db/test-utils.ts` - centralize `createTestDb` helper | `360:L120-138` | Extract from `src/services/__tests__/issue-service.test.ts` pattern |
 | [ ] | **Task 4.2**: Create `src/app/api/issues/__tests__/route.test.ts` with GET, POST, filter tests | `360:L70-77` | 3 test cases using createTestDb integration pattern |

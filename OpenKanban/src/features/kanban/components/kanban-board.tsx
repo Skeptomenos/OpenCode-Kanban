@@ -16,7 +16,7 @@ import type { Task, Column } from '../types';
 import { hasDraggableData } from '../utils';
 import { logger } from '@/lib/logger';
 import { queryKeys } from '@/lib/query-keys';
-import { fetchIssues, fetchBoards, fetchBoard, createBoard, updateIssue } from '../api';
+import { fetchIssues, fetchBoards, fetchBoard, updateIssue } from '../api';
 import { ColumnMutationsProvider } from '../hooks/column-mutations-context';
 import {
   Announcements,
@@ -44,7 +44,10 @@ interface KanbanBoardProps {
 /**
  * Resolves the active board ID.
  * - If boardId provided, uses it
- * - Otherwise fetches boards list and returns first (or creates default)
+ * - Otherwise fetches boards list and returns first
+ * - Throws if no board found (parent route should ensure board exists)
+ *
+ * @see specs/360-critical-fixes.md:L27-46 - Query functions must be pure, no mutations
  */
 async function resolveBoardId(boardId?: string): Promise<string> {
   if (boardId) return boardId;
@@ -52,11 +55,9 @@ async function resolveBoardId(boardId?: string): Promise<string> {
   const boards = await fetchBoards();
   if (boards.length > 0) return boards[0].id;
 
-  const newBoard = await createBoard({
-    name: 'Default Board',
-    columnConfig: [{ id: 'backlog', title: 'Backlog', statusMappings: ['backlog'] }],
-  });
-  return newBoard.id;
+  // No boards found - throw error. Parent route/component handles board creation.
+  // This keeps query functions pure (no side effects/mutations).
+  throw new Error('No boards found. Board must be created before accessing KanbanBoard.');
 }
 
 /**
