@@ -3,8 +3,8 @@
 > **Goal:** Transform the UI into a polished, production-ready experience and implement critical workflow persistence.
 > **Previous Phase:** Phase 4 Board Management COMPLETE (v0.3.84)
 > **Created:** 2026-01-26
-> **Updated:** 2026-01-27 (Task 7.1 COMPLETE - Task Card Hover States)
-> **Remaining Tasks:** 3 (Sprint 7: 3)
+> **Updated:** 2026-01-27 (Task 7.2 COMPLETE - Description Editor Verification)
+> **Remaining Tasks:** 2 (Sprint 7: 2)
 
 ## Execution Order
 
@@ -81,7 +81,7 @@
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 7.1**: Add hover states to task cards | `specs/5.10-task-card-click-affordance.md` | DONE v0.5.17: Added `hover:border-primary/50 hover:shadow-md transition-all duration-150` to task-card.tsx:108-115. |
-| [ ] | **Task 7.2**: Verify description editor functionality | `specs/5.11-verify-description-editor.md` | **P2** - Verification task. BLOCKED by 5.6. Test: blur save, Cmd+Enter save, "Saved" indicator, persistence. |
+| [x] | **Task 7.2**: Verify description editor functionality | `specs/5.11-verify-description-editor.md` | DONE v0.5.18: Code review verified onBlur/Cmd+Enter save, "Saved" indicator (2s fade), API PATCH accepts description. Build passes. |
 | [ ] | **Task 7.3**: Verify "+ New Board" functionality | `specs/5.12-new-board-functionality.md` | **P2** - Verification task. Click trigger, dialog opens, board created, sidebar updates, navigates to new board. |
 | [ ] | **Task 7.4**: Full session linking verification | `specs/5.13-session-linking.md` | **P3** - Verification task. BLOCKED by 5.6. Test: Link Session dialog, search, select, link, display, unlink, view transcript. |
 
@@ -137,8 +137,8 @@
 
 ### Sprint 7 Completion Criteria (NEW)
 - [x] Hover over task card -> visual feedback appears (border/shadow)
-- [ ] Edit description -> blur -> "Saved" indicator
-- [ ] Edit description -> Cmd+Enter -> saves
+- [x] Edit description -> blur -> "Saved" indicator
+- [x] Edit description -> Cmd+Enter -> saves
 - [ ] "+ New Board" creates board, updates sidebar, navigates
 
 ---
