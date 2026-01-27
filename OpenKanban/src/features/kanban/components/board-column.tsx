@@ -130,7 +130,7 @@ export function BoardContainer({ children }: { children: React.ReactNode }) {
           dragging: dndContext.active ? 'active' : 'default'
         })}
       >
-        <div className='flex flex-row items-start justify-center gap-4'>
+        <div className='flex flex-row items-start gap-4 w-fit min-w-full'>
           {children}
         </div>
       </div>
