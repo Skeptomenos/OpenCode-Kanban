@@ -48,7 +48,7 @@
 | [x] | **Task 3.3**: Create `TaskDescriptionEditor` component | `specs/5.2-task-card-editor.md:L15-25` | DONE: Created `task-description-editor.tsx`. Auto-saving textarea with blur/Cmd+Enter. Shows "Saved" indicator with fade animation. Build passes. |
 | [x] | **Task 3.4**: Integrate editor into InfobarContent | `specs/5.2-task-card-editor.md:L27-30` | DONE: Changed `DescriptiveSection.description` from `string` to `React.ReactNode`. Updated `info-sidebar.tsx` to render ReactNode. Replaced static text with `<TaskDescriptionEditor>` in `task-card.tsx` `handleCardClick`. |
 | [x] | **Task 3.5**: Fix new task optimistic update (show parent) | `specs/5.2-task-card-editor.md:L32-37` | DONE: Added `useProjects` hook to find current project. Injecting parent info `{ id, title, type: 'project' }` into new task optimistic update. |
-| [ ] | **Task 3.6**: Update LinkSessionDialog to use debounced server search | `specs/5.4-search-cleanup.md:L13-17` | Add `useDebounce(300)` for search input. Pass query to `useSessions(query)`. |
+| [x] | **Task 3.6**: Update LinkSessionDialog to use debounced server search | `specs/5.4-search-cleanup.md:L13-17` | DONE: Created `use-debounce.ts` hook (300ms). Updated `useSessions(query)` to accept optional search param and pass to API `?q=`. Updated `queryKeys.sessions` to factory pattern. Removed client-side filtering from LinkSessionDialog. |
 
 ### Sprint 4: Deferred Features (Est: 0.5 days)
 

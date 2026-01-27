@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { logger } from '@/lib/logger';
 import { formatTimestamp } from '@/lib/date-utils';
 import { DIALOG_DIMENSIONS } from '@/lib/constants/ui-dimensions';
+import { useDebounce } from '@/hooks/use-debounce';
 
 import { useSessions } from '../hooks/use-sessions';
 import { useLinkSession, useSessionLinks } from '../hooks/use-session-mutations';
@@ -39,28 +40,17 @@ export function LinkSessionDialog({
   onClose,
 }: LinkSessionDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { sessions, isLoading: sessionsLoading } = useSessions();
+  const debouncedQuery = useDebounce(searchQuery.trim() || undefined, 300);
+  const { sessions, isLoading: sessionsLoading } = useSessions(debouncedQuery);
   const { sessionLinks } = useSessionLinks(issueId);
   const linkSession = useLinkSession();
 
-  // WHY client-side filtering: GET /api/sessions returns all (max 100), no search param.
-  // 100 sessions is manageable client-side. Simpler than adding backend search.
   const availableSessions = useMemo(() => {
     const linkedIds = new Set(
       sessionLinks.map((link: SessionLink) => link.sessionId)
     );
-    return sessions
-      .filter((session) => !linkedIds.has(session.id))
-      .filter((session) => {
-        if (!searchQuery) return true;
-        const query = searchQuery.trim().toLowerCase();
-        return (
-          session.id.toLowerCase().includes(query) ||
-          session.title?.toLowerCase().includes(query) ||
-          session.slug?.toLowerCase().includes(query)
-        );
-      });
-  }, [sessions, sessionLinks, searchQuery]);
+    return sessions.filter((session) => !linkedIds.has(session.id));
+  }, [sessions, sessionLinks]);
 
   const handleLink = async (sessionId: string) => {
     try {

@@ -70,12 +70,14 @@ export const queryKeys = {
     parentId ? (['boards', { parentId }] as const) : (['boards'] as const),
 
   /**
-   * Sessions list query key.
+   * Sessions list query key factory.
    * Used by: useSessions hook
+   * Supports optional query param for server-side filtering.
    *
-   * @see ralph-wiggum/specs/4.10-link-session-ui.md
+   * @see ralph-wiggum/specs/5.4-search-cleanup.md:L13-17
    */
-  sessions: ['sessions'] as const,
+  sessions: (query?: string) =>
+    query ? (['sessions', { query }] as const) : (['sessions'] as const),
 
   /**
    * Issue session links query key factory.
