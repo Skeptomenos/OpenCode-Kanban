@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
+import { logger } from '@/lib/logger';
 import type { Project } from '@/contract/pm/types';
 
 class ProjectApiError extends Error {
@@ -98,13 +99,36 @@ async function deleteProject(id: string): Promise<{ id: string }> {
   return result.data;
 }
 
+/** @see specs/5.1-sidebar-overhaul.md:L33-43 */
 export function useUpdateProject() {
   const queryClient = useQueryClient();
 
-  return useMutation<Project, ProjectApiError, UpdateProjectMutationInput>({
+  return useMutation<Project, ProjectApiError, UpdateProjectMutationInput, { previousProjects: Project[] | undefined }>({
     mutationFn: ({ id, input }) => updateProject(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects });
+    onMutate: async ({ id, input }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.projects });
+      const previousProjects = queryClient.getQueryData<Project[]>(queryKeys.projects);
+      
+      if (previousProjects) {
+        queryClient.setQueryData<Project[]>(queryKeys.projects, (old) =>
+          old?.map((project) =>
+            project.id === id
+              ? { ...project, ...input, updatedAt: Date.now() }
+              : project
+          )
+        );
+      }
+      
+      return { previousProjects };
+    },
+    onError: (err, _vars, context) => {
+      logger.error('Failed to update project', { error: String(err) });
+      if (context?.previousProjects) {
+        queryClient.setQueryData(queryKeys.projects, context.previousProjects);
+      }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.projects });
     },
   });
 }
@@ -113,13 +137,32 @@ interface DeleteProjectMutationInput {
   projectId: string;
 }
 
+/** @see specs/5.1-sidebar-overhaul.md:L33-43 */
 export function useDeleteProject() {
   const queryClient = useQueryClient();
 
-  return useMutation<{ id: string }, ProjectApiError, DeleteProjectMutationInput>({
+  return useMutation<{ id: string }, ProjectApiError, DeleteProjectMutationInput, { previousProjects: Project[] | undefined }>({
     mutationFn: ({ projectId }) => deleteProject(projectId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects });
+    onMutate: async ({ projectId }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.projects });
+      const previousProjects = queryClient.getQueryData<Project[]>(queryKeys.projects);
+      
+      if (previousProjects) {
+        queryClient.setQueryData<Project[]>(queryKeys.projects, (old) =>
+          old?.filter((project) => project.id !== projectId)
+        );
+      }
+      
+      return { previousProjects };
+    },
+    onError: (err, _vars, context) => {
+      logger.error('Failed to delete project', { error: String(err) });
+      if (context?.previousProjects) {
+        queryClient.setQueryData(queryKeys.projects, context.previousProjects);
+      }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.projects });
     },
   });
 }
