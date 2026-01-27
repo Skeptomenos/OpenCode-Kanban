@@ -40,6 +40,26 @@ export const SessionSchema = z.object({
   summary: SessionSummarySchema.optional()
 }).strict();
 
+// --- Message Part ---
+
+/**
+ * A message part represents a single piece of content within a message.
+ * Parts are stored in the `part/{messageId}/` directory.
+ * @see ralph-wiggum/specs/5.5-deferred-features.md:L7-13
+ */
+export const MessagePartSchema = z.object({
+  id: z.string(),
+  type: z.enum(['text', 'tool_call', 'tool_result']),
+  text: z.string().optional(),
+  synthetic: z.boolean().optional(),
+  time: z.object({
+    start: z.number(),
+    end: z.number()
+  }).strict(),
+  messageID: z.string(),
+  sessionID: z.string()
+}).passthrough(); // Allow additional fields we don't use
+
 // --- Message ---
 
 export const MessageSchema = z.object({
@@ -49,6 +69,5 @@ export const MessageSchema = z.object({
   time: z.object({
     created: z.number(),
     completed: z.number().optional()
-  }).strict(),
-  // We can add more specific fields later if we need to parse message content
-}).strict();
+  }).strict()
+}).passthrough(); // Allow additional fields like summary, agent, model, tools

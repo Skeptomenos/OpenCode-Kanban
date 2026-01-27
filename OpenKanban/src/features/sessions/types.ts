@@ -47,19 +47,36 @@ export interface SessionLink {
   createdAt: string;
 }
 
-/**
- * API response shape from GET /api/sessions.
- *
- * WHY: Type the full envelope response to enable proper destructuring
- * and error handling in the useSessions hook.
- *
- * @see src/app/api/sessions/route.ts:L17-23
- */
 export interface SessionsResponse {
   success: boolean;
   data: {
     sessions: Session[];
-    /** OpenCode projects - not used in session linking UI */
     projects: unknown[];
+  };
+}
+
+export interface MessagePart {
+  id: string;
+  type: 'text' | 'tool_call' | 'tool_result';
+  text?: string;
+  synthetic?: boolean;
+  time: { start: number; end: number };
+  messageID: string;
+  sessionID: string;
+}
+
+export interface Message {
+  id: string;
+  sessionID: string;
+  role: 'user' | 'assistant' | 'system';
+  time: { created: number; completed?: number };
+  parts: MessagePart[];
+}
+
+export interface SessionDetailResponse {
+  success: boolean;
+  data: {
+    session: Session;
+    messages: Message[];
   };
 }

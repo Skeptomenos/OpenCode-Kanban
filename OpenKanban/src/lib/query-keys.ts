@@ -79,14 +79,11 @@ export const queryKeys = {
   sessions: (query?: string) =>
     query ? (['sessions', { query }] as const) : (['sessions'] as const),
 
-  /**
-   * Issue session links query key factory.
-   * Used by: useSessionLinks hook
-   *
-   * @param issueId - Issue ID to get linked sessions for
-   */
   issueSessionLinks: (issueId: string) =>
     ['issue-session-links', issueId] as const,
+
+  session: (sessionId: string) =>
+    ['session', sessionId] as const,
 } as const;
 
 /**

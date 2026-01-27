@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { IOpenCodeRepository } from './repository';
-import { OpenCodeProject, OpenCodeSession } from './types';
-import { ProjectSchema, SessionSchema } from './schemas';
+import { OpenCodeProject, OpenCodeSession, OpenCodeMessageWithParts, OpenCodeMessagePart } from './types';
+import { ProjectSchema, SessionSchema, MessageSchema, MessagePartSchema } from './schemas';
 import { logger } from '@/lib/logger';
 import { now } from '@/lib/date-utils';
 
@@ -249,5 +249,69 @@ export class LocalOpenCodeAdapter implements IOpenCodeRepository {
       logger.warn('Failed to read session file', { id, filePath: entry.filePath, error: String(error) });
       return null;
     }
+  }
+
+  async getSessionMessages(sessionId: string): Promise<OpenCodeMessageWithParts[]> {
+    const messageDir = path.join(this.storagePath, 'message', sessionId);
+    if (!fs.existsSync(messageDir)) return [];
+
+    const messages: OpenCodeMessageWithParts[] = [];
+
+    let files: string[];
+    try {
+      files = await fs.promises.readdir(messageDir);
+    } catch (error) {
+      logger.debug('Failed to read message directory', { messageDir, error: String(error) });
+      return [];
+    }
+
+    for (const file of files) {
+      if (!file.endsWith('.json')) continue;
+      try {
+        const content = await fs.promises.readFile(path.join(messageDir, file), 'utf-8');
+        const raw = JSON.parse(content);
+        const result = MessageSchema.safeParse(raw);
+        
+        if (result.success) {
+          const parts = await this.getMessageParts(result.data.id);
+          messages.push({ ...result.data, parts });
+        }
+      } catch (error) {
+        logger.debug('Failed to read message file', { file, error: String(error) });
+      }
+    }
+
+    return messages.sort((a, b) => a.time.created - b.time.created);
+  }
+
+  private async getMessageParts(messageId: string): Promise<OpenCodeMessagePart[]> {
+    const partDir = path.join(this.storagePath, 'part', messageId);
+    if (!fs.existsSync(partDir)) return [];
+
+    const parts: OpenCodeMessagePart[] = [];
+
+    let files: string[];
+    try {
+      files = await fs.promises.readdir(partDir);
+    } catch {
+      return [];
+    }
+
+    for (const file of files) {
+      if (!file.endsWith('.json')) continue;
+      try {
+        const content = await fs.promises.readFile(path.join(partDir, file), 'utf-8');
+        const raw = JSON.parse(content);
+        const result = MessagePartSchema.safeParse(raw);
+        
+        if (result.success) {
+          parts.push(result.data);
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    return parts.sort((a, b) => a.time.start - b.time.start);
   }
 }
