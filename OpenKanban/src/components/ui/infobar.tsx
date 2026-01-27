@@ -299,26 +299,12 @@ function Infobar({
         } as React.CSSProperties
       }
     >
-      {/* This is what handles the infobar gap on desktop */}
-      <div
-        data-slot='infobar-gap'
-        className={cn(
-          'relative w-(--infobar-width) bg-transparent transition-[width] duration-(--infobar-transition-duration,200ms) ease-linear',
-          'group-data-[collapsible=offcanvas]:w-0',
-          'group-data-[side=right]:rotate-180',
-          variant === 'floating' || variant === 'inset'
-            ? 'group-data-[collapsible=icon]:w-[calc(var(--infobar-width-icon)+(--spacing(4)))]'
-            : 'group-data-[collapsible=icon]:w-(--infobar-width-icon)'
-        )}
-      />
+      {/* Push Mode: relative positioning so infobar participates in flex layout @see specs/5.1-sidebar-overhaul.md:L17-22 */}
       <div
         data-slot='infobar-container'
         className={cn(
-          'absolute inset-y-0 z-10 hidden h-svh w-(--infobar-width) transition-[left,right,width] duration-(--infobar-transition-duration,200ms) ease-linear md:flex',
-          side === 'left'
-            ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--infobar-width)*-1)]'
-            : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--infobar-width)*-1)]',
-          // Adjust the padding for floating and inset variants.
+          'relative hidden h-full w-(--infobar-width) transition-[width] duration-(--infobar-transition-duration,200ms) ease-linear md:flex',
+          'group-data-[collapsible=offcanvas]:w-0 group-data-[collapsible=offcanvas]:overflow-hidden',
           variant === 'floating' || variant === 'inset'
             ? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--infobar-width-icon)+(--spacing(4))+2px)]'
             : 'group-data-[collapsible=icon]:w-(--infobar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l',
