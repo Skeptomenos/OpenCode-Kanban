@@ -3,8 +3,8 @@
 > **Goal:** Transform the UI into a polished, production-ready experience and implement critical workflow persistence.
 > **Previous Phase:** Phase 4 Board Management COMPLETE (v0.3.84)
 > **Created:** 2026-01-26
-> **Updated:** 2026-01-27 (Task 6.2 COMPLETE - Initial Load Race Condition Fix)
-> **Remaining Tasks:** 4 (Sprint 7: 4)
+> **Updated:** 2026-01-27 (Task 7.1 COMPLETE - Task Card Hover States)
+> **Remaining Tasks:** 3 (Sprint 7: 3)
 
 ## Execution Order
 
@@ -80,7 +80,7 @@
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 7.1**: Add hover states to task cards | `specs/5.10-task-card-click-affordance.md` | **P2** - `task-card.tsx:112` only has `cursor-pointer`. Add `hover:border-primary/50 hover:shadow-md transition-all duration-150`. Depends on 5.6 for verification. |
+| [x] | **Task 7.1**: Add hover states to task cards | `specs/5.10-task-card-click-affordance.md` | DONE v0.5.17: Added `hover:border-primary/50 hover:shadow-md transition-all duration-150` to task-card.tsx:108-115. |
 | [ ] | **Task 7.2**: Verify description editor functionality | `specs/5.11-verify-description-editor.md` | **P2** - Verification task. BLOCKED by 5.6. Test: blur save, Cmd+Enter save, "Saved" indicator, persistence. |
 | [ ] | **Task 7.3**: Verify "+ New Board" functionality | `specs/5.12-new-board-functionality.md` | **P2** - Verification task. Click trigger, dialog opens, board created, sidebar updates, navigates to new board. |
 | [ ] | **Task 7.4**: Full session linking verification | `specs/5.13-session-linking.md` | **P3** - Verification task. BLOCKED by 5.6. Test: Link Session dialog, search, select, link, display, unlink, view transcript. |
@@ -136,7 +136,7 @@
 - [x] Refresh page multiple times -> cards always appear
 
 ### Sprint 7 Completion Criteria (NEW)
-- [ ] Hover over task card -> visual feedback appears (border/shadow)
+- [x] Hover over task card -> visual feedback appears (border/shadow)
 - [ ] Edit description -> blur -> "Saved" indicator
 - [ ] Edit description -> Cmd+Enter -> saves
 - [ ] "+ New Board" creates board, updates sidebar, navigates

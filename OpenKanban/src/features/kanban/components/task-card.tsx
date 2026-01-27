@@ -109,7 +109,9 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
         variants({
           dragging: isOverlay ? 'overlay' : isDragging ? 'over' : undefined
         }),
-        'cursor-pointer p-3'
+        'cursor-pointer p-3',
+        'transition-all duration-150',
+        'hover:border-primary/50 hover:shadow-md'
       )}
       onClick={handleCardClick}
     >
