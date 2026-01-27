@@ -3,8 +3,8 @@
 > **Goal:** Transform the UI into a polished, production-ready experience and implement critical workflow persistence.
 > **Previous Phase:** Phase 4 Board Management COMPLETE (v0.3.84)
 > **Created:** 2026-01-26
-> **Updated:** 2026-01-27 (Task 6.1 COMPLETE - Column Reorder Persistence)
-> **Remaining Tasks:** 5 (Sprint 6: 1, Sprint 7: 4)
+> **Updated:** 2026-01-27 (Task 6.2 COMPLETE - Initial Load Race Condition Fix)
+> **Remaining Tasks:** 4 (Sprint 7: 4)
 
 ## Execution Order
 
@@ -69,12 +69,12 @@
 | [x] | **Task 5.1**: Fix InfoSidebar not visually rendering | `specs/5.6-fix-infobar-rendering.md` | DONE: `SidebarInset` changed from `w-full` to `min-w-0` in `sidebar.tsx:311`. InfoSidebar now renders properly on task card click. Verified at 1024px viewport. |
 | [x] | **Task 5.2**: Fix board left-column clipping | `specs/5.7-fix-board-clipping.md` | DONE: `justify-center` changed to `gap-4 w-fit min-w-full` in `board-column.tsx:133`. Columns now aligned left, no clipping. |
 
-### Sprint 6: Data Integrity Fixes (IN PROGRESS)
+### Sprint 6: Data Integrity Fixes (COMPLETE)
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 6.1**: Add column reorder persistence to database | `specs/5.8-column-reorder-persistence.md` | DONE v0.5.15: Added `useReorderColumnsMutation` hook. Column reorder now persists via PATCH /api/boards/[id]. |
-| [ ] | **Task 6.2**: Fix initial load race condition | `specs/5.9-fix-initial-load-race.md` | **P1** - Tasks sometimes don't appear on first load. Sync effect (lines 211-221) may miss initial data. Consider rendering from `data?.tasks` directly during non-drag. |
+| [x] | **Task 6.2**: Fix initial load race condition | `specs/5.9-fix-initial-load-race.md` | DONE v0.5.16: Render from React Query data (`columnsToRender`, `tasksToRender`) when not dragging. Pass tasks prop to BoardColumn. Zustand used only during drag. |
 
 ### Sprint 7: UX Polish (READY)
 
@@ -129,11 +129,11 @@
 - [x] Horizontal scroll works from leftmost to rightmost column
 - [x] Works on 1024px viewport with sidebar open
 
-### Sprint 6 Completion Criteria (NEW)
-- [ ] Drag column A after column B -> Refresh -> Column A still after column B
-- [ ] Console shows no errors during column reorder
-- [ ] Navigate to board -> Task cards appear immediately (no flash)
-- [ ] Refresh page multiple times -> cards always appear
+### Sprint 6 Completion Criteria (COMPLETE)
+- [x] Drag column A after column B -> Refresh -> Column A still after column B
+- [x] Console shows no errors during column reorder
+- [x] Navigate to board -> Task cards appear immediately (no flash)
+- [x] Refresh page multiple times -> cards always appear
 
 ### Sprint 7 Completion Criteria (NEW)
 - [ ] Hover over task card -> visual feedback appears (border/shadow)
@@ -225,22 +225,24 @@ if (isActiveAColumn) {
 >
 ```
 
-### Initial Load Race Condition (Task 6.2)
+### Initial Load Race Condition (Task 6.2) - FIXED
 ```tsx
-// kanban-board.tsx - Current issue (Lines 151-153, 211-221)
-// Board renders from Zustand state (tasks from useTaskStore)
-// Data synced via useEffect AFTER first render
-// Causes flash of empty state
+// kanban-board.tsx - FIXED implementation
+// Use useMemo to switch between React Query data (initial render)
+// and Zustand state (during drag operations)
 
-// FIX Option A: Render from React Query when not dragging
-const tasksToRender = draggedTask !== null 
-  ? tasks  // Zustand during drag
-  : data?.tasks ?? [];  // React Query otherwise
+const isDragging = draggedTask !== null;
+const columnsToRender = useMemo(
+  () => isDragging ? columns : (data?.columns ?? []),
+  [isDragging, columns, data?.columns]
+);
+const tasksToRender = useMemo(
+  () => isDragging ? tasks : (data?.tasks ?? []),
+  [isDragging, tasks, data?.tasks]
+);
 
-// FIX Option B: Eager sync on mount
-useEffect(() => {
-  if (data?.tasks) setTasks(data.tasks);
-}, []);  // Mount only
+// Pass tasks to BoardColumn to avoid Zustand read on initial render
+<BoardColumn column={col} tasks={tasksToRender.filter(t => t.columnId === col.id)} />
 ```
 
 ---
@@ -295,15 +297,15 @@ Task 7.1 (hover) -> 5.1 for verification
 | Sprint 3: Task Card Redesign | 6 | COMPLETE | - |
 | Sprint 4: Deferred Features | 3 | COMPLETE | - |
 | Sprint 5: Critical Bug Fixes | 2 | **COMPLETE** | - |
-| Sprint 6: Data Integrity | 2 | 6h | **P1** |
+| Sprint 6: Data Integrity | 2 | **COMPLETE** | - |
 | Sprint 7: UX Polish | 4 | 2.5h | **P2-P3** |
 | **Verification Pass** | - | 2h | - |
-| **Total Remaining** | **6** | **~8.5h (1.5 days)** | |
+| **Total Remaining** | **4** | **~2.5h** | |
 
 ---
 
 ## Implementation Priority Order
 
-1. **Day 1**: Task 6.1 Column reorder persistence (3h) + Task 6.2 Race condition fix (3h)
+1. ~~**Day 1**: Task 6.1 Column reorder persistence (3h) + Task 6.2 Race condition fix (3h)~~ **COMPLETE**
 2. **Day 2**: Task 7.1 Hover states (1h) + Task 7.2 Description verify (30m) + Task 7.3 New Board verify (30m) + Task 7.4 Session linking verify (30m)
 3. **Day 3**: Sprint 1-5 verification checklist pass + Final QA

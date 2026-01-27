@@ -162,8 +162,6 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
   /** Store previous tasks state for rollback on mutation error */
   const previousTasksRef = useRef<Task[]>([]);
 
-  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
-
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   // Status filter removed per specs/5.4-search-cleanup.md - Kanban columns ARE the status filter
@@ -180,6 +178,32 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
     queryKey: queryKeys.kanban(projectId, boardId, filters),
     queryFn: () => fetchKanbanData(projectId, boardId, filters),
   });
+
+  /**
+   * Computed render sources - fixes initial load race condition.
+   * 
+   * When NOT dragging: Render directly from React Query data to avoid
+   * the flash of empty state that occurs because Zustand starts empty
+   * and the sync useEffect runs after the first render.
+   * 
+   * When dragging: Use Zustand for instant optimistic updates during
+   * drag operations (60fps smoothness without network round-trips).
+   * 
+   * @see ralph-wiggum/specs/5.9-fix-initial-load-race.md
+   */
+  const isDragging = draggedTask !== null;
+  const columnsToRender = useMemo(
+    () => isDragging ? columns : (data?.columns ?? []),
+    [isDragging, columns, data?.columns]
+  );
+  const tasksToRender = useMemo(
+    () => isDragging ? tasks : (data?.tasks ?? []),
+    [isDragging, tasks, data?.tasks]
+  );
+  const columnsId = useMemo(
+    () => columnsToRender.map((col) => col.id),
+    [columnsToRender]
+  );
 
   /**
    * Mutation for moving issue (drag-and-drop with order persistence).
@@ -529,17 +553,17 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       >
         <BoardContainer>
           <SortableContext items={columnsId}>
-            {columns?.map((col, index) => (
+            {columnsToRender.map((col, index) => (
               <Fragment key={col.id}>
-                <BoardColumn column={col} />
-                {index === columns?.length - 1 && (
+                <BoardColumn column={col} tasks={tasksToRender.filter(t => t.columnId === col.id)} />
+                {index === columnsToRender.length - 1 && (
                   <div className={KANBAN_DIMENSIONS.COLUMN_WIDTH}>
                     <NewSectionDialog />
                   </div>
                 )}
               </Fragment>
             ))}
-            {!columns.length && <NewSectionDialog />}
+            {!columnsToRender.length && <NewSectionDialog />}
           </SortableContext>
         </BoardContainer>
 
