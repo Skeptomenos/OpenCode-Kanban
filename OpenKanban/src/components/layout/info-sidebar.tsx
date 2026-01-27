@@ -51,9 +51,13 @@ export function InfoSidebar({
                       </h3>
                     )}
                     {section.description && (
-                      <p className='text-muted-foreground text-sm leading-relaxed'>
-                        {section.description}
-                      </p>
+                      typeof section.description === 'string' ? (
+                        <p className='text-muted-foreground text-sm leading-relaxed'>
+                          {section.description}
+                        </p>
+                      ) : (
+                        section.description
+                      )
                     )}
                     {section.links && section.links.length > 0 && (
                       <div className='flex flex-col gap-2'>

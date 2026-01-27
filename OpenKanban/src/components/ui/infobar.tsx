@@ -39,7 +39,11 @@ export type HelpfulLink = {
 
 export type DescriptiveSection = {
   title: string;
-  description: string;
+  /**
+   * Description content - can be a string or React node (e.g., TaskDescriptionEditor).
+   * @see ralph-wiggum/specs/5.2-task-card-editor.md:L27-30
+   */
+  description: React.ReactNode;
   links?: HelpfulLink[];
 };
 

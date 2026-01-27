@@ -18,6 +18,7 @@ import {
   IconSquareCheck
 } from '@tabler/icons-react';
 import { TaskInfobarActions } from './task-infobar-actions';
+import { TaskDescriptionEditor } from './task-description-editor';
 
 /**
  * Icon mapping for parent type display in hierarchy badge.
@@ -84,7 +85,12 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
       sections: [
         {
           title: 'Description',
-          description: task.description || 'No description provided.',
+          description: (
+            <TaskDescriptionEditor
+              taskId={task.id}
+              initialDescription={task.description || ''}
+            />
+          ),
           links: []
         }
       ],

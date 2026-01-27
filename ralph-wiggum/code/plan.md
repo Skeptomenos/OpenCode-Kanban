@@ -46,7 +46,7 @@
 | [x] | **Task 3.1**: Remove "Task" badge from TaskCard | `specs/5.2-task-card-editor.md:L10` | DONE: Removed Badge component and its import from task-card.tsx. |
 | [x] | **Task 3.2**: Restructure TaskCard layout (header/body/footer) | `specs/5.2-task-card-editor.md:L7-12` | DONE: Restructured to header/body/footer layout. Title+drag handle in header, description with line-clamp-3 in body, parent with border-t in footer. Removed CardHeader/CardContent, using p-3 padding. |
 | [x] | **Task 3.3**: Create `TaskDescriptionEditor` component | `specs/5.2-task-card-editor.md:L15-25` | DONE: Created `task-description-editor.tsx`. Auto-saving textarea with blur/Cmd+Enter. Shows "Saved" indicator with fade animation. Build passes. |
-| [ ] | **Task 3.4**: Integrate editor into InfobarContent | `specs/5.2-task-card-editor.md:L27-30` | Replace static description text with `<TaskDescriptionEditor>` in `handleCardClick`. |
+| [x] | **Task 3.4**: Integrate editor into InfobarContent | `specs/5.2-task-card-editor.md:L27-30` | DONE: Changed `DescriptiveSection.description` from `string` to `React.ReactNode`. Updated `info-sidebar.tsx` to render ReactNode. Replaced static text with `<TaskDescriptionEditor>` in `task-card.tsx` `handleCardClick`. |
 | [ ] | **Task 3.5**: Fix new task optimistic update (show parent) | `specs/5.2-task-card-editor.md:L32-37` | In `NewTaskDialog` onSuccess, inject parent object into optimistic update. |
 | [ ] | **Task 3.6**: Update LinkSessionDialog to use debounced server search | `specs/5.4-search-cleanup.md:L13-17` | Add `useDebounce(300)` for search input. Pass query to `useSessions(query)`. |
 
