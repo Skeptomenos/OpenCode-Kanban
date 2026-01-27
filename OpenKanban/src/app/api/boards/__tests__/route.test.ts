@@ -160,7 +160,7 @@ describe('/api/boards', () => {
       const response = await POST(request);
       const body = await response.json();
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
       expect(body.success).toBe(true);
       expect(body.data.id).toBe('board_new');
       expect(body.data.name).toBe('New Sprint Board');
@@ -203,7 +203,7 @@ describe('/api/boards', () => {
       const response = await POST(request);
       const body = await response.json();
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
       expect(body.success).toBe(true);
       expect(body.data.id).toBe('board_custom');
       expect(body.data.filters).toEqual(customFilters);

@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { NextRequest } from 'next/server';
 import type { OpenCodeProject, OpenCodeSession } from '@/contract/opencode/types';
 
 /**
@@ -63,6 +64,11 @@ function createMockProject(overrides: Partial<OpenCodeProject> = {}): OpenCodePr
   };
 }
 
+function createMockRequest(queryString: string = ''): NextRequest {
+  const url = `http://localhost:3000/api/sessions${queryString ? `?${queryString}` : ''}`;
+  return new NextRequest(url);
+}
+
 describe('/api/sessions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -83,7 +89,8 @@ describe('/api/sessions', () => {
       mockGetAllProjects.mockResolvedValue(mockProjects);
 
       const { GET } = await import('../route');
-      const response = await GET();
+      const request = createMockRequest();
+      const response = await GET(request);
       const body = await response.json();
 
       expect(response.status).toBe(200);
@@ -101,7 +108,8 @@ describe('/api/sessions', () => {
       mockGetAllProjects.mockResolvedValue([]);
 
       const { GET } = await import('../route');
-      const response = await GET();
+      const request = createMockRequest();
+      const response = await GET(request);
       const body = await response.json();
 
       expect(response.status).toBe(200);
@@ -116,7 +124,8 @@ describe('/api/sessions', () => {
       mockGetAllProjects.mockResolvedValue([]);
 
       const { GET } = await import('../route');
-      const response = await GET();
+      const request = createMockRequest();
+      const response = await GET(request);
       const body = await response.json();
 
       expect(response.status).toBe(500);

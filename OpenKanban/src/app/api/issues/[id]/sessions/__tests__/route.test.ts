@@ -154,7 +154,7 @@ describe('/api/issues/[id]/sessions', () => {
       const response = await POST(request, context);
       const body = await response.json();
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
       expect(body.success).toBe(true);
       expect(body.data.linked).toBe(true);
       expect(body.data.issueId).toBe('issue_123');
