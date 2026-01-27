@@ -56,7 +56,7 @@
 |--------|------|----------------|-------|
 | [x] | **Task 4.1**: Create `SessionViewer` component | `specs/5.5-deferred-features.md:L7-13` | DONE: Created SessionViewer with breadcrumb nav, useSession hook, API endpoint, adapter methods for messages/parts. Build passes. |
 | [x] | **Task 4.2**: Wire "View Session" button to linked sessions | `specs/5.5-deferred-features.md:L8-13` | DONE: Added "View" (eye icon) button to TaskInfobarActions. Clicking replaces InfoSidebar content with SessionViewer. Back button restores task details. |
-| [ ] | **Task 4.3**: Add "Create Branch" button to task actions | `specs/5.5-deferred-features.md:L16-26` | Button in TaskInfobarActions. Generates `git checkout -b task/{id}-{slug}`. Copy to clipboard. |
+| [x] | **Task 4.3**: Add "Create Branch" button to task actions | `specs/5.5-deferred-features.md:L16-26` | DONE: Added IconGitBranch button to TaskInfobarActions. Generates `git checkout -b task/{id}-{slug}` and copies to clipboard via navigator.clipboard API with toast feedback. |
 
 ---
 
@@ -91,8 +91,8 @@
 - [ ] New tasks show parent project footer immediately
 
 ### Sprint 4 Completion Criteria
-- [ ] "View" button on linked sessions opens transcript
-- [ ] "Create Branch" button copies git command to clipboard
+- [x] "View" button on linked sessions opens transcript
+- [x] "Create Branch" button copies git command to clipboard
 
 ---
 

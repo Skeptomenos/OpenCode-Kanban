@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { IconLink, IconUnlink, IconExternalLink, IconEye } from '@tabler/icons-react';
+import { IconLink, IconUnlink, IconExternalLink, IconEye, IconGitBranch } from '@tabler/icons-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,21 @@ import { useTaskStore } from '../utils/store';
 interface TaskInfobarActionsProps {
   taskId: string;
   taskTitle: string;
+}
+
+/**
+ * Converts a task title to a git-branch-safe slug.
+ * @example slugify("Fix login bug") => "fix-login-bug"
+ * @see ralph-wiggum/specs/5.5-deferred-features.md:L16-26
+ */
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 export function TaskInfobarActions({ taskId, taskTitle }: TaskInfobarActionsProps) {
@@ -97,6 +112,22 @@ export function TaskInfobarActions({ taskId, taskTitle }: TaskInfobarActionsProp
     return `${sessionId.slice(0, 8)}...${sessionId.slice(-4)}`;
   };
 
+  const handleCreateBranch = async () => {
+    const slug = slugify(taskTitle);
+    const branchName = `task/${taskId}-${slug}`;
+    const command = `git checkout -b ${branchName}`;
+
+    try {
+      await navigator.clipboard.writeText(command);
+      toast.success('Branch command copied to clipboard', {
+        description: command,
+      });
+    } catch (err) {
+      logger.error('Failed to copy to clipboard', { error: String(err) });
+      toast.error('Failed to copy to clipboard');
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3">
@@ -159,6 +190,16 @@ export function TaskInfobarActions({ taskId, taskTitle }: TaskInfobarActionsProp
       >
         <IconLink className="h-4 w-4 mr-2" />
         Link Session
+      </Button>
+
+      <Button
+        variant="outline"
+        size="sm"
+        className="w-full"
+        onClick={handleCreateBranch}
+      >
+        <IconGitBranch className="h-4 w-4 mr-2" />
+        Create Branch
       </Button>
 
       <LinkSessionDialog
