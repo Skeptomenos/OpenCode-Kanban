@@ -55,7 +55,7 @@
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 4.1**: Create `SessionViewer` component | `specs/5.5-deferred-features.md:L7-13` | DONE: Created SessionViewer with breadcrumb nav, useSession hook, API endpoint, adapter methods for messages/parts. Build passes. |
-| [ ] | **Task 4.2**: Wire "View Session" button to linked sessions | `specs/5.5-deferred-features.md:L8-13` | Add "View" button in TaskInfobarActions. Opens SessionViewer in InfoSidebar. |
+| [x] | **Task 4.2**: Wire "View Session" button to linked sessions | `specs/5.5-deferred-features.md:L8-13` | DONE: Added "View" (eye icon) button to TaskInfobarActions. Clicking replaces InfoSidebar content with SessionViewer. Back button restores task details. |
 | [ ] | **Task 4.3**: Add "Create Branch" button to task actions | `specs/5.5-deferred-features.md:L16-26` | Button in TaskInfobarActions. Generates `git checkout -b task/{id}-{slug}`. Copy to clipboard. |
 
 ---

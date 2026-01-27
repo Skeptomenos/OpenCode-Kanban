@@ -1,18 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { IconLink, IconUnlink, IconExternalLink } from '@tabler/icons-react';
+import { IconLink, IconUnlink, IconExternalLink, IconEye } from '@tabler/icons-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { logger } from '@/lib/logger';
+import { useInfobar, type InfobarContent } from '@/components/ui/infobar';
 import {
   LinkSessionDialog,
+  SessionViewer,
   useSessionLinks,
   useUnlinkSession,
   type SessionLink,
 } from '@/features/sessions';
+import { TaskDescriptionEditor } from './task-description-editor';
+import { useTaskStore } from '../utils/store';
 
 interface TaskInfobarActionsProps {
   taskId: string;
@@ -23,6 +27,60 @@ export function TaskInfobarActions({ taskId, taskTitle }: TaskInfobarActionsProp
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { sessionLinks, isLoading, error } = useSessionLinks(taskId);
   const unlinkSession = useUnlinkSession();
+  const { setContent } = useInfobar();
+  const task = useTaskStore((state) => state.tasks.find((t) => t.id === taskId));
+
+  /**
+   * Restores the task details view in the InfoSidebar.
+   * Called when user clicks "back" from SessionViewer.
+   *
+   * WHY: Users need to navigate back from session transcript to task details.
+   * This rebuilds the original InfobarContent that was shown before viewing session.
+   *
+   * @see ralph-wiggum/specs/5.5-deferred-features.md:L7-13
+   */
+  const restoreTaskContent = () => {
+    const content: InfobarContent = {
+      title: task?.title ?? taskTitle,
+      sections: [
+        {
+          title: 'Description',
+          description: (
+            <TaskDescriptionEditor
+              taskId={taskId}
+              initialDescription={task?.description || ''}
+            />
+          ),
+          links: []
+        }
+      ],
+      actions: <TaskInfobarActions taskId={taskId} taskTitle={task?.title ?? taskTitle} />
+    };
+    setContent(content);
+  };
+
+  /**
+   * Opens the SessionViewer in the InfoSidebar, replacing task details.
+   *
+   * WHY: Provides master-detail navigation within the InfoSidebar.
+   * Users can view session transcripts without leaving the board context.
+   *
+   * @see ralph-wiggum/specs/5.5-deferred-features.md:L8-13
+   */
+  const handleViewSession = (sessionId: string) => {
+    const content: InfobarContent = {
+      title: 'Session Transcript',
+      sections: [],
+      actions: (
+        <SessionViewer
+          sessionId={sessionId}
+          taskTitle={task?.title ?? taskTitle}
+          onBack={restoreTaskContent}
+        />
+      )
+    };
+    setContent(content);
+  };
 
   const handleUnlink = async (sessionId: string) => {
     try {
@@ -66,16 +124,27 @@ export function TaskInfobarActions({ taskId, taskTitle }: TaskInfobarActionsProp
                     {formatSessionId(link.sessionId)}
                   </span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 flex-shrink-0"
-                  onClick={() => handleUnlink(link.sessionId)}
-                  disabled={unlinkSession.isPending}
-                  aria-label={`Unlink session ${link.sessionId}`}
-                >
-                  <IconUnlink className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    onClick={() => handleViewSession(link.sessionId)}
+                    aria-label={`View session ${link.sessionId}`}
+                  >
+                    <IconEye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    onClick={() => handleUnlink(link.sessionId)}
+                    disabled={unlinkSession.isPending}
+                    aria-label={`Unlink session ${link.sessionId}`}
+                  >
+                    <IconUnlink className="h-4 w-4" />
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>
