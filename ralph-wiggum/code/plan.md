@@ -3,8 +3,8 @@
 > **Goal:** Transform the UI into a polished, production-ready experience and implement critical workflow persistence.
 > **Previous Phase:** Phase 4 Board Management COMPLETE (v0.3.84)
 > **Created:** 2026-01-26
-> **Updated:** 2026-01-27 (Task 7.2 COMPLETE - Description Editor Verification)
-> **Remaining Tasks:** 2 (Sprint 7: 2)
+> **Updated:** 2026-01-27 (Task 7.3 COMPLETE - New Board Functionality Verified + Fixed Navigation)
+> **Remaining Tasks:** 1 (Sprint 7: 1)
 
 ## Execution Order
 
@@ -82,7 +82,7 @@
 |--------|------|----------------|-------|
 | [x] | **Task 7.1**: Add hover states to task cards | `specs/5.10-task-card-click-affordance.md` | DONE v0.5.17: Added `hover:border-primary/50 hover:shadow-md transition-all duration-150` to task-card.tsx:108-115. |
 | [x] | **Task 7.2**: Verify description editor functionality | `specs/5.11-verify-description-editor.md` | DONE v0.5.18: Code review verified onBlur/Cmd+Enter save, "Saved" indicator (2s fade), API PATCH accepts description. Build passes. |
-| [ ] | **Task 7.3**: Verify "+ New Board" functionality | `specs/5.12-new-board-functionality.md` | **P2** - Verification task. Click trigger, dialog opens, board created, sidebar updates, navigates to new board. |
+| [x] | **Task 7.3**: Verify "+ New Board" functionality | `specs/5.12-new-board-functionality.md` | DONE v0.5.19: Verified dialog/mutation/cache invalidation. **FIX**: Added router.push() to navigate to new board on creation. Build passes. |
 | [ ] | **Task 7.4**: Full session linking verification | `specs/5.13-session-linking.md` | **P3** - Verification task. BLOCKED by 5.6. Test: Link Session dialog, search, select, link, display, unlink, view transcript. |
 
 ---
@@ -139,7 +139,7 @@
 - [x] Hover over task card -> visual feedback appears (border/shadow)
 - [x] Edit description -> blur -> "Saved" indicator
 - [x] Edit description -> Cmd+Enter -> saves
-- [ ] "+ New Board" creates board, updates sidebar, navigates
+- [x] "+ New Board" creates board, updates sidebar, navigates
 
 ---
 

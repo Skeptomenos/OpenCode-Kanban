@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -54,6 +55,7 @@ export function CreateBoardDialog({
   children,
   onSuccess,
 }: CreateBoardDialogProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const createBoardMutation = useCreateBoard();
@@ -94,6 +96,7 @@ export function CreateBoardDialog({
           setOpen(false);
           toast.success(`Board "${result.name}" created`);
           onSuccess?.();
+          router.push(`/project/${parentId}/board/${result.id}`);
         },
         onError: (error) => {
           const message = error.message || 'Failed to create board';
