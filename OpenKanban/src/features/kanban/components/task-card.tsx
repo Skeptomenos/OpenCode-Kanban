@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useInfobar, type InfobarContent } from '@/components/ui/infobar';
-import { Badge } from '@/components/ui/badge';
+
 import { cn } from '@/lib/utils';
 import type { Task, TaskDragData } from '../types';
 import { useSortable } from '@dnd-kit/sortable';
@@ -128,9 +128,6 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
           <span className='sr-only'>Move task</span>
           <IconGripVertical />
         </Button>
-        <Badge variant={'outline'} className='ml-auto font-semibold'>
-          Task
-        </Badge>
       </CardHeader>
       <CardContent className='px-3 pt-3 pb-6 text-left whitespace-pre-wrap'>
         {task.title}

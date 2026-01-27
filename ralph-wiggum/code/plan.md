@@ -43,7 +43,7 @@
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 3.1**: Remove "Task" badge from TaskCard | `specs/5.2-task-card-editor.md:L10` | Delete `<Badge variant="outline">Task</Badge>` from `task-card.tsx`. |
+| [x] | **Task 3.1**: Remove "Task" badge from TaskCard | `specs/5.2-task-card-editor.md:L10` | DONE: Removed Badge component and its import from task-card.tsx. |
 | [ ] | **Task 3.2**: Restructure TaskCard layout (header/body/footer) | `specs/5.2-task-card-editor.md:L7-12` | Title + drag handle in header. Description preview in body (line-clamp-3). Parent in footer with border-t. |
 | [ ] | **Task 3.3**: Create `TaskDescriptionEditor` component | `specs/5.2-task-card-editor.md:L15-25` | File: `src/features/kanban/components/task-description-editor.tsx`. Auto-saving textarea. Save on blur/Cmd+Enter. |
 | [ ] | **Task 3.4**: Integrate editor into InfobarContent | `specs/5.2-task-card-editor.md:L27-30` | Replace static description text with `<TaskDescriptionEditor>` in `handleCardClick`. |
