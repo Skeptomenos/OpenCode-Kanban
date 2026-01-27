@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { useInfobar, type InfobarContent } from '@/components/ui/infobar';
 
 import { cn } from '@/lib/utils';
@@ -103,35 +103,46 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
         variants({
           dragging: isOverlay ? 'overlay' : isDragging ? 'over' : undefined
         }),
-        'cursor-pointer'
+        'cursor-pointer p-3'
       )}
       onClick={handleCardClick}
     >
+      <div className="flex flex-row items-start justify-between gap-2">
+        <h3 className="font-medium text-sm leading-tight flex-1 min-w-0">
+          {task.title}
+        </h3>
+        <Button
+          variant="ghost"
+          {...attributes}
+          {...listeners}
+          className="text-muted-foreground/50 hover:text-foreground h-auto cursor-grab p-1 shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span className="sr-only">Move task</span>
+          <IconGripVertical className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {task.description && (
+        <p className="mt-2 text-xs text-muted-foreground line-clamp-3">
+          {task.description}
+        </p>
+      )}
+
       {task.parent && (
-        <div className="flex items-center gap-1 px-3 pt-2 text-xs text-muted-foreground">
+        <div className="mt-3 pt-2 border-t flex items-center gap-1">
           {(() => {
             const Icon = PARENT_TYPE_ICONS[task.parent.type] ?? IconFolder;
-            return <Icon className="h-3 w-3 flex-shrink-0" />;
+            return <Icon className="size-3 shrink-0 text-muted-foreground" />;
           })()}
-          <span className="truncate max-w-[200px]" title={task.parent.title}>
+          <span
+            className="text-[10px] text-muted-foreground font-medium truncate"
+            title={task.parent.title}
+          >
             {task.parent.title}
           </span>
         </div>
       )}
-      <CardHeader className='space-between border-secondary relative flex flex-row border-b-2 px-3 py-3'>
-        <Button
-          variant={'ghost'}
-          {...attributes}
-          {...listeners}
-          className='text-secondary-foreground/50 -ml-2 h-auto cursor-grab p-1'
-        >
-          <span className='sr-only'>Move task</span>
-          <IconGripVertical />
-        </Button>
-      </CardHeader>
-      <CardContent className='px-3 pt-3 pb-6 text-left whitespace-pre-wrap'>
-        {task.title}
-      </CardContent>
     </Card>
   );
 }

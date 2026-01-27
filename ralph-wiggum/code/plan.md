@@ -44,7 +44,7 @@
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
 | [x] | **Task 3.1**: Remove "Task" badge from TaskCard | `specs/5.2-task-card-editor.md:L10` | DONE: Removed Badge component and its import from task-card.tsx. |
-| [ ] | **Task 3.2**: Restructure TaskCard layout (header/body/footer) | `specs/5.2-task-card-editor.md:L7-12` | Title + drag handle in header. Description preview in body (line-clamp-3). Parent in footer with border-t. |
+| [x] | **Task 3.2**: Restructure TaskCard layout (header/body/footer) | `specs/5.2-task-card-editor.md:L7-12` | DONE: Restructured to header/body/footer layout. Title+drag handle in header, description with line-clamp-3 in body, parent with border-t in footer. Removed CardHeader/CardContent, using p-3 padding. |
 | [ ] | **Task 3.3**: Create `TaskDescriptionEditor` component | `specs/5.2-task-card-editor.md:L15-25` | File: `src/features/kanban/components/task-description-editor.tsx`. Auto-saving textarea. Save on blur/Cmd+Enter. |
 | [ ] | **Task 3.4**: Integrate editor into InfobarContent | `specs/5.2-task-card-editor.md:L27-30` | Replace static description text with `<TaskDescriptionEditor>` in `handleCardClick`. |
 | [ ] | **Task 3.5**: Fix new task optimistic update (show parent) | `specs/5.2-task-card-editor.md:L32-37` | In `NewTaskDialog` onSuccess, inject parent object into optimistic update. |
