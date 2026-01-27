@@ -19,6 +19,7 @@ import { queryKeys, type BoardFilters } from '@/lib/query-keys';
 import { KANBAN_DIMENSIONS } from '@/lib/constants/ui-dimensions';
 import { fetchIssues, fetchBoards, fetchBoard, moveIssue } from '../api';
 import { ColumnMutationsProvider } from '../hooks/column-mutations-context';
+import { useReorderColumnsMutation } from '../hooks/use-column-mutations';
 import {
   Announcements,
   DndContext,
@@ -184,6 +185,8 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
    * Mutation for moving issue (drag-and-drop with order persistence).
    * @see ralph-wiggum/specs/5.3-drag-persistence.md:L32-48
    */
+  const reorderColumnsMutation = useReorderColumnsMutation(projectId, boardId);
+
   const moveIssueMutation = useMutation({
     mutationFn: ({ id, status, prevIssueId, nextIssueId }: {
       id: string;
@@ -406,7 +409,9 @@ export function KanbanBoard({ projectId, boardId }: KanbanBoardProps) {
       return;
     }
 
-    setColumns(arrayMove(columns, activeColumnIndex, overColumnIndex));
+    const reorderedColumns = arrayMove(columns, activeColumnIndex, overColumnIndex);
+    setColumns(reorderedColumns);
+    reorderColumnsMutation.mutate(reorderedColumns);
   }
 
   function onDragOver(event: DragOverEvent) {

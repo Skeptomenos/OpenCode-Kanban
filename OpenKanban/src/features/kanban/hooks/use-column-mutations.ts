@@ -23,6 +23,39 @@ function columnsToColumnConfig(columns: Column[]): ColumnConfig[] {
   }));
 }
 
+/**
+ * Mutation to persist column reordering to the database.
+ * Called when columns are dragged to new positions.
+ *
+ * Separate from useColumnMutations because it needs to be called directly
+ * in onDragEnd (not via context) for immediate execution after arrayMove.
+ *
+ * @see ralph-wiggum/specs/5.8-column-reorder-persistence.md
+ */
+export function useReorderColumnsMutation(projectId?: string, boardId?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (columns: Column[]) => {
+      const state = useTaskStore.getState();
+      const effectiveBoardId = boardId ?? state.currentBoardId;
+      if (!effectiveBoardId) {
+        throw new Error('No board selected');
+      }
+
+      return updateBoard(effectiveBoardId, {
+        columnConfig: columnsToColumnConfig(columns),
+      });
+    },
+    onError: (err) => {
+      logger.error('Failed to reorder columns', { error: String(err) });
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.kanban(projectId, boardId) });
+    },
+  });
+}
+
 export function useColumnMutations(projectId?: string, boardId?: string) {
   const queryClient = useQueryClient();
 

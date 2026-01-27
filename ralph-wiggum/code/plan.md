@@ -3,8 +3,8 @@
 > **Goal:** Transform the UI into a polished, production-ready experience and implement critical workflow persistence.
 > **Previous Phase:** Phase 4 Board Management COMPLETE (v0.3.84)
 > **Created:** 2026-01-26
-> **Updated:** 2026-01-27 (Sprint 5 VERIFIED COMPLETE)
-> **Remaining Tasks:** 6 (Sprint 6: 2, Sprint 7: 4)
+> **Updated:** 2026-01-27 (Task 6.1 COMPLETE - Column Reorder Persistence)
+> **Remaining Tasks:** 5 (Sprint 6: 1, Sprint 7: 4)
 
 ## Execution Order
 
@@ -69,11 +69,11 @@
 | [x] | **Task 5.1**: Fix InfoSidebar not visually rendering | `specs/5.6-fix-infobar-rendering.md` | DONE: `SidebarInset` changed from `w-full` to `min-w-0` in `sidebar.tsx:311`. InfoSidebar now renders properly on task card click. Verified at 1024px viewport. |
 | [x] | **Task 5.2**: Fix board left-column clipping | `specs/5.7-fix-board-clipping.md` | DONE: `justify-center` changed to `gap-4 w-fit min-w-full` in `board-column.tsx:133`. Columns now aligned left, no clipping. |
 
-### Sprint 6: Data Integrity Fixes (READY)
+### Sprint 6: Data Integrity Fixes (IN PROGRESS)
 
 | Status | Task | Spec Reference | Notes |
 |--------|------|----------------|-------|
-| [ ] | **Task 6.1**: Add column reorder persistence to database | `specs/5.8-column-reorder-persistence.md` | **P1** - `onDragEnd` in `kanban-board.tsx:409` only updates Zustand via `setColumns(arrayMove(...))`. No API call. Create `useReorderColumnsMutation` hook. |
+| [x] | **Task 6.1**: Add column reorder persistence to database | `specs/5.8-column-reorder-persistence.md` | DONE v0.5.15: Added `useReorderColumnsMutation` hook. Column reorder now persists via PATCH /api/boards/[id]. |
 | [ ] | **Task 6.2**: Fix initial load race condition | `specs/5.9-fix-initial-load-race.md` | **P1** - Tasks sometimes don't appear on first load. Sync effect (lines 211-221) may miss initial data. Consider rendering from `data?.tasks` directly during non-drag. |
 
 ### Sprint 7: UX Polish (READY)
