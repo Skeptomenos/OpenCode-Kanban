@@ -18,6 +18,7 @@ import { useTaskStore, type Task } from '../utils/store';
 import { createIssue, type CreateIssueInput } from '../api';
 import { queryKeys } from '@/lib/query-keys';
 import { logger } from '@/lib/logger';
+import { useProjects } from '@/features/projects/hooks/use-projects';
 
 export function NewTaskDialog() {
   const queryClient = useQueryClient();
@@ -26,6 +27,12 @@ export function NewTaskDialog() {
   const currentBoardId = useTaskStore((state) => state.currentBoardId);
   const setTasks = useTaskStore((state) => state.setTasks);
   const tasks = useTaskStore((state) => state.tasks);
+  const { projects } = useProjects();
+
+  // Find current project for parent info injection
+  // WHY: New tasks should show their parent project immediately in the footer
+  // without waiting for a refetch. See specs/5.2-task-card-editor.md:L32-37
+  const currentProject = projects.find((p) => p.id === currentProjectId);
 
   const createIssueMutation = useMutation({
     mutationFn: (input: CreateIssueInput) => createIssue(input),
@@ -35,6 +42,10 @@ export function NewTaskDialog() {
         title: issue.title,
         description: issue.description ?? undefined,
         columnId: issue.status,
+        // Inject parent info for immediate display in task card footer
+        parent: currentProject
+          ? { id: currentProject.id, title: currentProject.title, type: 'project' }
+          : undefined,
       };
       setTasks([...tasks, newTask]);
     },
