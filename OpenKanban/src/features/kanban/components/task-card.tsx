@@ -109,14 +109,14 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
         variants({
           dragging: isOverlay ? 'overlay' : isDragging ? 'over' : undefined
         }),
-        'cursor-pointer p-3',
+        'cursor-pointer p-3 w-full max-w-full',
         'transition-all duration-150',
         'hover:border-primary/50 hover:shadow-md'
       )}
       onClick={handleCardClick}
     >
       <div className="flex flex-row items-start justify-between gap-2">
-        <h3 className="font-medium text-sm leading-tight flex-1 min-w-0">
+        <h3 className="font-medium text-sm leading-tight flex-1 min-w-0 break-words">
           {task.title}
         </h3>
         <Button
@@ -132,7 +132,7 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
       </div>
 
       {task.description && (
-        <p className="mt-2 text-xs text-muted-foreground line-clamp-3">
+        <p className="mt-2 text-xs text-muted-foreground line-clamp-3 break-words">
           {task.description}
         </p>
       )}

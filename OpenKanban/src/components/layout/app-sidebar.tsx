@@ -59,11 +59,11 @@ function ProjectTreeItem({ project, isActive, pathname }: ProjectTreeItemProps) 
             isActive={isActive}
             className="pr-8"
           >
-            <IconChevronRight
-              className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
-            />
             <IconFolder className="h-4 w-4 shrink-0" />
             <span className="truncate">{project.title}</span>
+            <IconChevronRight
+              className="ml-auto h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+            />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         
