@@ -118,32 +118,48 @@ A local-first Project Management tool where:
 - [ ] `src/features/kanban/components/issue-card.tsx` updated with hierarchy indicators
 - [ ] `src/features/sessions/components/link-session-dialog.tsx`
 
-### Phase 5: UI/UX Polish & Workflow
+### Phase 5: UI/UX Polish & Workflow ✅ COMPLETE
 - [x] **Tooling**: Integrated `agentation` for visual feedback.
-- [ ] **Sidebar Overhaul**:
-    - [ ] Hierarchy: Nest Boards under Projects.
-    - [ ] Layout: "Push Mode" (Master-Detail) layout.
-    - [ ] Actions: Edit/Delete Projects menu.
-- [ ] **Task Card**:
-    - [ ] Layout: Title in header, description preview.
-    - [ ] Editor: Auto-saving description textarea.
-    - [ ] Fix: Parent visibility on new tasks.
-- [ ] **Workflow Persistence**:
-    - [ ] Drag & Drop: Persist reordering and column moves.
-    - [ ] Optimistic Updates: Instant UI feedback.
-- [ ] **Scale**:
-    - [ ] Server-side session metadata search.
-- [ ] **Integration** (Deferred):
-    - [ ] Session details view (within board).
-    - [ ] "Create Branch" from Task.
+- [x] **Sidebar Overhaul**:
+    - [x] Hierarchy: Nest Boards under Projects.
+    - [x] Layout: "Push Mode" (Master-Detail) layout.
+    - [x] Actions: Edit/Delete Projects menu.
+- [x] **Task Card**:
+    - [x] Layout: Title in header, description preview.
+    - [x] Editor: Auto-saving description textarea.
+    - [x] Fix: Parent visibility on new tasks.
+- [x] **Workflow Persistence**:
+    - [x] Drag & Drop: Persist reordering and column moves.
+    - [x] Optimistic Updates: Instant UI feedback.
+- [x] **Scale**:
+    - [x] Server-side session metadata search.
+- [x] **Integration** (Deferred):
+    - [x] Session details view (within board).
+    - [x] "Create Branch" from Task.
+
+### Phase 6: UI Overhaul & Refinement
+*Goal: Address lingering UI inconsistencies and achieve a polished, cohesive design system.*
+- [ ] **Global Design System**:
+    - [ ] Standardize typography and spacing tokens.
+    - [ ] Unified z-index management strategy.
+- [ ] **Component Polish**:
+    - [ ] Task Card: Refine overflow handling and visual density.
+    - [ ] Sidebar: Enhance collapsed state and transition animations.
+    - [ ] Dialogs: Standardize header/footer layouts.
+- [ ] **Responsive Refinement**:
+    - [ ] Mobile navigation and layout optimization.
+    - [ ] Touch target sizing for drag handles.
+- [ ] **Interaction Feedback**:
+    - [ ] Loading states for all async actions.
+    - [ ] Toast notification consistency.
 
 ---
 
 ## 4. Current Status
 
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-01-28
 
-**State:** Phase 4 Board Management COMPLETE. Ready for Phase 4 Filter Builder.
+**State:** Phase 5 COMPLETE. Ready for Phase 6 UI Overhaul.
 
 | Component | Status | Notes |
 |-----------|--------|-------|
@@ -152,7 +168,7 @@ A local-first Project Management tool where:
 | Session loader | ✅ Done | Async I/O, reads from `~/.local/share/opencode/storage` |
 | API endpoint | ✅ Done | `GET /api/sessions`, full CRUD for issues/boards |
 | Database | ✅ Done | SQLite with Drizzle ORM at `data/kanban.db` |
-| Repository | ✅ Done | TDD-verified with 106 tests (vitest) |
+| Repository | ✅ Done | TDD-verified with 166 tests (vitest) |
 | Kanban UI | ✅ Done | Connected to API, data persists across refresh |
 | Persistence | ✅ Done | SQLite-backed, survives browser refresh |
 | Session Links | ✅ Done | Issues can link to OpenCode sessions |
@@ -162,8 +178,9 @@ A local-first Project Management tool where:
 | Service Layer | ✅ Done | IssueService, BoardService, OpenCodeService |
 | TanStack Query | ✅ Done | Replaces Zustand async actions |
 | Type Safety | ✅ Done | Zod strict schemas, FormData guards |
+| UI/UX Polish | ✅ Done | Sidebar hierarchy, Task layout, Drag persistence |
 
-**Next Action:** Start Phase 4 Filter Builder (board filter controls UI).
+**Next Action:** Begin Phase 6 planning.
 
 **Documentation:**
 - `docs/ROADMAP.md` - This file (master roadmap)
